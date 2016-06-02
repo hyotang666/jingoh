@@ -28,5 +28,6 @@ When syntax is not invalid, an error of type syntax-error is signaled.
 
 ## See-Also:
 
+&
 CHECK
 MAKE-REQUIREMENT

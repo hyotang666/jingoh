@@ -7,6 +7,7 @@
     #:=>
     #:unspecified
     #:implementation-dependent
+    #:&
     ;; evaluator
     #:?
     #:check

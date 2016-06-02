@@ -20,7 +20,7 @@ DEFORG IN-ORG REQUIREMENTS-ABOUT
 DETAIL REPORT
 
 * jingoh.tester - Requirement's tester.
-=> DEFSPEC IMPLEMENTATION-DEPENDENT UNSPECIFIED
+& => DEFSPEC IMPLEMENTATION-DEPENDENT UNSPECIFIED
 
 * jingoh.reader - Special dispatch macros.
 ENABLE SYNTAX
@@ -31,6 +31,7 @@ When REPORT is called, specified requirements are checked and reported.
 
 ## Dictionary
 
+* &
 * =>
 * DEFORG
 * DEFSPEC

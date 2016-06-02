@@ -40,8 +40,8 @@ Like CL:PACKAGE, in order to change current org, we need to in.
     (deforg :test)
     (in-org :test)
     *org*)
-:satisfies #`(and (org-p $a)
-		  (eq :test (org-name $a)))
+:satisfies #`(& (org-p $a)
+		(eq :test (org-name $a)))
 
 #|
 Like CL:PACKAGE, current subject is in special symbol *subject*

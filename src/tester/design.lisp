@@ -15,9 +15,9 @@ When requirement is true, returns nil.
 #|
 When requirement is false, returns issue list.
 |#
-#?(? (+) => 1) :satisfies #`(and (listp $result)
-				 (= 1 (length $result))
-				 (every #'issue-p $result))
+#?(? (+) => 1) :satisfies #`(& (listp $result)
+			       (= 1 (length $result))
+			       (every #'issue-p $result))
 
 #|
 to check signals or not, use :signals keyword.
@@ -59,8 +59,8 @@ to check with complex test, you can use :satisfies keyword.
 satisfies accepts lambda form.
 |#
 #?(? #P"" :satisfies (lambda(result)
-		       (and (pathnamep result)
-			    (= 0 (length(namestring result))))))
+		       (& (pathnamep result)
+			  (= 0 (length(namestring result))))))
 => NIL
 
 #|
@@ -89,6 +89,16 @@ Current org (i.e. *org*) is modified.
     (write-char #\space)
     (princ (org-requirements-count *org*))) ; now modified.
 :output "0 1"
+
+(requirements-about &)
+
+#|
+Like CL:AND, this is asserts all form is returns non nil value.
+|#
+#1?(macroexpand-1 '(& (symbolp 'foo)))
+=> (OR (ASSERT (SYMBOLP 'FOO))
+       T)
+:test equal
 
 (requirements-about internal-dsl)
 

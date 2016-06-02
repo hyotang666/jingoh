@@ -20,6 +20,7 @@
     #:unspecified
     #:implementation-dependent
     #:?
+    #:&
 
     ;;;; from reporter
     #:report

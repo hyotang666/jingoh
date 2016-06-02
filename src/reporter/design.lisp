@@ -20,8 +20,8 @@ report reports org:*org* status.
 reporter can customize. It is bound in *reporter*
 |#
 #?*reporter*
-:satisfies #`(and (functionp $result)
-		  (eq 'default-reporter(millet:function-name $result)))
+:satisfies #`(& (functionp $result)
+		(eq 'default-reporter(millet:function-name $result)))
 
 #|
 to see detail, call detail.
@@ -30,7 +30,7 @@ to see detail, call detail.
      (defspec (+) => 1)
      (with-output-to-string(*standard-output*)
        (detail)))
-:satisfies #`(and (stringp $result)
-		  (let((*package*(find-package :jingoh.tester)))
-		    (issue-p (read-from-string $result))))
+:satisfies #`(& (stringp $result)
+		(let((*package*(find-package :jingoh.tester)))
+		  (issue-p (read-from-string $result))))
 

@@ -33,5 +33,6 @@ When syntax is invalid, an error of type syntax-error is signaled.
 
 ## See-Also:
 
+&
 ?
 MAKE-REQUIREMENT

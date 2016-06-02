@@ -27,7 +27,7 @@ ISSUE is abstract datatype which contains information about issue of requiements
 ## Operation categories
 
 * main apis
-=> ?  CHECK DEFSPEC IMPLEMENTATION-DEPENDENT UNSPECIFIED
+& => ?  CHECK DEFSPEC IMPLEMENTATION-DEPENDENT UNSPECIFIED
 
 * internal dsls
 CANONICALIZE ENCALLABLE MAKE-REQUIREMENT RESERVED-KEYWORDS THE-PUSH-INSTANCE-FORM THE-STANDARD-HANDLING-FORM
@@ -46,6 +46,7 @@ SYNTAX-ERROR
 
 ## Dictionary
 
+* &
 * =>
 * ?
 * CANONICALIZE

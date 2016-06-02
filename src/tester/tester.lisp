@@ -11,6 +11,12 @@
   #.(doc :jingoh.tester "doc/tester/Q.M.md")
   `(check ,(apply #'make-requirement body)))
 
+(defmacro & (&body body)
+  `(OR ,@(mapcar(lambda(form)
+		   `(ASSERT ,form))
+	    body)
+       T))
+
 (defgeneric make-requirement(form key expected &rest params)
   #++(:documentation #.(doc :jingoh.tester "doc/tester/make-requirement.G.md")))
 
