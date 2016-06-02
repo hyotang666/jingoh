@@ -4,7 +4,7 @@
   :description "Jingoh's background database system"
   :pathname "src/org/"
   :depends-on (:jingoh.util :with-resignal)
-  :in-order-to ((test-op (load-op :jingoh.org-test)))
+  :in-order-to ((test-op (test-op :jingoh.org-test)))
   :components((:file "package")
               ; bottom
               (:file "conditions" :depends-on ("package"))
@@ -19,5 +19,5 @@
   :depends-on (:jingoh :named-readtables)
   :pathname "src/org/"
   :components ((:file "design"))
-  :perform (load-op(o s)
+  :perform (test-op(o s)
              (uiop:symbol-call :jingoh 'report)))
