@@ -29,6 +29,7 @@ When arg is not issue object, an error of type type-error is signaled.
 ## See-Also:
 
 CONDITION-ISSUE
+DEBUGGER-WAS-INVOKED
 ERROR-WAS-SIGNALED
 ISSUE
 ISSUE-EXPECTED

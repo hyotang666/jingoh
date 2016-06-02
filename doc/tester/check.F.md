@@ -30,6 +30,7 @@ When requirement is not requirement, an error may signaled.
 
 ?
 CONDITION-ISSUE
+DEBUGGER-WAS-INVOKED
 ERROR-WAS-SIGNALED
 ISSUE
 ISSUE-OF-MULTIPLE-VALUES

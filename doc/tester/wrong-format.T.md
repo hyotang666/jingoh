@@ -35,6 +35,7 @@ Currently byte stream output is not supported.
 ## See Also:
 
 CONDITION-ISSUE
+DEBUGGER-WAS-INVOKED
 ERROR-WAS-SIGNALED
 ISSUE
 ISSUE-ACTUAL

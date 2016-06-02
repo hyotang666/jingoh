@@ -23,13 +23,13 @@
     ;; main
     #:issue #:condition-issue
     ;; miscellaneous
-    #:error-was-signaled #:warning-was-signaled #:unexpected-success #:issue-of-multiple-values #:wrong-format
+    #:error-was-signaled #:warning-was-signaled #:unexpected-success #:issue-of-multiple-values #:wrong-format #:debugger-was-invoked
 
     ;;;; predicate
     ;; main
     #:issue-p #:condition-issue-p
     ;; miscellaneous
-    #:error-was-signaled-p #:warning-was-signaled-p #:unexpected-success-p #:issue-of-multiple-values-p #:wrong-format-p
+    #:error-was-signaled-p #:warning-was-signaled-p #:unexpected-success-p #:issue-of-multiple-values-p #:wrong-format-p #:debugger-was-invoked-p
 
     ;;;; accessor
     #:issue-form #:issue-expected #:issue-actual #:issue-test

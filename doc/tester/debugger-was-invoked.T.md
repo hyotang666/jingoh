@@ -1,8 +1,8 @@
-# [Structure] CONDITION-ISSUE
+# [Structure] DEBUGGER-WAS-INVOKED
 
 ## Class Precedence List: (case in CLISP)
 
-* condition-issue issue structure-object t
+* debugger-was-invoked condition-issue issue structure-object t
 
 ## Effective Slots:
 
@@ -12,11 +12,11 @@ Contains condition message string.
 
 * FORM [Type] T
 [ACCESSOR] issue-form
-Contains lisp form which causes signaling condition.
+Contains lisp form which invokes debugger.
 
 * EXPECTED [Type] T
 [ACCESSOR] issue-expected
-Contains FORM's expected return value.
+NIL bacause useless.
 
 * ACTUAL [Type] T
 [ACCESSOR] issue-actual
@@ -27,24 +27,26 @@ Contains signaled condition.
 NIL bacause useless.
 
 ## Description:
-Condition issue is superclass for issue about conditions.
-When you extends new issue about conditions, it must inherit this.
+DEBUGGER-WAS-INVOKED is the issue of unexpected invoking debugger.
 
 ## Example:
 
-## Notes: 
-Usually this is not used directly, just for inheritance.
+## Notes:
 
 ## See Also:
 
+CONDITION-ISSUE
 CONDITION-ISSUE-MESSAGE
 CONDITION-ISSUE-P
-DEBUGGER-WAS-INVOKED
-ERROR-WAS-SIGNALED
+DEBUGGER-WAS-INVOKED-P
+ERROR-WAS-SIGNALED-P
 ISSUE
 ISSUE-ACTUAL
 ISSUE-EXPECTED
 ISSUE-FORM
+ISSUE-OF-MULTIPLE-VALUES
+ISSUE-P
 ISSUE-TEST
+UNEXPECTED-SUCCESS
 WARNING-WAS-SIGNALED
-
+WRONG-FORMAT

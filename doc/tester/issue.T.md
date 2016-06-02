@@ -36,6 +36,7 @@ Issues are produced by tester, and used by reporter in order to show the details
 ## See Also:
 
 CONDITION-ISSUE
+DEBUGGER-WAS-INVOKED
 ERROR-WAS-SIGNALED
 ISSUE-ACTUAL
 ISSUE-EXPECTED

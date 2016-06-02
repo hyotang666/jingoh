@@ -28,6 +28,7 @@ Returns accpeted issue's expected result.
 ## See-Also:
 
 CONDITION-ISSUE
+DEBUGGER-WAS-INVOKED
 ERROR-WAS-SIGNALED
 ISSUE
 ISSUE-ACTUAL

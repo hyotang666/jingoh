@@ -9,6 +9,8 @@
 
 (defstruct(warning-was-signaled (:include condition-issue)))
 
+(defstruct(debugger-was-invoked (:include condition-issue)))
+
 (defstruct(unexpected-success (:include issue)))
 
 (defstruct(issue-of-multiple-values (:include issue)))

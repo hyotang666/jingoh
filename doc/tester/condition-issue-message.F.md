@@ -30,5 +30,6 @@ When arg is not condition-issue, an error of type type-error is signaled
 
 CONDITION-ISSUE
 CONDITION-ISSUE-MESSAGE
+DEBUGGER-WAS-INVOKED
 ERROR-WAS-SIGNALED
 WARNING-WAS-SIGNALED

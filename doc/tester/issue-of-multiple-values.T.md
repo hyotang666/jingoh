@@ -34,6 +34,7 @@ ISSUE-OF-MULTIPLE-VALUES is the issue especially about multiple values.
 ## See Also:
 
 CONDITION-ISSUE
+DEBUGGER-WAS-INVOKED
 ERROR-WAS-SIGNALED
 ISSUE
 ISSUE-ACTUAL

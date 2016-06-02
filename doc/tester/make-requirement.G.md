@@ -18,12 +18,13 @@ form key expected
 * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL :INVOKE-DEBUGGER-WITH)) (EXPECTED T) &REST PARAMETERS)
 * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL :SIGNALS)) (EXPECTED T) &REST PARAMETERS)
 * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL =>)) (EXPECTED T) &REST PARAMETERS)
+* (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL :NEVER-INVOKE-DEBUGGER)) (EXPECTED T) &REST PARAMETERS)
 
 ## Arguments and Values:
 
 form := one lisp expression to test
 
-key := (MEMBER => :signals :values :invoke-debugger-with :output :satisfies :multiple-value-satisfies)
+key := (MEMBER => :signals :values :invoke-debugger-with :output :satisfies :multiple-value-satisfies :never-invoke-debugger)
 
 expected := one lisp value which should be return value of form.
 
@@ -59,6 +60,12 @@ Specifying to use specified function to test.
 
 * :multiple-value-satisfies
 Specifying to use specified function to test the every return value.
+
+* :invoke-debugger-with
+Specifying the debugger will be invoked with specified condition.
+
+* :never-invoke-debugger
+Specifying the debugger will be never invoked.
 
 ### options
 

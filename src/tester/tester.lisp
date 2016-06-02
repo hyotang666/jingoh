@@ -72,21 +72,23 @@
   (declare(ignore key))
   (let((actual(gensym "ACTUAL"))
        (form(canonicalize test-form parameters))
-       (result(gensym "RESULT")))
+       (result(gensym "RESULT"))
+       (temp(gensym "TEMP")))
     `(LAMBDA()
-       (PROG(*DEBUGGER-HOOK* ,actual ,result)
+       (PROG(*DEBUGGER-HOOK* ,actual ,result ,temp)
 	 ;; In order to make tag visible from hook,
 	 ;; we need to set hook in body.
 	 (SETF *DEBUGGER-HOOK*(LAMBDA(CONDITION FUNCTION)
 				(DECLARE(IGNORE CONDITION FUNCTION))
+				(POP ,temp)
 				(GO :END))
 	       ,actual (HANDLER-BIND((WARNING(LAMBDA(CONDITION)
 					       (UNLESS,(getf parameters :ignore-warning)
-						 ,(the-push-instance-form result 'WARNING-WAS-SIGNALED test-form expected 'CONDITION :MESSAGE `(PRINC-TO-STRING CONDITION))))))
+						 ,(the-push-instance-form temp 'WARNING-WAS-SIGNALED test-form expected 'CONDITION :MESSAGE `(PRINC-TO-STRING CONDITION))))))
 			 ,form))
 	 ,(the-push-instance-form result 'UNEXPECTED-SUCCESS test-form expected actual)
 	 :END
-	 (RETURN ,result)))))
+	 (RETURN(APPEND ,result ,temp))))))
 
 (defmethod make-requirement(test-form (key(eql :values))expected
 				      &rest parameters)
@@ -162,3 +164,18 @@
       `(LET((,actual(MULTIPLE-VALUE-LIST ,form)))
 	 (UNLESS(APPLY ,test ,actual)
 	   ,(the-push-instance-form result 'ISSUE-OF-MULTIPLE-VALUES test-form expected actual))))))
+
+(defmethod make-requirement(test-form(key(eql :never-invoke-debugger))expected &rest parameters)
+  (declare(ignore key expected))
+  (let((result(gensym "RESULT")))
+    `(LAMBDA()
+       (PROG(*DEBUGGER-HOOK* ,result)
+	 ;; In order to make tag visible from hook,
+	 ;; we need to set hook in body.
+	 (SETF *DEBUGGER-HOOK*(LAMBDA(CONDITION HOOK)
+				(DECLARE(IGNORE HOOK))
+				,(the-push-instance-form result 'debugger-was-invoked test-form NIL 'CONDITION :message `(PRINC-TO-STRING CONDITION))
+				(GO :END)))
+	 ,(canonicalize test-form parameters)
+	 :END
+	 (RETURN ,result)))))

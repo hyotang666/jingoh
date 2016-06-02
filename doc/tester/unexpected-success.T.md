@@ -32,6 +32,7 @@ UNEXPECTED-SUCCESS is the issue which expected condition was not signaled.
 ## See Also:
 
 CONDITION-ISSUE
+DEBUGGER-WAS-INVOKED
 ERROR-WAS-SIGNALED
 ISSUE
 ISSUE-ACTUAL

@@ -1,8 +1,8 @@
-# [Function] ISSUE-OF-MULTIPLE-VALUES-P
+# [Function] DEBUGGER-WAS-INVOKED-P
 
 ## Syntax:
 
-(ISSUE-OF-MULTIPLE-VALUES-P arg) => result
+(DEBUGGER-WAS-INVOKED-P arg) => result
 
 ## Arguments and Values:
 
@@ -11,8 +11,8 @@ arg := any lisp object
 result := boolean
 
 ## Description:
-Tests arg is issue-of-multiple-values object or not.
-When arg is issue-of-multiple-values object, returns T, otherwise NIL.
+Tests arg is debugger-was-invoked object or not.
+When arg is debugger-was-invoked object, returns T, otherwise NIL.
 
 ## Example:
 

@@ -97,7 +97,7 @@ Supported keywords are returned by RESERVED-KEYWORDS.
 |#
 #?(reserved-keywords #'make-requirement)
 :satisfies #`(null(set-exclusive-or $result
-				    '(=> :signals :output :satisfies :values :multiple-value-satisfies :invoke-debugger-with)))
+				    '(=> :signals :output :satisfies :values :multiple-value-satisfies :invoke-debugger-with :never-invoke-debugger)))
 
 #|
 encallable makes argument to fits lisp forms first element.

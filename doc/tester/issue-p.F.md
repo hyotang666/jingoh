@@ -27,6 +27,7 @@ When arg is issue object, returns T, otherwise NIL.
 ## See-Also:
 
 CONDITION-ISSUE-P
+DEBUGGER-WAS-INVOKED-P
 ERROR-WAS-SIGNALED-P
 ISSUE-OF-MULTIPLE-VALUES-P
 ISSUE-P
