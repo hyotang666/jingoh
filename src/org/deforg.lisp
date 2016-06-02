@@ -5,6 +5,8 @@
 (defparameter *org*(make-org)
   #.(doc :jingoh.org "doc/org/AorgA.V.md"))
 
+(define-symbol-macro *subject* (ORG-CURRENT-SUBJECT *ORG*))
+
 (defmacro deforg(name)
   #.(doc :jingoh.org "doc/org/deforg.M.md")
   (check-type name symbol)
@@ -52,8 +54,6 @@
   `(EVAL-WHEN(:LOAD-TOPLEVEL :COMPILE-TOPLEVEL :EXECUTE)
      (WITH-RESIGNAL((MISSING-ORG()'MISSING-ORG :API 'IN-ORG))
        (SETF *ORG*(FIND-ORG ',name)))))
-
-(define-symbol-macro *subject* (ORG-CURRENT-SUBJECT *ORG*))
 
 (defmacro requirements-about(subject)
   #.(doc :jingoh.org "doc/org/requirements-about.M.md")
