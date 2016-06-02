@@ -26,6 +26,7 @@
   `(LAMBDA()
      (PROG(,result)
        (HANDLER-BIND((WARNING(LAMBDA(CONDITION)
+			       (DECLARE(IGNORABLE CONDITION))
 			       (UNLESS,(getf parameters :ignore-warning)
 				 ,(the-push-instance-form result 'WARNING-WAS-SIGNALED test-form expected 'CONDITION :message `(PRINC-TO-STRING CONDITION)))))
 		     (ERROR(LAMBDA(CONDITION)
