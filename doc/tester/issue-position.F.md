@@ -1,19 +1,19 @@
-# [Accessor] ISSUE-EXPECTED
+# [Accessor] ISSUE-POSITION
 
 ## Syntax:
 
-(ISSUE-EXPECTED arg) => result
+(ISSUE-POSITION arg) => result
 
-(SETF (ISSUE-EXPECTED ARG) new-value) => new-value
+(SETF (ISSUE-POSITION ARG) new-value) => new-value
 
 ## Arguments and Values:
 
-arg := issue object
+arg := issue-object
 
-result := one lisp object
+result := integer file-position
 
 ## Description:
-Returns accpeted issue's expected result.
+Returns accpeted issue's file-position.
 
 ## Example:
 
@@ -35,8 +35,6 @@ ISSUE-ACTUAL
 ISSUE-EXPECTED
 ISSUE-FORM
 ISSUE-OF-MULTIPLE-VALUES
-ISSUE-POSITION
-ISSUE-TEST
 UNEXPECTED-SUCCESS
 WARNING-WAS-SIGNALED
 WRONG-FORMAT

@@ -1,6 +1,6 @@
 (in-package :jingoh.tester)
 
-(defstruct issue form expected actual test)
+(defstruct issue form expected actual test position)
 
 (defstruct(condition-issue (:include issue))
   message)

@@ -1,9 +1,11 @@
 (in-package :jingoh.tester)
 
 (defun check(requirement)
+  #.(doc :jingoh.tester "doc/tester/check.F.md")
   (funcall(coerce requirement 'function)))
 
 (defmacro defspec(&body body)
+  #.(doc :jingoh.tester "doc/tester/defspec.M.md")
   `(PROGN (ADD-REQUIREMENT ,(apply #'make-requirement body))
 	  *SUBJECT*))
 
@@ -12,31 +14,35 @@
   `(check ,(apply #'make-requirement body)))
 
 (defmacro & (&body body)
+  #.(doc :jingoh.tester "doc/tester/&.M.md")
   `(OR ,@(mapcar(lambda(form)
 		   `(ASSERT ,form))
 	    body)
        T))
 
 (defgeneric make-requirement(form key expected &rest params)
-  #++(:documentation #.(doc :jingoh.tester "doc/tester/make-requirement.G.md")))
+  (:documentation #.(doc :jingoh.tester "doc/tester/make-requirement.G.md")))
 
-(defun the-push-instance-form (place type test-form expected actual &rest options)
+(defun the-push-instance-form (place type test-form expected actual position &rest options)
+  #.(doc :jingoh.tester "doc/tester/the-push-instance-form.F.md")
   `(PUSH (MAKE-INSTANCE ',type
 			:FORM ',test-form
 			:EXPECTED ',expected
 			:ACTUAL ,actual
+			:POSITION ,position
 			,@options)
 	 ,place))
 
 (defun the-standard-handling-form(result parameters test-form expected &rest body)
+  #.(doc :jingoh.tester "doc/tester/the-standard-handling-form.F.md")
   `(LAMBDA()
      (PROG(,result)
        (HANDLER-BIND((WARNING(LAMBDA(CONDITION)
 			       (DECLARE(IGNORABLE CONDITION))
 			       (UNLESS,(getf parameters :ignore-warning)
-				 ,(the-push-instance-form result 'WARNING-WAS-SIGNALED test-form expected 'CONDITION :message `(PRINC-TO-STRING CONDITION)))))
+				 ,(the-push-instance-form result 'WARNING-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):message `(PRINC-TO-STRING CONDITION)))))
 		     (ERROR(LAMBDA(CONDITION)
-			     ,(the-push-instance-form result 'ERROR-WAS-SIGNALED test-form expected 'CONDITION :message `(PRINC-TO-STRING CONDITION))
+			     ,(the-push-instance-form result 'ERROR-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):message `(PRINC-TO-STRING CONDITION))
 			     (GO :END))))
 	 ,@body)
        :END
@@ -52,7 +58,7 @@
     (the-standard-handling-form result parameters test-form expected
       `(LET((,actual ,form))
 	 (UNLESS(,test ,actual ',expected)
-	   ,(the-push-instance-form result 'ISSUE test-form expected actual :test `',test))))))
+	   ,(the-push-instance-form result 'ISSUE test-form expected actual (getf parameters :position):test `',test))))))
 
 (defmethod make-requirement(test-form (key(eql :signals)) expected
 				      &rest parameters)
@@ -66,12 +72,12 @@
 	   (,expected()NIL) ; do nothing.
 	   ,@(unless(eq 'warning expected)
 	       `((WARNING(CONDITION)
-		   ,(the-push-instance-form result 'WARNING-WAS-SIGNALED test-form expected 'CONDITION :MESSAGE `(PRINC-TO-STRING CONDITION)))))
+		   ,(the-push-instance-form result 'WARNING-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):MESSAGE `(PRINC-TO-STRING CONDITION)))))
 	   ,@(unless(eq 'error expected)
 	       `((ERROR(CONDITION)
-		   ,(the-push-instance-form result 'ERROR-WAS-SIGNALED test-form expected 'CONDITION :MESSAGE `(PRINC-TO-STRING CONDITION)))))
+		   ,(the-push-instance-form result 'ERROR-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):MESSAGE `(PRINC-TO-STRING CONDITION)))))
 	   (:NO-ERROR(&REST ,actual)
-	     ,(the-push-instance-form result 'UNEXPECTED-SUCCESS test-form expected ``(VALUES ,@,actual))))
+	     ,(the-push-instance-form result 'UNEXPECTED-SUCCESS test-form expected ``(VALUES ,@,actual)(getf parameters :position))))
 	 (RETURN ,result)))))
 
 (defmethod make-requirement(test-form (key(eql :invoke-debugger-with))
@@ -91,9 +97,9 @@
 				(GO :END))
 	       ,actual (HANDLER-BIND((WARNING(LAMBDA(CONDITION)
 					       (UNLESS,(getf parameters :ignore-warning)
-						 ,(the-push-instance-form temp 'WARNING-WAS-SIGNALED test-form expected 'CONDITION :MESSAGE `(PRINC-TO-STRING CONDITION))))))
+						 ,(the-push-instance-form temp 'WARNING-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):MESSAGE `(PRINC-TO-STRING CONDITION))))))
 			 ,form))
-	 ,(the-push-instance-form result 'UNEXPECTED-SUCCESS test-form expected actual)
+	 ,(the-push-instance-form result 'UNEXPECTED-SUCCESS test-form expected actual (getf parameters :position))
 	 :END
 	 (RETURN(APPEND ,result ,temp))))))
 
@@ -107,7 +113,7 @@
     (the-standard-handling-form result parameters test-form expected
       `(LET((,actual(MULTIPLE-VALUE-LIST ,form)))
 	 (UNLESS(,test ,actual ',expected)
-	   ,(the-push-instance-form result 'ISSUE-OF-MULTIPLE-VALUES test-form expected actual :TEST `',test))))))
+	   ,(the-push-instance-form result 'ISSUE-OF-MULTIPLE-VALUES test-form expected actual (getf parameters :position):TEST `',test))))))
 
 (defmethod make-requirement(test-form (key(eql :output)) expected
 				      &rest parameters)
@@ -120,7 +126,7 @@
       `(LET((,actual(WITH-OUTPUT-TO-STRING(,(getf parameters :stream '*standard-output*))
 		      ,form)))
 	 (UNLESS(,test ,expected ,actual)
-	   ,(the-push-instance-form result 'WRONG-FORMAT test-form expected actual :TEST `',test))))))
+	   ,(the-push-instance-form result 'WRONG-FORMAT test-form expected actual (getf parameters :position):TEST `',test))))))
 
 (defmethod make-requirement(test-form(key(eql :satisfies))expected
 			     &rest parameters)
@@ -132,7 +138,7 @@
     (the-standard-handling-form result parameters test-form expected
       `(LET((,actual ,form))
 	 (UNLESS(,test ,actual)
-	   ,(the-push-instance-form result 'ISSUE test-form NIL actual :TEST `',test))))))
+	   ,(the-push-instance-form result 'ISSUE test-form NIL actual(getf parameters :position):TEST `',test))))))
 
 (defmethod no-applicable-method((gf(eql #'make-requirement))&rest args)
   (error'syntax-error
@@ -144,8 +150,10 @@
 
 ;; These 2 vars are treated as constant.
 ;; but if defined with defconstant, does not work correctly in sbcl.
-(defvar unspecified '#:UNSPECIFIED)
-(defvar implementation-dependent '#:IMPLEMENTATION-DEPENDENT)
+(defvar unspecified '#:UNSPECIFIED
+  #.(doc :jingoh.tester "doc/tester/unspecified.V.md"))
+(defvar implementation-dependent '#:IMPLEMENTATION-DEPENDENT
+  #.(doc :jingoh.tester "doc/tester/implementation-dependent.V.md"))
 
 (defmethod make-requirement(test-form(key(eql '=>))(expected(eql unspecified))&rest parameters)
   (declare(ignore key))
@@ -170,7 +178,7 @@
     (the-standard-handling-form result parameters test-form expected
       `(LET((,actual(MULTIPLE-VALUE-LIST ,form)))
 	 (UNLESS(APPLY ,test ,actual)
-	   ,(the-push-instance-form result 'ISSUE-OF-MULTIPLE-VALUES test-form expected actual))))))
+	   ,(the-push-instance-form result 'ISSUE-OF-MULTIPLE-VALUES test-form expected actual(getf parameters :position)))))))
 
 (defmethod make-requirement(test-form(key(eql :never-invoke-debugger))expected &rest parameters)
   (declare(ignore key expected))
@@ -181,7 +189,7 @@
 	 ;; we need to set hook in body.
 	 (SETF *DEBUGGER-HOOK*(LAMBDA(CONDITION HOOK)
 				(DECLARE(IGNORE HOOK))
-				,(the-push-instance-form result 'debugger-was-invoked test-form NIL 'CONDITION :message `(PRINC-TO-STRING CONDITION))
+				,(the-push-instance-form result 'debugger-was-invoked test-form NIL 'CONDITION (getf parameters :position):message `(PRINC-TO-STRING CONDITION))
 				(GO :END)))
 	 ,(canonicalize test-form parameters)
 	 :END

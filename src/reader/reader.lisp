@@ -40,15 +40,18 @@
 (defun |#?reader|(stream character number)
   #.(doc :jingoh.reader "doc/reader/#Qreader.F.md")
   (declare(ignore character))
-  `(EVAL-WHEN(:COMPILE-TOPLEVEL :LOAD-TOPLEVEL)
-     (DEFSPEC ,(read stream t t t) ; as test form
-	      ,(read stream t t t) ; as reserved keyword
-	      ,(read stream t t t) ; as expected result
-	      ,@(loop :repeat (or number 0) ; as option
-		      :collect (read stream t t t)
-		      :collect (read stream t t t)))))
+  (let((position(file-position stream)))
+    `(EVAL-WHEN(:COMPILE-TOPLEVEL :LOAD-TOPLEVEL)
+       (DEFSPEC ,(read stream t t t) ; as test form
+		,(read stream t t t) ; as reserved keyword
+		,(read stream t t t) ; as expected result
+		:POSITION ,position
+		,@(loop :repeat (or number 0) ; as option
+			:collect (read stream t t t)
+			:collect (read stream t t t))))))
 
 (defreadtable syntax
   (:merge :standard)
   (:dispatch-macro-char #\# #\? #'|#?reader|)
   (:dispatch-macro-char #\# #\` #'musam:|#`reader|))
+

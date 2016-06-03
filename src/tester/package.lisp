@@ -33,7 +33,7 @@
     #:error-was-signaled-p #:warning-was-signaled-p #:unexpected-success-p #:issue-of-multiple-values-p #:wrong-format-p #:debugger-was-invoked-p
 
     ;;;; accessor
-    #:issue-form #:issue-expected #:issue-actual #:issue-test
+    #:issue-form #:issue-expected #:issue-actual #:issue-test #:issue-position
     #:condition-issue-message
     #|NOTE! - Slot names are not exported.|#
 

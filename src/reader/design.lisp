@@ -9,7 +9,7 @@
 #|
 To set dispatch macro #?, we need to evaluate enable.
 |#
-#?(let((*readtable*(copy-readtable)))
+#?(let((*readtable*(copy-readtable nil)))
     (values (get-dispatch-macro-character #\# #\?)
 	    (enable)
 	    (get-dispatch-macro-character #\# #\?)))
@@ -23,7 +23,7 @@ To set dispatch macro #?, we need to evaluate enable.
 #|
 can use other character
 |#
-#?(let((*readtable*(copy-readtable)))
+#?(let((*readtable*(copy-readtable nil)))
     (values (get-dispatch-macro-character #\# #\!)
 	    (enable #\!)
 	    (get-dispatch-macro-character #\# #\!)))
@@ -38,7 +38,7 @@ can use other character
 #|
 when conflicts restartable condition is signaled.
 |#
-#1?(let((*readtable*(copy-readtable)))
+#1?(let((*readtable*(copy-readtable nil)))
      (enable #\*))
 :signals macro-char-confliction
 :lazy t
