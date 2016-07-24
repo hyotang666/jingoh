@@ -46,8 +46,8 @@
 		,(read stream t t t) ; as reserved keyword
 		,(read stream t t t) ; as expected result
 		:POSITION ,position
-		,@(loop :for char = (peek-char t  stream)
-			:while (char= #\, char)
+		,@(loop :for char = (peek-char t  stream nil nil)
+			:while (eql #\, char)
 			:do (read-char stream) ; discard #\,
 			:collect (read stream t t t)
 			:collect (read stream t t t))))))
