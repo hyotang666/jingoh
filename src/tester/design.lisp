@@ -66,8 +66,8 @@ satisfies accepts lambda form.
 #|
 Unknown keyword comes, an error will be signaled.
 |#
-#1?(? 0 :no-such-keyword :hoge)
-:signals syntax-error
+#?(? 0 :no-such-keyword :hoge)
+:signals syntax-error,
 :lazy t
 
 (requirements-about defspec)
@@ -95,9 +95,9 @@ Current org (i.e. *org*) is modified.
 #|
 Like CL:AND, this is asserts all form is returns non nil value.
 |#
-#1?(macroexpand-1 '(& (symbolp 'foo)))
+#?(macroexpand-1 '(& (symbolp 'foo)))
 => (OR (ASSERT (SYMBOLP 'FOO))
-       T)
+       T),
 :test equal
 
 (requirements-about internal-dsl)
@@ -114,11 +114,11 @@ encallable makes argument to fits lisp forms first element.
 |#
 #?(encallable 'car) => CAR
 #?(encallable #'car) => CAR
-#1?(encallable '(lambda()(print :foo))) => (LAMBDA()(PRINT :FOO))
+#?(encallable '(lambda()(print :foo))) => (LAMBDA()(PRINT :FOO)),
 :test equal
 
 #|
 if optional argument is passed as true, applyable form is returned.
 |#
-#1?(encallable '#'car t) => #'CAR
+#?(encallable '#'car t) => #'CAR,
 :test equal

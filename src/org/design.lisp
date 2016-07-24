@@ -17,7 +17,7 @@ Like CL:DEFPACKAGE, we can define new org with deforg
 #|
 Unlike CL:DEFPACKAGE, org name is only symbol is acceptable.
 |#
-#1?(deforg "test") :signals type-error
+#?(deforg "test") :signals type-error,
 :lazy t
 
 #|
@@ -72,11 +72,11 @@ so, when you want to add item to org, you should use add-requirement.
 #|
 ADD-REQUIREMENT is stable
 |#
-#1?(let((*org*(make-org)))
+#?(let((*org*(make-org)))
      (add-requirement 0)
      (add-requirement 1)
      (map-requirements #'identity))
-=> (0 1)
+=> (0 1),
 :test equal
 
 #|
@@ -92,38 +92,38 @@ map-requirements return new list like CL:MAPCAR
 But unlike CL:MAPCAR, map-requirements has default arguments.
 It is *subject* and *org*.
 |#
-#1?(let((*org*(make-org)))
+#?(let((*org*(make-org)))
      (add-requirement 0)
-     (map-requirements #'1+)) => (1)
+     (map-requirements #'1+)) => (1),
 :test equal
 
 #|
 Unlike CL:MAPCAR, MAP-REQUIREMENTS does not accept some orgs.
 |#
-#1?(map-requirements #'+ T (make-org)(make-org)):signals error
+#?(map-requirements #'+ T (make-org)(make-org)):signals error,
 :lazy t
 
 #|
 if you does not need result list, (because of side effect)
 you can use do-requirements which like CL:DOLIST.
 |#
-#1?(let((*org*(make-org)))
+#?(let((*org*(make-org)))
      (add-requirement 0)
      (do-requirements(s)
        (print s))) :output "
-0 "
+0 ",
 :test string=
 
 #|
 do-requirements's syntax is similar with CL:DOLIST.
 It means you can specify return form.
 |#
-#1?(let((o(make-org))
+#?(let((o(make-org))
 	(result))
      (add-requirement 0 o)
      (do-requirements(s t o result)
        (push s result)))
-=> (0)
+=> (0),
 :test equal
 
 #|

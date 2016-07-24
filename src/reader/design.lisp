@@ -38,9 +38,9 @@ can use other character
 #|
 when conflicts restartable condition is signaled.
 |#
-#1?(let((*readtable*(copy-readtable nil)))
+#?(let((*readtable*(copy-readtable nil)))
      (enable #\*))
-:signals macro-char-confliction
+:signals macro-char-confliction,
 :lazy t
 
 
