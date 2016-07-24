@@ -32,6 +32,11 @@
 
 (defun canonicalize(test-form parameters)
   #.(doc :jingoh.tester "doc/tester/canonicalize.F.md")
-  (if(getf parameters :lazy)
-    `(EVAL ',test-form)
-    test-form))
+  (let((result(getf parameters :lazy :does-not-exist)))
+    (if(eq result :does-not-exist)
+      test-form
+      (if result ; :lazy T
+	`(EVAL ',test-form)
+	;; else explicitly specified :lazy NIL.
+	(progn (eval test-form)
+	       test-form)))))
