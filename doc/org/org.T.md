@@ -12,6 +12,9 @@
 * CURRENT-SUBJECT [Type] SYMBOL
 [ACCESSOR] org-current-subject
 
+* OPTIONS [Type] LIST
+[ACCESSOR] org-options
+
 * SPECIFICATIONS [Type] VECTOR
 [ACCESSOR] org-specifications
 
@@ -24,6 +27,9 @@ In this context, key is subject, value is requirements.
 Subject is a symbol which names a group of requirements.
 The name may represent abstract category/features, or may represent concrete functions/macros/types.
 
+Options is options for subject.
+Contains :before, :after and :around option for each requirement of subject.
+
 For modulability, requirement's concrete data structure is not specified.
 It is not part of jingoh.org, but jingoh.tester is responded to it.
 
@@ -31,6 +37,7 @@ It is not part of jingoh.org, but jingoh.tester is responded to it.
 
 ## See Also:
 
+`*OPTIONS*`
 `*ORG*`
 `*SUBJECT*`
 DEFORG
@@ -43,10 +50,8 @@ NOT-ORG
 ORG-CURRENT-SUBJECT
 ORG-DESIGNATOR
 ORG-NAME
+ORG-OPTIONS
 ORG-P
 ORG-REQUIREMENTS-COUNT
 ORG-SPECIFICATIONS
 REGISTER-ORG
-
-## Notes:
-

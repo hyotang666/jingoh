@@ -15,6 +15,7 @@
     #:make-org ; constructor
     #:org-name ; reader
     #:org-current-subject ; accessor
+    #:org-options ; accessor
     #:org-specifications ; reader
     #|NOTE! - Slot names are not exported.|#
 

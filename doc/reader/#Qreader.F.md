@@ -8,25 +8,20 @@
 
 stream := input-stream
 
-character := character
+character := character (ignored)
 
-number := non negative integer
+number := non negative integer (ignored)
 
-result := ? form
+result := defspec form
 
 ## Description:
-Reading S-expression from stream, and making ? form.
-
-Number must be number of options for ?.
+Reading S-expression from stream, and making defspec form.
 
 ## Example:
 ```lisp
 #?(+ 1 1) => 2
-;; Need option number.
-#1?(list 1 1) => (1 1) :test equal
-;; if lost...
-'#?(list 1 1) => (1 1) :test equal
-;=> (? (list 1 1) => (1 1))
+#?(list 1 1) => (1 1), ; <= NOTE - comma is needed when you specify additional options.
+:test equal
 ```
 
 ## Affected-By:
