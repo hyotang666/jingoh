@@ -6,6 +6,7 @@
   #.(doc :jingoh.org "doc/org/AorgA.V.md"))
 
 (define-symbol-macro *subject* (ORG-CURRENT-SUBJECT *ORG*))
+(define-symbol-macro *options* (ORG-OPTIONS *ORG*))
 
 (defmacro deforg(name)
   #.(doc :jingoh.org "doc/org/deforg.M.md")
@@ -55,10 +56,11 @@
      (WITH-RESIGNAL((MISSING-ORG()'MISSING-ORG :API 'IN-ORG))
        (SETF *ORG*(FIND-ORG ',name)))))
 
-(defmacro requirements-about(subject)
+(defmacro requirements-about(subject &rest options)
   #.(doc :jingoh.org "doc/org/requirements-about.M.md")
   (check-type subject symbol)
   `(EVAL-WHEN(:LOAD-TOPLEVEL :COMPILE-TOPLEVEL :EXECUTE)
+     (SETF *OPTIONS* ',options)
      (SETF *SUBJECT* ',subject)))
 
 (macrolet((?!(form)

@@ -4,15 +4,16 @@
 
 (jingoh:setup :jingoh.reader)
 
-(requirements-about enable)
+(requirements-about enable
+		    :around (let((*readtable*(copy-readtable NIL)))
+			      (call-body)))
 
 #|
 To set dispatch macro #?, we need to evaluate enable.
 |#
-#?(let((*readtable*(copy-readtable nil)))
-    (values (get-dispatch-macro-character #\# #\?)
-	    (enable)
-	    (get-dispatch-macro-character #\# #\?)))
+#?(values (get-dispatch-macro-character #\# #\?)
+	  (enable)
+	  (get-dispatch-macro-character #\# #\?))
 :multiple-value-satisfies #`(& (null $existp1)
 			       (not(null $return))
 			       (& $existp2
@@ -23,10 +24,9 @@ To set dispatch macro #?, we need to evaluate enable.
 #|
 can use other character
 |#
-#?(let((*readtable*(copy-readtable nil)))
-    (values (get-dispatch-macro-character #\# #\!)
-	    (enable #\!)
-	    (get-dispatch-macro-character #\# #\!)))
+#?(values (get-dispatch-macro-character #\# #\!)
+	  (enable #\!)
+	  (get-dispatch-macro-character #\# #\!))
 :multiple-value-satisfies #`(& (null $existp1)
 			       (not(null $return))
 			       (& $existp2
@@ -38,9 +38,6 @@ can use other character
 #|
 when conflicts restartable condition is signaled.
 |#
-#?(let((*readtable*(copy-readtable nil)))
-     (enable #\*))
+#?(enable #\*)
 :signals macro-char-confliction,
 :lazy t
-
-

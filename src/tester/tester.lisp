@@ -6,7 +6,7 @@
 
 (defmacro defspec(&body body)
   #.(doc :jingoh.tester "doc/tester/defspec.M.md")
-  `(PROGN (ADD-REQUIREMENT ,(apply #'make-requirement body))
+  `(PROGN (ADD-REQUIREMENT ,(apply #'make-requirement (append body *options*)))
 	  *SUBJECT*))
 
 (defmacro ? (&body body)
@@ -44,9 +44,16 @@
 		     (ERROR(LAMBDA(CONDITION)
 			     ,(the-push-instance-form result 'ERROR-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):message `(PRINC-TO-STRING CONDITION))
 			     (GO :END))))
-	 ,@body)
+	 (UNWIND-PROTECT(PROGN ,@(option-form :before parameters)
+			       ,@body)
+	   ,(option-form :after parameters)))
        :END
        (RETURN ,result))))
+
+(defun option-form (key parameters)
+  (let((result(getf parameters key)))
+    (when result
+      (list result))))
 
 (defmethod make-requirement(test-form (key(eql '=>)) expected
 				      &rest parameters)
@@ -67,18 +74,21 @@
        (form(canonicalize test-form parameters))
        (result(gensym "RESULT")))
     `(LAMBDA()
-       (PROG(,result)
-	 (HANDLER-CASE,form
-	   (,expected()NIL) ; do nothing.
-	   ,@(unless(eq 'warning expected)
-	       `((WARNING(CONDITION)
-		   ,(the-push-instance-form result 'WARNING-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):MESSAGE `(PRINC-TO-STRING CONDITION)))))
-	   ,@(unless(eq 'error expected)
-	       `((ERROR(CONDITION)
-		   ,(the-push-instance-form result 'ERROR-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):MESSAGE `(PRINC-TO-STRING CONDITION)))))
-	   (:NO-ERROR(&REST ,actual)
-	     ,(the-push-instance-form result 'UNEXPECTED-SUCCESS test-form expected ``(VALUES ,@,actual)(getf parameters :position))))
-	 (RETURN ,result)))))
+       (UNWIND-PROTECT
+	 (PROG(,result)
+	   (HANDLER-CASE(PROGN ,@(option-form :before parameters)
+			       ,form)
+	     (,expected()NIL) ; do nothing.
+	     ,@(unless(eq 'warning expected)
+		 `((WARNING(CONDITION)
+		     ,(the-push-instance-form result 'WARNING-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):MESSAGE `(PRINC-TO-STRING CONDITION)))))
+	     ,@(unless(eq 'error expected)
+		 `((ERROR(CONDITION)
+		     ,(the-push-instance-form result 'ERROR-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):MESSAGE `(PRINC-TO-STRING CONDITION)))))
+	     (:NO-ERROR(&REST ,actual)
+	       ,(the-push-instance-form result 'UNEXPECTED-SUCCESS test-form expected ``(VALUES ,@,actual)(getf parameters :position))))
+	   (RETURN ,result))
+	 ,(option-form :after parameters)))))
 
 (defmethod make-requirement(test-form (key(eql :invoke-debugger-with))
 				      expected &rest parameters)
@@ -88,20 +98,23 @@
        (result(gensym "RESULT"))
        (temp(gensym "TEMP")))
     `(LAMBDA()
-       (PROG(*DEBUGGER-HOOK* ,actual ,result ,temp)
-	 ;; In order to make tag visible from hook,
-	 ;; we need to set hook in body.
-	 (SETF *DEBUGGER-HOOK*(LAMBDA(CONDITION FUNCTION)
-				(DECLARE(IGNORE CONDITION FUNCTION))
-				(POP ,temp)
-				(GO :END))
-	       ,actual (HANDLER-BIND((WARNING(LAMBDA(CONDITION)
-					       (UNLESS,(getf parameters :ignore-warning)
-						 ,(the-push-instance-form temp 'WARNING-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):MESSAGE `(PRINC-TO-STRING CONDITION))))))
-			 ,form))
-	 ,(the-push-instance-form result 'UNEXPECTED-SUCCESS test-form expected actual (getf parameters :position))
-	 :END
-	 (RETURN(APPEND ,result ,temp))))))
+       (UNWIND-PROTECT
+	 (PROG(*DEBUGGER-HOOK* ,actual ,result ,temp)
+	   ;; In order to make tag visible from hook,
+	   ;; we need to set hook in body.
+	   (SETF *DEBUGGER-HOOK*(LAMBDA(CONDITION FUNCTION)
+				  (DECLARE(IGNORE CONDITION FUNCTION))
+				  (POP ,temp)
+				  (GO :END))
+		 ,actual (HANDLER-BIND((WARNING(LAMBDA(CONDITION)
+						 (UNLESS,(getf parameters :ignore-warning)
+						   ,(the-push-instance-form temp 'WARNING-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):MESSAGE `(PRINC-TO-STRING CONDITION))))))
+			   ,@(option-form :before parameters)
+			   ,form))
+	   ,(the-push-instance-form result 'UNEXPECTED-SUCCESS test-form expected actual (getf parameters :position))
+	   :END
+	   (RETURN(APPEND ,result ,temp)))
+	 ,(option-form :after parameters)))))
 
 (defmethod make-requirement(test-form (key(eql :values))expected
 				      &rest parameters)
@@ -184,13 +197,16 @@
   (declare(ignore key expected))
   (let((result(gensym "RESULT")))
     `(LAMBDA()
-       (PROG(*DEBUGGER-HOOK* ,result)
-	 ;; In order to make tag visible from hook,
-	 ;; we need to set hook in body.
-	 (SETF *DEBUGGER-HOOK*(LAMBDA(CONDITION HOOK)
-				(DECLARE(IGNORE HOOK))
-				,(the-push-instance-form result 'debugger-was-invoked test-form NIL 'CONDITION (getf parameters :position):message `(PRINC-TO-STRING CONDITION))
-				(GO :END)))
-	 ,(canonicalize test-form parameters)
-	 :END
-	 (RETURN ,result)))))
+       (UNWIND-PROTECT
+	 (PROG(*DEBUGGER-HOOK* ,result)
+	   ;; In order to make tag visible from hook,
+	   ;; we need to set hook in body.
+	   (SETF *DEBUGGER-HOOK*(LAMBDA(CONDITION HOOK)
+				  (DECLARE(IGNORE HOOK))
+				  ,(the-push-instance-form result 'debugger-was-invoked test-form NIL 'CONDITION (getf parameters :position):message `(PRINC-TO-STRING CONDITION))
+				  (GO :END)))
+	   ,@(option-form :before parameters)
+	   ,(canonicalize test-form parameters)
+	   :END
+	   (RETURN ,result))
+	 ,(option-form :after parameters)))))

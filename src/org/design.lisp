@@ -5,13 +5,14 @@
 (jingoh:setup :jingoh.org)
 (musam:enable)
 
-(requirements-about main-api)
+(requirements-about main-api
+		    :around (let((*org*(make-org)))
+			      (call-body)))
 
 #|
 Like CL:DEFPACKAGE, we can define new org with deforg
 |#
-#?(let((*org*(make-org)))
-    (deforg :test))
+#?(deforg :test)
 :satisfies org-p
 
 #|
@@ -28,18 +29,16 @@ Like CL:PACKAGE, current org is in special symbol *org*
 #|
 Like CL:DEFPACKAGE, definition does not change current org.
 |#
-#?(let((*org*(make-org)))
-    (deforg :test)
-    (eq :test (org-name *org*)))
+#?(progn (deforg :test)
+	 (eq :test (org-name *org*)))
 => NIL
 
 #|
 Like CL:PACKAGE, in order to change current org, we need to in.
 |#
-#?(let((*org*(make-org)))
-    (deforg :test)
-    (in-org :test)
-    *org*)
+#?(progn (deforg :test)
+	 (in-org :test)
+	 *org*)
 :satisfies #`(& (org-p $a)
 		(eq :test (org-name $a)))
 
@@ -47,8 +46,7 @@ Like CL:PACKAGE, in order to change current org, we need to in.
 Like CL:PACKAGE, current subject is in special symbol *subject*
 and default subject is nil.
 |#
-#?(let((*org*(make-org)))
-    *subject*)
+#?*subject*
 => NIL
 
 #|

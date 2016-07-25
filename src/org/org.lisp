@@ -4,6 +4,7 @@
   #.(doc :jingoh.org "doc/org/org.T.md")
   (name nil :type symbol :read-only t)
   (current-subject nil :type symbol)
+  (options nil :type list)
   (specifications (make-array 0 :fill-pointer 0 :adjustable t) :type vector))
 
 (defmethod print-object((o org)*standard-output*)

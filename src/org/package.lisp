@@ -36,6 +36,7 @@
     ;;;; variable
     *org* ; current org
     *subject* ; current subject (psued variable)
+    *options* ; current subject's options (psued variable)
 
     ;;;; conditions
     #:not-org

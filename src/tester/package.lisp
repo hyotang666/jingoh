@@ -8,6 +8,7 @@
     #:unspecified
     #:implementation-dependent
     #:&
+    #:call-body
     ;; evaluator
     #:?
     #:check
@@ -19,6 +20,7 @@
     #:reserved-keywords
     #:encallable
     #:canonicalize
+    #:option-form
 
     ;;;; Structure
     ;; main
