@@ -1,7 +1,7 @@
 (in-package :jingoh.reporter)
 
 (macrolet((!(form)
-	    `(WITH-RESIGNAL((MISSING-ORG()'MISSING-ORG :API 'DEFAULT-REPORTER))
+	    `(RESIGNAL-BIND((MISSING-ORG()'MISSING-ORG :API 'DEFAULT-REPORTER))
 	       ,form)))
 
   (defun default-reporter(&rest names)
@@ -25,7 +25,7 @@
   #.(doc :jingoh.reporter "doc/reporter/AreporterA.V.md"))
 
 (macrolet((!(n form)
-	    `(WITH-RESIGNAL((MISSING-ORG(C)'MISSING-ORG
+	    `(RESIGNAL-BIND((MISSING-ORG(C)'MISSING-ORG
 			      :API ',(nth n '(REPORT DETAIL))))
 	       ,form)))
 

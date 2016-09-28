@@ -3,7 +3,7 @@
 (defsystem :jingoh.org
   :description "Jingoh's background database system"
   :pathname "src/org/"
-  :depends-on (:jingoh.util :with-resignal)
+  :depends-on (:jingoh.util :resignal-bind)
   :in-order-to ((test-op (test-op :jingoh.org-test)))
   :components((:file "package")
               ; bottom

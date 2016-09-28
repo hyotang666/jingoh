@@ -15,7 +15,7 @@
      (REGISTER-ORG ',name (MAKE-ORG :NAME ',name))))
 
 (macrolet((!(n form)
-	    `(WITH-RESIGNAL((TYPE-ERROR()'NOT-ORG
+	    `(RESIGNAL-BIND((TYPE-ERROR()'NOT-ORG
 			      :API ',(nth n '(REGISTER-ORG DELETE-SUBJECT))))
 	       ,form)))
 
@@ -53,7 +53,7 @@
   #.(doc :jingoh.org "doc/org/in-org.M.md")
   (check-type name symbol)
   `(EVAL-WHEN(:LOAD-TOPLEVEL :COMPILE-TOPLEVEL :EXECUTE)
-     (WITH-RESIGNAL((MISSING-ORG()'MISSING-ORG :API 'IN-ORG))
+     (RESIGNAL-BIND((MISSING-ORG()'MISSING-ORG :API 'IN-ORG))
        (SETF *ORG*(FIND-ORG ',name)))))
 
 (defmacro requirements-about(subject &rest options)

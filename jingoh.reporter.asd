@@ -2,7 +2,7 @@
 (in-package :asdf)
 (defsystem :jingoh.reporter
   :description "Jingoh's printing issues feature."
-  :depends-on (:jingoh.org :jingoh.util :jingoh.tester :with-resignal)
+  :depends-on (:jingoh.org :jingoh.util :jingoh.tester :resignal-bind)
   :in-order-to ((test-op (test-op :jingoh.reporter-test)))
   :pathname "src/reporter/"
   :serial t

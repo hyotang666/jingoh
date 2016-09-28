@@ -9,7 +9,7 @@
 		     (ERROR'MISSING-SUBJECT :API 'DO-REQUIREMENTS
 					    :DATUM ,',subject-designator)))
 	       (!(form)
-		 `(WITH-RESIGNAL((TYPE-ERROR()'NOT-ORG :API 'DO-REQUIREMENTS))
+		 `(RESIGNAL-BIND((TYPE-ERROR()'NOT-ORG :API 'DO-REQUIREMENTS))
 		    ,FORM)))
       (LET((,gname ,subject-designator))
 	 (CASE,gname
@@ -29,7 +29,7 @@
 	       ,return)))))))
 
 (macrolet((!(n form)
-	    `(WITH-RESIGNAL((ERROR()'NOT-ORG
+	    `(RESIGNAL-BIND((ERROR()'NOT-ORG
 			      :DATUM ORG
 			      :EXPECTED-TYPE 'ORG
 			      :API ',(nth n '(MAP-REQUIREMENTS ADD-REQUIREMENT ORG-REQUIREMENTS-COUNT))))
