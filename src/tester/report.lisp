@@ -13,6 +13,8 @@
 
 (defstruct(unexpected-success (:include issue)))
 
+(defstruct(unexpected-output (:include issue)))
+
 (defstruct(issue-of-multiple-values (:include issue)))
 
 (defstruct(wrong-format (:include issue)))
