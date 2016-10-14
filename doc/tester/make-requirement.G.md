@@ -72,10 +72,12 @@ Specifying the debugger will be never invoked.
 
 * :test
 The default is EQL.
-When return value is list, string, etc... you need to use this.
+When return value is list, string, etc... you need to specify this.
 
 * :lazy
-When tesing the ill formed macro ensure sinals error or not, you need to specify this option with true.
+When tesing the ill formed macro ensure signals error or not, you need to specify this option with true.
+In some cases, one test-form must be evaluated in compile time.
+In such cases, you need to specify this option with NIL explicitly.
 
 * :stream
 When keyword is :output, you may need to specify outputted stream with this option.
