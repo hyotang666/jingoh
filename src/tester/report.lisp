@@ -17,6 +17,8 @@
 
 (defstruct(wrong-format (:include issue)))
 
+(defstruct(missing-restarts(:include issue)))
+
 #+(or sbcl)
 (defmethod make-instance :around ((type structure-class) &rest args)
   (loop :with instance = (closer-mop:class-prototype type)

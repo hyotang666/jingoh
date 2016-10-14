@@ -30,7 +30,7 @@ expected := one lisp value which should be return value of form.
 
 params := option-key and option-value pair\*
 
-option-key := (member :test :lazy :stream :ignore-warning)
+option-key := (member :test :lazy :stream :ignore-warning :with-restarts)
 
 option-value := one lisp value
 
@@ -54,6 +54,7 @@ In this case, you may need to specify outputted stream with parameter :stream.
 
 * :signals
 Testing specified condition is signaled or not.
+In this case, you may need to specify established restarts with parameter :with-restarts.
 
 * :satisfies
 Specifying to use specified function to test.
@@ -83,6 +84,10 @@ The default is `*standard-output*`.
 * :ignore-warning
 When you know test form signals warning, but want to ignore it, you need to specify this option with true.
 
+* :with-restarts
+This is designed for using with :signals key to test restart is established.
+Expected restarts are specified as restart name (symbol) or list of restart names.
+Not be evaluated.
 ## Example:
 
 ## Affected-By:
