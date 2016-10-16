@@ -6,10 +6,14 @@
     #:report
     #:detail
 
-    ;;;; for customizing reporter
+    ;;;; reporter and detailer. 
     *reporter*
     #:default-reporter
-    #|The default detailer is PRINT|#
+    #|The default detailer is PRINT.
+      You can costomize it with
+      (defmethod print-object((obj jingoh.tester:issue)stream)
+	 ...)
+      .|#
 
     ))
 

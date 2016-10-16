@@ -27,13 +27,13 @@
     ;; main
     #:issue #:condition-issue
     ;; miscellaneous
-    #:error-was-signaled #:warning-was-signaled #:unexpected-success #:issue-of-multiple-values #:wrong-format #:debugger-was-invoked
+    #:error-was-signaled #:warning-was-signaled #:unexpected-success #:issue-of-multiple-values #:wrong-format #:debugger-was-invoked #:missing-restarts
 
     ;;;; predicate
     ;; main
     #:issue-p #:condition-issue-p
     ;; miscellaneous
-    #:error-was-signaled-p #:warning-was-signaled-p #:unexpected-success-p #:issue-of-multiple-values-p #:wrong-format-p #:debugger-was-invoked-p
+    #:error-was-signaled-p #:warning-was-signaled-p #:unexpected-success-p #:issue-of-multiple-values-p #:wrong-format-p #:debugger-was-invoked-p #:missing-restarts-p
 
     ;;;; accessor
     #:issue-form #:issue-expected #:issue-actual #:issue-test #:issue-position
