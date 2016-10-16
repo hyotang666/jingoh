@@ -1,5 +1,6 @@
 (in-package :cl-user)
-(defpackage :jingoh.org(:use :cl :jingoh.util :resignal-bind)
+(defpackage :jingoh.org(:use :cl :resignal-bind)
+  (:import-from :documentation-embedder #:doc)
   (:nicknames :org)
   (:export
 

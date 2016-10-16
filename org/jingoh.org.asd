@@ -1,9 +1,14 @@
 ; vim: ft=lisp et
 (in-package :asdf)
+(unless(uiop:featurep :doc-bootstrap)
+  (pushnew :doc-bootstrap *features*)
+  (defsystem :doc-bootstrap
+    :defsystem-depends-on (:documentation-embedder)))
+
 (defsystem :jingoh.org
   :description "Jingoh's background database system"
-  :pathname "src/org/"
-  :depends-on (:jingoh.util :resignal-bind)
+  :pathname "src/"
+  :depends-on (:resignal-bind :documentation-embedder)
   :in-order-to ((test-op (test-op :jingoh.org-test)))
   :components((:file "package")
               ; bottom
@@ -17,7 +22,7 @@
 
 (defsystem :jingoh.org-test
   :depends-on (:jingoh :named-readtables)
-  :pathname "src/org/"
+  :pathname "src/"
   :components ((:file "design"))
   :perform (test-op(o s)
              (uiop:symbol-call :jingoh 'report)))

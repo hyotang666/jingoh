@@ -1,7 +1,7 @@
 (in-package :jingoh.org)
 
 (defmacro do-requirements((var &optional(subject-designator T)(org '*org*) return)&body body)
-  #.(doc :jingoh.org "doc/org/do-requirements.M.md")
+  #.(doc :jingoh.org "doc/do-requirements.M.md")
   (let((gname(gensym "NAME"))
        (v(gensym "V")))
     `(macrolet((?!(form)
@@ -39,7 +39,7 @@
 		 (ERROR 'MISSING-SUBJECT :API 'map-topic :DATUM SUBJECT))))
 
   (defun map-requirements(function &optional(subject T)(org *org*))
-    #++(doc :jingoh.org "doc/org/map-topic.F.md")
+    #++(doc :jingoh.org "doc/map-topic.F.md")
     (case subject
       ((NIL) ; all subject.
        (loop :for (NIL . v) :across (! 0(org-specifications org))
@@ -54,7 +54,7 @@
 					  :key #'car))))))))
 
   (defun add-requirement(requirement &optional(org *org*))
-    #.(doc :jingoh.org "doc/org/add-requirement.F.md")
+    #.(doc :jingoh.org "doc/add-requirement.F.md")
     (let((subject(find *subject* (! 1(org-specifications org))
 		       :key #'car)))
       (if subject
@@ -68,7 +68,7 @@
     requirement)
 
   (defun org-requirements-count(org)
-    #.(doc :jingoh.org "doc/org/org-requirements-count.F.md")
+    #.(doc :jingoh.org "doc/org-requirements-count.F.md")
     (loop :for (NIL . v) :across (! 2(org-specifications org))
 	  :sum (length v)))
 

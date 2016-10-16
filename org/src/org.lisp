@@ -1,7 +1,7 @@
 (in-package :jingoh.org)
 
 (defstruct(org (:copier nil))
-  #.(doc :jingoh.org "doc/org/org.T.md")
+  #.(doc :jingoh.org "doc/org.T.md")
   (name nil :type symbol :read-only t)
   (current-subject nil :type symbol)
   (options nil :type list)
@@ -18,10 +18,10 @@
     (call-next-method)))
 
 (deftype org-designator()
-  #.(doc :jingoh.org "doc/org/org-designator.T.md")
+  #.(doc :jingoh.org "doc/org-designator.T.md")
   '(or (and symbol (not boolean))
        org))
 
 (deftype subject-designator()
-  #.(doc :jingoh.org "doc/org/subject-designator.T.md")
+  #.(doc :jingoh.org "doc/subject-designator.T.md")
   'symbol)

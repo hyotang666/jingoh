@@ -1,10 +1,20 @@
 ; vim: ft=lisp et
 (in-package :asdf)
+
+(unless(uiop:featurep :doc-bootstrap)
+  (pushnew :doc-bootstrap *features*)
+  (defsystem :doc-bootstrap
+    :defsystem-depends-on (:documentation-embedder)))
+
 (defsystem :jingoh
-  :description "A test framework for supporting requirements first development."
-  :depends-on (:jingoh.org :jingoh.tester :jingoh.reporter :jingoh.reader :jingoh.util :named-readtables)
+  :version #.(demb:version :demb (first (demb:cached-file-lines "README.md")))
+  :description #.(demb:description :demb (first (demb:cached-file-lines)))
+  :long-description #.(format nil "~{~A~&~}"(demb:cached-file-lines))
+  :license #.(demb:license :demb (find-if (demb:searcher "* License")
+                                          (demb:cached-file-lines)))
+  :depends-on (:jingoh.org :jingoh.tester :jingoh.reporter :jingoh.reader
+                           :named-readtables :documentation-embedder)
   :in-order-to ((test-op (test-op :jingoh-test)))
-  :pathname "src/jingoh/"
   :components((:file "package")))
 
 (defsystem :jingoh-test

@@ -7,7 +7,7 @@
 		    (api condition)
 		    (type-error-datum condition)
 		    (type-error-expected-type condition))))
-  (:documentation #.(doc :jingoh.org "doc/org/not-org.T.md")))
+  (:documentation #.(doc :jingoh.org "doc/not-org.T.md")))
 
 (define-condition missing(error)
   ((api :initarg :api :initform nil :reader api :type symbol)
@@ -17,10 +17,10 @@
 		    (api condition)
 		    (substitute #\space #\-(string(type-of condition)))
 		    (datum condition))))
-  (:documentation #.(doc :jingoh.org "doc/org/missing.T.md")))
+  (:documentation #.(doc :jingoh.org "doc/missing.T.md")))
 
 (define-condition missing-org(missing)()
-  (:documentation #.(doc :jingoh.org "doc/org/missing-org.T.md")))
+  (:documentation #.(doc :jingoh.org "doc/missing-org.T.md")))
 
 (define-condition missing-subject(missing)()
-  (:documentation #.(doc :jingoh.org "doc/org/missing-subject.T.md")))
+  (:documentation #.(doc :jingoh.org "doc/missing-subject.T.md")))

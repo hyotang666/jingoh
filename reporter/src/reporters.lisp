@@ -5,7 +5,7 @@
 	       ,form)))
 
   (defun default-reporter(&rest names)
-    #.(doc :jingoh.reporter "doc/reporter/default-reporter.F.md")
+    #.(doc :jingoh.reporter "doc/default-reporter.F.md")
     (flet((report(org)
 	    (if(zerop(org-requirements-count org))
 	      (warn "No requirements in ~S"(org-name org))
@@ -22,7 +22,7 @@
 	  (report(find-org name)))))))
 
 (defparameter *reporter* #'default-reporter
-  #.(doc :jingoh.reporter "doc/reporter/AreporterA.V.md"))
+  #.(doc :jingoh.reporter "doc/AreporterA.V.md"))
 
 (macrolet((!(n form)
 	    `(RESIGNAL-BIND((MISSING-ORG(C)'MISSING-ORG
@@ -30,11 +30,11 @@
 	       ,form)))
 
   (defun report(&rest args)
-    #.(doc :jingoh.reporter "doc/reporter/report.F.md")
+    #.(doc :jingoh.reporter "doc/report.F.md")
     (! 0(apply *reporter* args)))
 
   (defun detail(&key subject(org *org*))
-    #.(doc :jingoh.reporter "doc/reporter/detail.F.md")
+    #.(doc :jingoh.reporter "doc/detail.F.md")
     (let((*org*(! 1(find-org org))))
       (do-requirements(requirement subject)
 	(mapc #'print(check requirement))))))

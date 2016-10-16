@@ -1,7 +1,7 @@
 (in-package :jingoh.tester)
 
 (defun encallable(form &optional not-first-p)
-  #.(doc :jingoh.tester "doc/tester/encallable.F.md")
+  #.(doc :jingoh.tester "doc/encallable.F.md")
   (typecase form
     (symbol(if not-first-p
 	     `(FUNCTION ,form)
@@ -22,7 +22,7 @@
 	 :format-arguments (list form)))))
 
 (define-condition syntax-error(simple-error program-error)()
-  (:documentation #.(doc :jingoh.tester "doc/tester/syntax-error.T.md")))
+  (:documentation #.(doc :jingoh.tester "doc/syntax-error.T.md")))
 
 (defun reserved-keywords(gf)
   (loop :for method :in (closer-mop:generic-function-methods gf)
@@ -31,7 +31,7 @@
 	:finally (return (delete-duplicates result))))
 
 (defun canonicalize(test-form parameters)
-  #.(doc :jingoh.tester "doc/tester/canonicalize.F.md")
+  #.(doc :jingoh.tester "doc/canonicalize.F.md")
   (labels((main(lazy)
 	    (set-around (getf parameters :around)
 			(if(eq lazy :does-not-exist)

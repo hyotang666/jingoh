@@ -1,5 +1,6 @@
 (in-package :cl-user)
-(defpackage :jingoh.reporter(:use :cl :jingoh.org :jingoh.util :resignal-bind :jingoh.tester)
+(defpackage :jingoh.reporter(:use :cl :jingoh.org :resignal-bind :jingoh.tester)
+  (:import-from :documentation-embedder #:doc)
   (:export
     ;;;; main api
     #:report
