@@ -6,7 +6,7 @@ There are many test frameworks, e.g. 5am, prove, etc...
 * Issues
 Such frameworks looks like too much test.
 
-* Propose
+* Proposal
 Test first development is important.
 But you should never forget it is one kind of early optimization.
 Jingoh provides DSL to notate specification, rather than test framework.
@@ -36,13 +36,14 @@ Additionaly, it will be enough to be used as tutolials for end users.
 ;;;; Works fine with float.
 #?(+ 0.5 0.5) => 1.0
 
-;;;; when acceptable arguments comes, an error of type type-error is signaled.
+;;;; unless acceptable arguments comes,
+;;;; an error of type type-error is signaled.
 #?(+ 1 nil) :signals type-error
 ```
 
 ## From developer
 
-* Product's goal
+* Product's goal - ?
 * License - MIT
-* Supported implementation
+* Supported implementation CLISP, CCL, ECL, SBCL
 
