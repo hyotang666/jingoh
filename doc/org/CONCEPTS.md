@@ -1,4 +1,4 @@
-# jingoh.org - Background database system
+# jingoh.org - Jingoh's background database system
 
 ## Abstract concepts
 Jingoh.org provides jingoh's background database system.

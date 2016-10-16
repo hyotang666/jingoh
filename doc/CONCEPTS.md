@@ -1,7 +1,7 @@
-# jingoh - A test framework for supporting requirements first development.
+# jingoh - DSL to notate specification, rather than test framework.
 
 ## Abstract concepts
-Jingoh provides the features for requirements first development.
+Jingoh provides the features to notate specification, rather than test framework.
 Once you writes your library's specifications of requirements with jingoh, such file works as test.
 Additionaly, it will be enough to be used as tutolials for end users.
 

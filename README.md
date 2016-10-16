@@ -1,4 +1,4 @@
-# JINGOH - A test framework for supporting requirements first development.
+# JINGOH 0.0.0 - DSL to notate specification, rather than test framework.
 
 * Current lisp world
 There are many test frameworks, e.g. 5am, prove, etc...
@@ -9,7 +9,7 @@ Such frameworks looks like too much test.
 * Propose
 Test first development is important.
 But you should never forget it is one kind of early optimization.
-Jingoh provides the features for design first development.
+Jingoh provides DSL to notate specification, rather than test framework.
 Once you writes your library's specifications of requirements design with jingoh, such file works as test.
 Additionaly, it will be enough to be used as tutolials for end users.
 
@@ -43,26 +43,6 @@ Additionaly, it will be enough to be used as tutolials for end users.
 ## From developer
 
 * Product's goal
-* License
+* License - MIT
 * Supported implementation
 
-## For light user
-
-* Tutorial - main API
-* FAQ
-
-## For heavy user
-
-* Dictionary
-
-## For resolver
-
-* Specification of API which integrates implementation dependent behaviors
-
-## For improver
-
-* Specification of DSL
-
-## For maintainer
-
-* Structure of the system model
