@@ -1,30 +1,30 @@
 (in-package :jingoh.tester)
 
 (defun check(requirement)
-  #.(doc :jingoh.tester "doc/check.F.md")
+  #.(Doc :jingoh.tester "doc/check.F.md")
   (funcall(coerce requirement 'function)))
 
 (defmacro defspec(&body body)
-  #.(doc :jingoh.tester "doc/defspec.M.md")
+  #.(Doc :jingoh.tester "doc/defspec.M.md")
   `(PROGN (ADD-REQUIREMENT ,(apply #'make-requirement (append body *options*)))
 	  *SUBJECT*))
 
 (defmacro ? (&body body)
-  #.(doc :jingoh.tester "doc/Q.M.md")
+  #.(Doc :jingoh.tester "doc/Q.M.md")
   `(check ,(apply #'make-requirement body)))
 
 (defmacro & (&body body)
-  #.(doc :jingoh.tester "doc/&.M.md")
+  #.(Doc :jingoh.tester "doc/&.M.md")
   `(OR ,@(mapcar(lambda(form)
 		   `(ASSERT ,form))
 	    body)
        T))
 
 (defgeneric make-requirement(form key expected &rest params)
-  (:documentation #.(doc :jingoh.tester "doc/make-requirement.G.md")))
+  (:documentation #.(Doc :jingoh.tester "doc/make-requirement.G.md")))
 
 (defun the-push-instance-form (place type test-form expected actual position &rest options)
-  #.(doc :jingoh.tester "doc/the-push-instance-form.F.md")
+  #.(Doc :jingoh.tester "doc/the-push-instance-form.F.md")
   `(PUSH (MAKE-INSTANCE ',type
 			:FORM ',test-form
 			:EXPECTED ',expected
@@ -34,7 +34,7 @@
 	 ,place))
 
 (defun the-standard-handling-form(result parameters test-form expected &rest body)
-  #.(doc :jingoh.tester "doc/the-standard-handling-form.F.md")
+  #.(Doc :jingoh.tester "doc/the-standard-handling-form.F.md")
   (let((output(gensym "OUTPUT")))
     `(LAMBDA()
        (PROG(,result ,output)
@@ -195,9 +195,9 @@
 ;; These 2 vars are treated as constant.
 ;; but if defined with defconstant, does not work correctly in sbcl.
 (defvar unspecified '#:UNSPECIFIED
-  #.(doc :jingoh.tester "doc/unspecified.V.md"))
+  #.(Doc :jingoh.tester "doc/unspecified.V.md"))
 (defvar implementation-dependent '#:IMPLEMENTATION-DEPENDENT
-  #.(doc :jingoh.tester "doc/implementation-dependent.V.md"))
+  #.(Doc :jingoh.tester "doc/implementation-dependent.V.md"))
 
 (defmethod make-requirement(test-form(key(eql '=>))(expected(eql unspecified))&rest parameters)
   (declare(ignore key))

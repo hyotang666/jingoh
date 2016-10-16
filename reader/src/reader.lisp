@@ -1,6 +1,6 @@
 (in-package :cl-user)
 (defpackage :jingoh.reader(:use :cl :jingoh.tester :named-readtables)
-  (:import-from :documentation-embedder #:doc)
+  (:import-from :documentation-embedder #:Doc)
   (:export
     ;;;; main api
     #:enable
@@ -16,7 +16,7 @@
 (in-package :jingoh.reader)
 
 (defmacro enable(&optional(char #\?))
-  #.(doc :jingoh.reader "doc/enable.M.md")
+  #.(Doc :jingoh.reader "doc/enable.M.md")
   (let((var (gensym "CHAR"))
        (it(gensym "TEMP")))
     `(EVAL-WHEN(:LOAD-TOPLEVEL :COMPILE-TOPLEVEL :EXECUTE)
@@ -32,14 +32,14 @@
 	       (REPLACE() :REPORT "Replace it." #0#))))))))
 
 (defun replace-macro-character(char)
-  #.(doc :jingoh.reader "doc/replace-macro-character.F.md")
+  #.(Doc :jingoh.reader "doc/replace-macro-character.F.md")
   (set-dispatch-macro-character #\# char #'|#?reader|))
 
 (define-condition macro-char-confliction(simple-error)()
-  (:documentation #.(doc :jingoh.reader "doc/macro-char-confliction.T.md")))
+  (:documentation #.(Doc :jingoh.reader "doc/macro-char-confliction.T.md")))
 
 (defun |#?reader|(stream character number)
-  #.(doc :jingoh.reader "doc/#Qreader.F.md")
+  #.(Doc :jingoh.reader "doc/#Qreader.F.md")
   (declare(ignore character number))
   (let((position(file-position stream)))
     `(EVAL-WHEN(:COMPILE-TOPLEVEL :LOAD-TOPLEVEL)

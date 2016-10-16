@@ -3,13 +3,13 @@
 (defvar *orgs* (make-hash-table :test #'eq))
 
 (defparameter *org*(make-org)
-  #.(doc :jingoh.org "doc/AorgA.V.md"))
+  #.(Doc :jingoh.org "doc/AorgA.V.md"))
 
 (define-symbol-macro *subject* (ORG-CURRENT-SUBJECT *ORG*))
 (define-symbol-macro *options* (ORG-OPTIONS *ORG*))
 
 (defmacro deforg(name)
-  #.(doc :jingoh.org "doc/deforg.M.md")
+  #.(Doc :jingoh.org "doc/deforg.M.md")
   (check-type name symbol)
   `(EVAL-WHEN(:LOAD-TOPLEVEL :COMPILE-TOPLEVEL :EXECUTE)
      (REGISTER-ORG ',name (MAKE-ORG :NAME ',name))))
@@ -20,13 +20,13 @@
 	       ,form)))
 
   (defun register-org(name org)
-    #.(doc :jingoh.org "doc/register-org.F.md")
+    #.(Doc :jingoh.org "doc/register-org.F.md")
     (check-type name symbol)
     (! 0(check-type org org))
     (setf(gethash name *orgs*)org))
 
   (defun delete-subject(subject-designator &optional(org *org*))
-    #.(doc :jingoh.org "doc/delete-subject.F.md")
+    #.(Doc :jingoh.org "doc/delete-subject.F.md")
     (case subject-designator
       ((nil) ; delete all.
        (loop :with spec = (! 1(org-specifications org))
@@ -45,19 +45,19 @@
   ) ; end of macrolet
 
 (defun delete-org(org-designator)
-  #.(doc :jingoh.org "doc/delete-org.F.md")
+  #.(Doc :jingoh.org "doc/delete-org.F.md")
   (remhash (org-name(find-org org-designator))
 	   *orgs*))
 
 (defmacro in-org(name)
-  #.(doc :jingoh.org "doc/in-org.M.md")
+  #.(Doc :jingoh.org "doc/in-org.M.md")
   (check-type name symbol)
   `(EVAL-WHEN(:LOAD-TOPLEVEL :COMPILE-TOPLEVEL :EXECUTE)
      (RESIGNAL-BIND((MISSING-ORG()'MISSING-ORG :API 'IN-ORG))
        (SETF *ORG*(FIND-ORG ',name)))))
 
 (defmacro requirements-about(subject &rest options)
-  #.(doc :jingoh.org "doc/requirements-about.M.md")
+  #.(Doc :jingoh.org "doc/requirements-about.M.md")
   (check-type subject symbol)
   `(EVAL-WHEN(:LOAD-TOPLEVEL :COMPILE-TOPLEVEL :EXECUTE)
      (SETF *OPTIONS* ',options)
@@ -69,7 +69,7 @@
 		   (ERROR'MISSING-ORG :API 'FIND-ORG :DATUM ORG-DESIGNATOR)))))
 
   (defun find-org(org-designator &optional(errorp t))
-    #.(doc :jingoh.org "doc/find-org.F.md")
+    #.(Doc :jingoh.org "doc/find-org.F.md")
     (if(org-p org-designator)
       org-designator
       (?!(gethash org-designator *orgs*)))))

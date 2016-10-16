@@ -1,28 +1,28 @@
 (in-package :jingoh.tester)
 
 (defun encallable(form &optional not-first-p)
-  #.(doc :jingoh.tester "doc/encallable.F.md")
+  #.(Doc :jingoh.tester "doc/encallable.F.md")
   (typecase form
-    (symbol(if not-first-p
+    (SYMBOL(if not-first-p
 	     `(FUNCTION ,form)
 	     form))
-    (function(if not-first-p
+    (FUNCTION(if not-first-p
 	       form
 	       (or (millet:function-name form)
 		   `(LAMBDA(&REST ARGS)
 		      (APPLY ,form ARGS)))))
-    ((cons (eql lambda) t)form)
-    ((or (cons (eql function)(cons symbol null))
-	 (cons (eql quote)(cons symbol null)))
+    ((CONS (EQL LAMBDA) T)form)
+    ((OR (CONS (EQL FUNCTION)(CONS SYMBOL NULL))
+	 (CONS (EQL QUOTE)(CONS SYMBOL NULL)))
      (if not-first-p
        form
        (second form)))
-    (t (error'syntax-error
+    (T (error'syntax-error
 	 :format-control "?: ~S is not function name"
 	 :format-arguments (list form)))))
 
 (define-condition syntax-error(simple-error program-error)()
-  (:documentation #.(doc :jingoh.tester "doc/syntax-error.T.md")))
+  (:documentation #.(Doc :jingoh.tester "doc/syntax-error.T.md")))
 
 (defun reserved-keywords(gf)
   (loop :for method :in (closer-mop:generic-function-methods gf)
@@ -31,20 +31,20 @@
 	:finally (return (delete-duplicates result))))
 
 (defun canonicalize(test-form parameters)
-  #.(doc :jingoh.tester "doc/canonicalize.F.md")
-  (labels((main(lazy)
-	    (set-around (getf parameters :around)
+  #.(Doc :jingoh.tester "doc/canonicalize.F.md")
+  (labels((MAIN(lazy)
+	    (SET-AROUND (getf parameters :around)
 			(if(eq lazy :does-not-exist)
 			  test-form
-			  (body lazy))))
-	  (body(lazy)
+			  (BODY lazy))))
+	  (BODY(lazy)
 	    (if lazy
 	      `(EVAL ',test-form)
 	      ;; else explicitly specified :lazy NIL.
 	      (progn (eval test-form)
 		     test-form)))
-	  (set-around(around body)
+	  (SET-AROUND(around body)
 	    (if around
 	      (subst body '(CALL-BODY) around :test #'equal)
 	      body)))
-    (main(getf parameters :lazy :does-not-exist))))
+    (MAIN(getf parameters :lazy :does-not-exist))))
