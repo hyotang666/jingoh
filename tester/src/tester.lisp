@@ -39,10 +39,9 @@
     `(LAMBDA()
        (PROG(,result ,output)
 	 (HANDLER-BIND((WARNING(LAMBDA(CONDITION)
-				 (DECLARE(IGNORABLE CONDITION)) ; see git log.
 				 (UNLESS,(getf parameters :ignore-warning)
 				   ,(the-push-instance-form result 'WARNING-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):message `(PRINC-TO-STRING CONDITION)))
-				 (GO :END)))
+				 (MUFFLE-WARNING CONDITION)))
 		       (ERROR(LAMBDA(CONDITION)
 			       ,(the-push-instance-form result 'ERROR-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):message `(PRINC-TO-STRING CONDITION))
 			       (GO :END))))
