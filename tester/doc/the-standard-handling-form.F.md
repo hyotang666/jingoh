@@ -26,24 +26,38 @@ Template for common signal handling form.
 (the-standard-handling-form 0 nil 1 2 3 4 5)
 =>
 (LAMBDA ()
-  (PROG (0)
+  (PROG (0 #:OUTPUT111)
     (HANDLER-BIND ((WARNING (LAMBDA (CONDITION)
+                              (DECLARE (IGNORABLE CONDITION))
                               (UNLESS NIL
 			        (PUSH (MAKE-INSTANCE 'WARNING-WAS-SIGNALED
 				                     :FORM '1
 						     :EXPECTED '2
 						     :ACTUAL CONDITION
+						     :POSITION NIL
 						     :MESSAGE (PRINC-TO-STRING CONDITION))
-                                      0))))
+                                      0))
+                              (GO :END)))
                    (ERROR (LAMBDA (CONDITION)
 		            (PUSH (MAKE-INSTANCE 'ERROR-WAS-SIGNALED
 			                         :FORM '1
 						 :EXPECTED '2
 						 :ACTUAL CONDITION
+						 :POSITION NIL
 						 :MESSAGE (PRINC-TO-STRING CONDITION))
 				  0)
 			    (GO :END))))
-      3 4 5) ; <- as body.
+      (UNWIND-PROTECT (SETF #:OUTPUT111
+                            (WITH-OUTPUT-TO-STRING (*TERMINAL-IO*)
+			      (PROGN 3 4 5))) ; <- as body.
+        NIL))
+    (UNLESS (STRING= "" #:OUTPUT111)
+      (PUSH (MAKE-INSTANCE 'UNEXPECTED-OUTPUT
+                           :FORM 1
+			   :EXPECTED '""
+			   :ACTUAL #:OUTPUT111
+			   :POSITION NIL)
+            0))
     :END
     (RETURN 0)))
 ```
