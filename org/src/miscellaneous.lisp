@@ -1,32 +1,56 @@
 (in-package :jingoh.org)
 
+(defun the-nil-subject-procedure(v org var body return)
+  `(LOOP :FOR (NIL . ,v) :ACROSS (!(ORG-SPECIFICATIONS ,org))
+	 :DO (MAP NIL (LAMBDA(,var),@body),v)
+	 :FINALLY(RETURN ,return)))
+
+(defun the-t-subject-procedure(var body org return)
+  `(BLOCK()
+     (MAP NIL (LAMBDA(,var),@body)
+	  (CDR(?!(FIND *SUBJECT* (!(ORG-SPECIFICATIONS ,org))
+		       :KEY #'CAR))))
+     ,return))
+
+(defun the-subject-procedure(var body gname org return)
+  `(BLOCK()
+     (MAP NIL(LAMBDA(,var) ,@body)
+	  (CDR(?!(FIND ,gname (!(ORG-SPECIFICATIONS ,org))
+		       :KEY #'CAR))))
+     ,return))
+
 (defmacro do-requirements((var &optional(subject-designator T)(org '*org*) return)&body body)
   #.(Doc :jingoh.org "doc/do-requirements.M.md")
   (let((gname(gensym "NAME"))
        (v(gensym "V")))
-    `(macrolet((?!(form)
-		`(OR ,form
-		     (ERROR'MISSING-SUBJECT :API 'DO-REQUIREMENTS
-					    :DATUM ,',subject-designator)))
+    `(MACROLET((?!(form)
+		 `(OR ,form
+		      (ERROR'MISSING-SUBJECT :API 'DO-REQUIREMENTS
+					     :DATUM ,',subject-designator)))
 	       (!(form)
 		 `(RESIGNAL-BIND((TYPE-ERROR()'NOT-ORG :API 'DO-REQUIREMENTS))
 		    ,FORM)))
-      (LET((,gname ,subject-designator))
+       (LET((,gname ,subject-designator))
 	 (CASE,gname
-	   ((NIL)(LOOP :FOR (NIL . ,v) :ACROSS (!(ORG-SPECIFICATIONS ,org))
-		       :DO (MAP NIL (LAMBDA(,var),@body),v)
-		       :FINALLY(RETURN ,return)))
-	   ((T)(BLOCK()
-		 (MAP NIL (LAMBDA(,var),@body)
-		      (CDR(?!(FIND *SUBJECT* (!(ORG-SPECIFICATIONS ,org))
-				   :KEY #'CAR))))
-		 ,return))
-	   (OTHERWISE
-	     (BLOCK()
-	       (MAP NIL(LAMBDA(,var) ,@body)
-		    (CDR(?!(FIND ,gname (!(ORG-SPECIFICATIONS ,org))
-				 :KEY #'CAR))))
-	       ,return)))))))
+	   ((NIL),(the-nil-subject-procedure v org var body return))
+	   ((T),(the-t-subject-procedure var body org return))
+	   (OTHERWISE,(the-subject-procedure var body gname org return)))))))
+
+(define-compiler-macro do-requirements(&whole whole (var &optional(subject-designator T)(org '*org*) return)&body body)
+  (if(not(constantp subject-designator))
+    whole
+    `(MACROLET((?!(form)
+		 `(OR ,form
+		      (ERROR'MISSING-SUBJECT :API 'DO-REQUIREMENTS
+					     :DATUM ,',subject-designator)))
+	       (!(form)
+		 `(RESIGNAL-BIND((TYPE-ERROR()'NOT-ORG :API 'DO-REQUIREMENTS))
+		    ,FORM)))
+       ,(case subject-designator
+	  ((NIL)(the-nil-subject-procedure(gensym "V")org var body return))
+	  ((T)(the-t-subject-procedure var body org return))
+	  (otherwise
+	    (the-subject-procedure var body subject-designator org return))))))
 
 (macrolet((!(n form)
 	    `(RESIGNAL-BIND((ERROR()'NOT-ORG
