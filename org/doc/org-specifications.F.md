@@ -24,7 +24,7 @@ Accepts org, returns specifications object.
 ## Notes:
 For extensibility, specifications's concrete data structure is not specified.
 Although jingoh.org provides enough api to manupilate it.
-Users (include hackers) does not need to know what is happen behing the black box.
+Users (include hackers) does not need to know what is happen behind the black box.
 
 ## Exceptional-Situations:
 When org is not org object, an error of type type-error is signaled.

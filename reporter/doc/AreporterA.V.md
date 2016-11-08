@@ -10,6 +10,7 @@ Function object.
 ## Description:
 Used to tell users to test result.
 You can replace this to customize report behavior.
+See default-reporter.
 
 ## Example:
 

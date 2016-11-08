@@ -42,12 +42,12 @@ Options combination order is not same with method combination.
 3. :after option is run.
 And these options is NOT around subject, but each requirement of subject.
 For example, when subject has 3 requirements, procedure like below.
-1. :before option is run.
-2. :around option which includes requirement1 is run.
-3. :after option is run.
-4. :before option is run.
-5. :around option which includes requirement2 is run.
-6. :after option is run.
+1. :before option runs.
+2. :around option which includes requirement1 runs.
+3. :after option runs.
+4. :before option runs.
+5. :around option which includes requirement2 runs.
+6. :after option runs.
 7. ...so on.
 
 ## Exceptional-Situations:

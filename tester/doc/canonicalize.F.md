@@ -20,7 +20,7 @@ When parameters have key :lazy, and its value is NIL, evaluate test-form then re
 This works as (eval-when(:compile-toplevel)...).
 
 When parameters have key :around, returns test-form witch wrapped with around form.
-(This is like CLOS CALL-NEXT-METHOD.)
+(This is like CLOS around method. See example below.)
 
 This is helper for MAKE-REQUIREMENT
 

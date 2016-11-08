@@ -7,8 +7,6 @@ There are many test frameworks, e.g. 5am, prove, etc...
 Such frameworks looks like too much test.
 
 * Proposal
-Test first development is important.
-But you should never forget it is one kind of early optimization.
 Jingoh provides DSL to notate specification, rather than test framework.
 Once you writes your library's specifications of requirements design with jingoh, such file works as test.
 Additionaly, it will be enough to be used as tutolials for end users.

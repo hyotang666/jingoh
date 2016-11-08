@@ -17,7 +17,9 @@ E.g. which form has unexpected behavior, what is expected result, what is actual
 
 DETAIL helps you to make your products robust.
 
-## Terms
+## Note
+Issue object is structure.
+If you need sophisticated detail printer, write method CL:PRINT-OBJECT specified to issue.
 
 ## Symbol categories
 

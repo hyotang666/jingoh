@@ -11,7 +11,7 @@ org := org
 result := non negative integer
 
 ## Description:
-Like CL:HASH-TABLE-COUT, ORG-REQUIREMENTS-COUNT returns the number of entries in the org's specifications.
+Like CL:HASH-TABLE-COUNT, ORG-REQUIREMENTS-COUNT returns the number of entries in the org's specifications.
 If ORG has just been created or completely deleted, the entry count is 0.
 
 ## Example:

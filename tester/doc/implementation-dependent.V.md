@@ -10,8 +10,14 @@ SYMBOL
 
 ## Description:
 Represents implementation dependent bahavior.
+Return value is ignored, just checking unexpected signals and unexpected outputs.
+In other words, test form must be functional.
 
 ## Example:
+```lisp
+(? (lisp-implementation-type) => #.implementation-dependent)
+=> NIL
+```
 
 ## Affected By:
 

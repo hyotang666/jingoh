@@ -14,7 +14,8 @@ form key expected
 * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL =>)) (EXPECTED (EQL #:IMPLEMENTATION-DEPENDENT)) &REST ARGS)
 * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL =>)) (EXPECTED (EQL #:UNSPECIFIED)) &REST PARAMETERS)
 * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL :SATISFIES)) (EXPECTED T) &REST PARAMETERS)
-* (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL :OUTPUT)) (EXPECTED T) &REST PARAMETERS) * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL :VALUES)) (EXPECTED T) &REST PARAMETERS)
+* (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL :OUTPUT)) (EXPECTED T) &REST PARAMETERS)
+* (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL :VALUES)) (EXPECTED T) &REST PARAMETERS)
 * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL :INVOKE-DEBUGGER-WITH)) (EXPECTED T) &REST PARAMETERS)
 * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL :SIGNALS)) (EXPECTED T) &REST PARAMETERS)
 * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL =>)) (EXPECTED T) &REST PARAMETERS)
@@ -47,10 +48,15 @@ Specifying to use primary return value of FORM to test.
 * :values
 Specifying to use every return value of FORM to test.
 NOTE! - In this case, you need to specify EXPECTED as list of every expected return values.
+```lisp
+(? (values 1 2) :values (1 2))
+```
 
 * :output
 Specifying to use outputting result of form to test.
 In this case, you may need to specify outputted stream with parameter :stream.
+NOTE! - This can test only strings, not bytes.
+(Currently jingoh does not support testing byte output.)
 
 * :signals
 Testing specified condition is signaled or not.
@@ -58,9 +64,17 @@ In this case, you may need to specify established restarts with parameter :with-
 
 * :satisfies
 Specifying to use specified function to test.
+```lisp
+(? 1 :satisfies integerp)
+```
 
 * :multiple-value-satisfies
 Specifying to use specified function to test the every return value.
+```lisp
+(? (values 1 :a) :multiple-value-satisfies (lambda(num key)
+                                             (and (numberp num)
+					          (keywordp key))))
+```
 
 * :invoke-debugger-with
 Specifying the debugger will be invoked with specified condition.
@@ -78,6 +92,10 @@ When return value is list, string, etc... you need to specify this.
 When tesing the ill formed macro ensure signals error or not, you need to specify this option with true.
 In some cases, one test-form must be evaluated in compile time.
 In such cases, you need to specify this option with NIL explicitly.
+NOTE! - Under the table, jingoh compile test form at first.
+Then meking requirement object.
+Then restore it.
+Function JINGOH.REPORTER:REPORT or JINGOH.REPORTER:DETAIL check requirements by calling test.
 
 * :stream
 When keyword is :output, you may need to specify outputted stream with this option.
