@@ -70,7 +70,8 @@
 
   (defun find-org(org-designator &optional(errorp t))
     #.(Doc :jingoh.org "doc/find-org.F.md")
-    (if(org-p org-designator)
-      org-designator
-      (?!(gethash org-designator *orgs*)))))
+    (typecase org-designator
+      (org org-designator)
+      (null (make-org))
+      (t (?!(gethash org-designator *orgs*))))))
 
