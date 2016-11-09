@@ -11,7 +11,7 @@
 
 (define-condition missing(error)
   ((api :initarg :api :initform nil :reader api :type symbol)
-   (datum :initarg :datam :initform nil :reader datum))
+   (datum :initarg :datum :initform nil :reader datum))
   (:report(lambda(condition *standard-output*)
 	    (format t "~@[~S: ~]Searched but ~(~A~)~@[ named ~S~]."
 		    (api condition)
