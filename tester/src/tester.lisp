@@ -118,36 +118,77 @@
 		 ,(the-push-instance-form result 'UNEXPECTED-OUTPUT test-form "" output (getf parameters :position)))
 	       (RETURN ,result)))))))
 
-(defmethod make-requirement(test-form (key(eql :invoke-debugger-with))
+(defmethod make-requirement(test-form (key (eql :invoke-debugger))
+				      (expected null)
+				      &rest parameters)
+  (declare(ignore key expected))
+  (alexandria:with-unique-names(actual result output end temp)
+    (let((form(canonicalize test-form parameters)))
+      `(LAMBDA()
+	 (UNWIND-PROTECT
+	   (PROG(*DEBUGGER-HOOK* ,actual ,result ,output ,temp)
+	     ;; In order to make tag visible from hook,
+	     ;; we need to set hook in body.
+	     (FLET((HOOK(CONDITION FUNCTION)
+		     (DECLARE(IGNORE FUNCTION))
+		     (WHEN(EQ CONDITION ,temp)
+		       ,(the-push-instance-form result 'DEBUGGER-WAS-INVOKED test-form NIL 'CONDITION (getf parameters :position) :MESSAGE`(PRINC-TO-STRING CONDITION)))
+		     (GO ,end))
+		   (HANDLER(CONDITION)
+		     (IF(FIND-RESTART 'MUFFLE-WARNING CONDITION)
+		       (PROGN ,@(unless(getf parameters :ignore-warning)
+				  `(,(the-push-instance-form result 'WARNING-WAS-SIGNALED test-form NIL 'CONDITION (getf parameters :position) :MESSAGE `(PRINC-TO-STRING CONDITION))))
+			      (MUFFLE-WARNING CONDITION))
+		       (SETF ,temp CONDITION)))
+		   )
+	       (SETF *DEBUGGER-HOOK* #'HOOK
+		     ,output (WITH-OUTPUT-TO-STRING(*TERMINAL-IO*)
+			       (SETF ,actual (HANDLER-BIND((WARNING #'HANDLER))
+					       ,@(option-form :before parameters)
+					       ,form)))))
+	     (WHEN(AND ,output (NOT(STRING= "" ,output)))
+	       ,(the-push-instance-form result 'UNEXPECTED-OUTPUT test-form "" output (getf parameters :position)))
+	     ,end
+	     (RETURN ,result))
+	   ,@(option-form :after parameters))))))
+
+(defmethod make-requirement(test-form (key(eql :invoke-debugger))
 				      expected &rest parameters)
   (declare(ignore key))
-  (let((actual(gensym "ACTUAL"))
-       (form(canonicalize test-form parameters))
-       (result(gensym "RESULT"))
-       (output(gensym "OUTPUT"))
-       (temp(gensym "TEMP")))
-    `(LAMBDA()
-       (UNWIND-PROTECT
-	 (PROG(*DEBUGGER-HOOK* ,output ,actual ,result ,temp)
-	   ;; In order to make tag visible from hook,
-	   ;; we need to set hook in body.
-	   (SETF *DEBUGGER-HOOK*(LAMBDA(CONDITION FUNCTION)
-				  (DECLARE(IGNORE CONDITION FUNCTION))
-				  (POP ,temp)
-				  (GO :END))
-		 ,output (SETF ,actual (HANDLER-BIND((WARNING(LAMBDA(CONDITION)
-							       (UNLESS,(getf parameters :ignore-warning)
-								 ,(the-push-instance-form temp 'WARNING-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):MESSAGE `(PRINC-TO-STRING CONDITION)))
-							       (WHEN(FIND-RESTART 'MUFFLE-WARNING CONDITION)
-								 (MUFFLE-WARNING CONDITION)))))
-					 ,@(option-form :before parameters)
-					 ,form)))
-	   ,(the-push-instance-form result 'UNEXPECTED-SUCCESS test-form expected actual (getf parameters :position))
-	   (UNLESS(STRING= "" ,output)
-	     ,(the-push-instance-form result 'UNEXPECTED-OUTPUT test-form "" output (getf parameters :position)))
-	   :END
-	   (RETURN(APPEND ,result ,temp)))
-	 ,(option-form :after parameters)))))
+  (alexandria:with-unique-names(actual result output end)
+    (let((form(canonicalize test-form parameters)))
+      `(LAMBDA()
+	 (UNWIND-PROTECT
+	   (PROG(*DEBUGGER-HOOK* ,actual ,result ,output)
+	     ;; In order to make tag visible from hook,
+	     ;; we need to set hook in body.
+	     (FLET((HOOK(CONDITION FUNCTION)
+		     (DECLARE(IGNORE FUNCTION))
+		     (IF(TYPEP CONDITION ',expected)
+		       ,(let((restarts(getf parameters :with-restarts)))
+			  (when restarts
+			    `(LET((,actual(MAPCAR #'FIND-RESTART ',(uiop:ensure-list restarts))))
+				(WHEN(SOME #'NULL ,actual)
+				  ,(the-push-instance-form result 'MISSING-RESTARTS test-form restarts `(REMOVE NIL ,actual) (getf parameters :position))))))
+		       ,(the-push-instance-form result 'UNMATCH-CONDITION test-form expected 'CONDITION (getf parameters :position) :MESSAGE `(PRINC-TO-STRING CONDITION)))
+		     (GO ,end))
+		   (HANDLER(CONDITION)
+		     (WHEN(FIND-RESTART 'MUFFLE-WARNING CONDITION)
+		       ,@(unless(getf parameters :ignore-warning)
+			   `(,(the-push-instance-form result 'WARNING-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position) :MESSAGE `(PRINC-TO-STRING CONDITION))))
+		       (MUFFLE-WARNING CONDITION)))
+		   )
+	       (SETF *DEBUGGER-HOOK* #'HOOK
+		     ,output (WITH-OUTPUT-TO-STRING(*TERMINAL-IO*)
+			       (SETF ,actual(HANDLER-BIND((WARNING #'HANDLER))
+					      ,@(option-form :before parameters)
+					      ,form)))))
+	     ,(the-push-instance-form result 'UNEXPECTED-SUCCESS test-form expected actual (getf parameters :position))
+	     (WHEN(AND ,output (NOT(STRING= "" ,output)))
+	       ,(the-push-instance-form result 'UNEXPECTED-OUTPUT test-form "" output (getf parameters :position)))
+	     ,end
+	     (RETURN ,result))
+	   ,@(option-form :after parameters))))))
 
 (defmethod make-requirement(test-form (key(eql :values))expected
 				      &rest parameters)
@@ -225,25 +266,3 @@
       `(LET((,actual(MULTIPLE-VALUE-LIST ,form)))
 	 (UNLESS(APPLY ,test ,actual)
 	   ,(the-push-instance-form result 'ISSUE-OF-MULTIPLE-VALUES test-form expected actual(getf parameters :position)))))))
-
-(defmethod make-requirement(test-form(key(eql :never-invoke-debugger))expected &rest parameters)
-  (declare(ignore key expected))
-  (let((output(gensym "OUTPUT"))
-       (result(gensym "RESULT")))
-    `(LAMBDA()
-       (UNWIND-PROTECT
-	 (PROG(*DEBUGGER-HOOK* ,result ,output)
-	   ;; In order to make tag visible from hook,
-	   ;; we need to set hook in body.
-	   (SETF *DEBUGGER-HOOK*(LAMBDA(CONDITION HOOK)
-				  (DECLARE(IGNORE HOOK))
-				  ,(the-push-instance-form result 'debugger-was-invoked test-form NIL 'CONDITION (getf parameters :position):message `(PRINC-TO-STRING CONDITION))
-				  (GO :END)))
-	   (SETF ,output (WITH-OUTPUT-TO-STRING(*TERMINAL-IO*)
-			   ,@(option-form :before parameters)
-			   ,(canonicalize test-form parameters)))
-	   (UNLESS(STRING= "" ,output)
-	     ,(the-push-instance-form result 'UNEXPECTED-OUTPUT test-form "" output (getf parameters :position)))
-	   :END
-	   (RETURN ,result))
-	 ,(option-form :after parameters)))))

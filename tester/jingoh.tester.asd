@@ -8,7 +8,7 @@
 (defsystem :jingoh.tester
   :description "Jingoh's requirement's tester."
   :in-order-to ((test-op (test-op :jingoh.tester-test)))
-  :depends-on (:jingoh.org :millet :closer-mop :documentation-embedder)
+  :depends-on (:jingoh.org :millet :closer-mop :documentation-embedder :alexandria)
   :pathname "src/"
   :components ((:file "package")
                ; bottom

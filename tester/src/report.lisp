@@ -11,6 +11,8 @@
 
 (defstruct(debugger-was-invoked (:include condition-issue)))
 
+(defstruct(unmatch-condition (:include condition-issue)))
+
 (defstruct(unexpected-success (:include issue)))
 
 (defstruct(unexpected-output (:include issue)))

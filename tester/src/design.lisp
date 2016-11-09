@@ -24,6 +24,16 @@ to check signals or not, use :signals keyword.
 |#
 #?(? (error "test") :signals error)
 => NIL
+#|
+NOTE! - :signals keyword check just signaled only.
+        If you want to check actualy debugger is invoked or not,
+        use :invoke-debugger keyword.
+|#
+#?(signal 'warning) :invoke-debugger NIL
+#?(warn 'warning) :invoke-debugger NIL
+, :ignore-warning T
+#?(warn 'error) :invoke-debugger TYPE-ERROR
+#?(error 'warning) :invoke-debugger WARNING
 
 #|
 to check values, use :values keyword.
@@ -107,7 +117,7 @@ Supported keywords are returned by RESERVED-KEYWORDS.
 |#
 #?(reserved-keywords #'make-requirement)
 :satisfies #`(null(set-exclusive-or $result
-				    '(=> :signals :output :satisfies :values :multiple-value-satisfies :invoke-debugger-with :never-invoke-debugger)))
+				    '(=> :signals :output :satisfies :values :multiple-value-satisfies :invoke-debugger)))
 
 #|
 encallable makes argument to fits lisp forms first element.
