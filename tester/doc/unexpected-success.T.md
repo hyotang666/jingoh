@@ -8,11 +8,11 @@
 
 * FORM [Type] T
 [ACCESSOR] issue-form
-Contains lisp form which did not signal condition.
+Contains test form which did not signal condition.
 
 * EXPECTED [Type] T
 [ACCESSOR] issue-expected
-Contains FORM's expected signaled condition name.
+Contains FORM's expected signaled condition type.
 
 * ACTUAL [Type] T
 [ACCESSOR] issue-actual
@@ -44,6 +44,7 @@ ISSUE-POSITION
 ISSUE-TEST
 MISSING-RESTARTS
 UNEXPECTED-OUTPUT
+UNMATCH-CONDITION
 WARNING-WAS-SIGNALED
 WRONG-FORMAT
 

@@ -12,7 +12,7 @@ Contains condition message string.
 
 * FORM [Type] T
 [ACCESSOR] issue-form
-Contains lisp form which causes signaling condition.
+Contains test form which causes signaling condition.
 
 * EXPECTED [Type] T
 [ACCESSOR] issue-expected
@@ -47,5 +47,6 @@ ISSUE-EXPECTED
 ISSUE-FORM
 ISSUE-POSITION
 ISSUE-TEST
+UNMATCH-CONDITION
 WARNING-WAS-SIGNALED
 

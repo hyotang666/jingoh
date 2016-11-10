@@ -1,29 +1,29 @@
-# [Structure] UNEXPECTED-OUTPUT
+# [Structure] UNMATCH-CONDITION
 
 ## Class Precedence List: (case in CLISP)
 
-* unexpected-output issue structure-object t
+* unmatch-condition condition-issue issue structure-object t
 
 ## Effective Slots:
 
 * FORM [Type] T
 [ACCESSOR] issue-form
-Contains test form which output unexpectedly.
+Contains test form which invoked debugger but with unexpected condition.
 
 * EXPECTED [Type] T
 [ACCESSOR] issue-expected
-Empty string. (i.e. "")
+Contains condition type which should invoke debugger.
 
 * ACTUAL [Type] T
 [ACCESSOR] issue-actual
-Outputted string.
+Contains condition type which actualy invoked debugger.
 
 * TEST [Type] T
 [ACCESSOR] issue-test
 NIL because useless.
 
 ## Description:
-UNEXPECTED-OUTPUT is the issue which expected no output occur.
+UNMATCH-CONDITION is the issue that debugger was invoked but argument was not match expected type.
 
 ## Example:
 
@@ -32,6 +32,8 @@ UNEXPECTED-OUTPUT is the issue which expected no output occur.
 ## See Also:
 
 CONDITION-ISSUE
+CONDITION-ISSUE-MESSAGE
+CONDITION-ISSUE-P
 DEBUGGER-WAS-INVOKED
 ERROR-WAS-SIGNALED
 ISSUE
@@ -43,8 +45,9 @@ ISSUE-P
 ISSUE-POSITION
 ISSUE-TEST
 MISSING-RESTARTS
+UNEXPECTED-OUTPUT
 UNEXPECTED-SUCCESS
-UNMATCH-CONDITION
+UNMATCH-CONDITION-P
 WARNING-WAS-SIGNALED
 WRONG-FORMAT
 

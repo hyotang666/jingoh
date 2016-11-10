@@ -8,7 +8,7 @@
 
 * FORM [Type] T
 [ACCESSOR] issue-form
-Contains lisp form which output string to stream.
+Contains test form which output string to stream.
 
 * EXPECTED [Type] T
 [ACCESSOR] issue-expected
@@ -21,8 +21,7 @@ Contains FORM's actual generated string.
 * TEST [Type] T
 [ACCESSOR] issue-test
 Contains predicates which tests EXPECTED and ACTUAL.
-NOTE! - Test may fail even if EXPECTED and ACTUAL is the same value.
-e.g. (eq '(A) '(A)) => NIL
+The default is CL:STRING=.
 
 ## Description:
 WRONG-FORMAT is the issue about outputted string.
@@ -48,6 +47,7 @@ ISSUE-TEST
 MISSING-RESTARTS
 UNEXPECTED-OUTPUT
 UNEXPECTED-SUCCESS
+UNMATCH-CONDITION
 WARNING-WAS-SIGNALED
 WRONG-FORMAT
 WRONG-FORMAT-P

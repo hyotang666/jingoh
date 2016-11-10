@@ -8,7 +8,7 @@
 
 * FORM [Type] T
 [ACCESSOR] issue-form
-Contains lisp form which causes issue.
+Contains test form which causes issue.
 
 * EXPECTED [Type] T
 [ACCESSOR] issue-expected
@@ -49,6 +49,7 @@ MAKE-REQUIREMENT
 MISSING-RESTARTS
 UNEXPECTED-OUTPUT
 UNEXPECTED-SUCCESS
+UNMATCH-CONDITION
 WARNING-WAS-SIGNALED
 WRONG-FORMAT
 

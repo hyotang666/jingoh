@@ -8,7 +8,7 @@
 
 * FORM [Type] T
 [ACCESSOR] issue-form
-Contains lisp form which produce multiple values.
+Contains test form which produce multiple values.
 
 * EXPECTED [Type] T
 [ACCESSOR] issue-expected
@@ -46,6 +46,7 @@ ISSUE-TEST
 MISSING-RESTARTS
 UNEXPECTED-OUTPUT
 UNEXPECTED-SUCCESS
+UNMATCH-CONDITION
 WARNING-WAS-SIGNALED
 WRONG-FORMAT
 

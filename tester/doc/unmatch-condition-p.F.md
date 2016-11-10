@@ -1,8 +1,8 @@
-# [Function] ERROR-WAS-SIGNALED-P
+# [Function] UNMATCH-CONDITION-P
 
 ## Syntax:
 
-(ERROR-WAS-SIGNALED-P arg) => result
+(UNMATCH-CONDITION-P arg0) => result
 
 ## Arguments and Values:
 
@@ -11,12 +11,12 @@ arg := any lisp object
 result := boolean
 
 ## Description:
-Tests arg is error-was-signaled object or not.
-When arg is error-was-signaled object, returns T, otherwise NIL.
+Tests arg is unmatch-condition object or not.
+When arg is unmatch-condition object, returns T, otherwise NIL.
+
+## Affected by:
 
 ## Example:
-
-## Affected-By:
 
 ## Side-Effects:
 
@@ -31,9 +31,9 @@ DEBUGGER-WAS-INVOKED-P
 ERROR-WAS-SIGNALED-P
 ISSUE-OF-MULTIPLE-VALUES-P
 ISSUE-P
-MISSNG-RESTARTS-P
+MISSING-RESTARTS-P
 UNEXPECTED-OUTPUT-P
 UNEXPECTED-SUCCESS-P
-UNMATCH-CONDTIION-P
+UNMATCH-CONDITION-P
 WARNING-WAS-SIGNALED-P
 WRONG-FORMAT-P

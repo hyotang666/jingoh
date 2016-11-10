@@ -35,4 +35,6 @@ When syntax is invalid, an error of type syntax-error is signaled.
 
 &
 ?
+IMPLEMENTATION-DEPENDENT
 MAKE-REQUIREMENT
+UNSPECIFIED

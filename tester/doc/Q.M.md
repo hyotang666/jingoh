@@ -30,4 +30,6 @@ When syntax is not invalid, an error of type syntax-error is signaled.
 
 &
 CHECK
+IMPLEMENTATION-DEPENDENT
 MAKE-REQUIREMENT
+UNSPECIFIED

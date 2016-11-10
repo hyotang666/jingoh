@@ -6,7 +6,6 @@
 
 ## Arguments and Values:
 
-
 arg := any lisp object
 
 result := boolean
@@ -35,5 +34,6 @@ ISSUE-P
 MISSING-RESTARTS-P
 UNEXPECTED-OUTPUT-P
 UNEXPECTED-SUCCESS-P
+UNMATCH-CONDTIION-P
 WARNING-WAS-SIGNALED-P
 WRONG-FORMAT-P

@@ -10,6 +10,7 @@ SYMBOL
 
 ## Description:
 Represents unspecified behavior.
+Always success.
 
 ## Example:
 
