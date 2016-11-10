@@ -49,14 +49,23 @@ to check output, use :output keyword.
 => NIL
 
 #|
-If behavior is not specified, you can use unspecified.
-Samely, if return value is implementation dependent,
+If return value is implementation dependent,
 you can use implementation-dependent.
-NOTE! - unspecified and implementation-dependent MUST be used with #. dispatch macro.
-In case below, LISP-IMPLEMENTATION-TYPE is implementation dependent.
-NOTE! - unspecified and implementation-dependent is just for checking signals or not.
+In such case, just side effect (include signals) only checked.
+NOTE! - implementation-dependent MUST be used with #. dispatch macro.
+Example below, LISP-IMPLEMENTATION-TYPE is implementation dependent.
 |#
 #?(? (lisp-implementation-type) => #.implementation-dependent)
+=> NIL
+
+#|
+If behavior is not specified,
+you can use unspecified.
+In such case, nothing checked.
+Always success.
+NOTE! - unspecified MUST be used with #. dispatch macro.
+|#
+#?(? (error "test") => #.unspecified)
 => NIL
 
 #|

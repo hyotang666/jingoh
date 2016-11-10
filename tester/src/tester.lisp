@@ -237,17 +237,16 @@
   #.(Doc :jingoh.tester "doc/implementation-dependent.V.md"))
 
 (defmethod make-requirement(test-form(key(eql '=>))(expected(eql unspecified))&rest parameters)
-  (declare(ignore key))
-  (when(getf parameters :from-id)
-    (setf expected implementation-dependent))
-  (let((result(gensym "RESULT")))
-    (the-standard-handling-form result parameters test-form expected
-      (canonicalize test-form parameters))))
+  (declare(ignore test-form key expected parameters))
+  `(CONSTANTLY NIL))
 
 (defmethod make-requirement(test-form(key(eql '=>))
 			     (expected(eql implementation-dependent))
-			     &rest args)
-  (apply #'make-requirement test-form key unspecified(list* :from-id t args)))
+			     &rest parameters)
+  (declare(ignore key))
+  (let((result(gensym "RESULT")))
+    (the-standard-handling-form result parameters test-form expected
+      (canonicalize test-form parameters))))
 
 (defmethod make-requirement(test-form(key(eql :multiple-value-satisfies))
 			     expected &rest parameters)
