@@ -105,11 +105,11 @@
 				 (SETF ,actual (PROGN ,@(option-form :before parameters)
 						      ,form))))
 		 ,(the-push-instance-form result 'UNEXPECTED-SUCCESS test-form expected actual(getf parameters :position)))
-	       ,(option-form :after parameters)
 	       ,end
 	       (WHEN(AND ,output (NOT(STRING= "" ,output)))
 		 ,(the-push-instance-form result 'UNEXPECTED-OUTPUT test-form "" output (getf parameters :position)))
-	       (RETURN ,result))))))))
+	       (RETURN ,result))
+	     ,(option-form :after parameters)))))))
 
 (defmethod make-requirement(test-form (key (eql :invoke-debugger))
 				      (expected null)
