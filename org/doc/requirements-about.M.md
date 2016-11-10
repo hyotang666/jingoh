@@ -36,20 +36,6 @@ If the `requirements-about` form is a toplevel form, these assignments also occu
 Unlike CL:IN-PACKAGE, REQUIREMENTS-ABOUT is no need to define.
 It is like CL:DEFGENERIC and CL:DEFMETHOD relationships.
 
-Options combination order is not same with method combination.
-1. :before option is run.
-2. :around option is run.
-3. :after option is run.
-And these options is NOT around subject, but each requirement of subject.
-For example, when subject has 3 requirements, procedure like below.
-1. :before option runs.
-2. :around option which includes requirement1 runs.
-3. :after option runs.
-4. :before option runs.
-5. :around option which includes requirement2 runs.
-6. :after option runs.
-7. ...so on.
-
 ## Exceptional-Situations:
 When subject is not symbol, an error of type type-error is signaled.
 
