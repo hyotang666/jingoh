@@ -21,7 +21,6 @@
     #:reserved-keywords
     #:encallable
     #:canonicalize
-    #:option-form
 
     ;;;; Structure
     ;; main

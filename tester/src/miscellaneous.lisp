@@ -32,19 +32,26 @@
 
 (defun canonicalize(test-form parameters)
   #.(Doc :jingoh.tester "doc/canonicalize.F.md")
-  (labels((MAIN(lazy)
-	    (SET-AROUND (getf parameters :around)
-			(if(eq lazy :does-not-exist)
-			  test-form
-			  (BODY lazy))))
-	  (BODY(lazy)
-	    (if lazy
-	      `(EVAL ',test-form)
-	      ;; else explicitly specified :lazy NIL.
-	      (progn (eval test-form)
-		     test-form)))
-	  (SET-AROUND(around body)
-	    (if around
-	      (subst body '(CALL-BODY) around :test #'equal)
-	      body)))
-    (MAIN(getf parameters :lazy :does-not-exist))))
+  (labels((MAKE-BODY()
+	    (SET-AROUND (let((after(getf parameters :after)))
+			  (if after
+			    `(UNWIND-PROTECT ,(make-primary)
+					     ,after)
+			    (MAKE-PRIMARY)))))
+	  (MAKE-PRIMARY()
+	    (let((before(getf parameters :before)))
+	      (if before
+		`(PROGN ,before ,test-form)
+		test-form)))
+	  (SET-AROUND(body)
+	    (let((around(getf parameters :around)))
+	      (if around
+		(subst body '(CALL-BODY) around :test #'equal)
+		body)))
+	  )
+  (case(getf parameters :lazy :does-not-exist)
+    (:does-not-exist (MAKE-BODY))
+    ((NIL)(let((body(MAKE-BODY)))
+	    (eval body)
+	    body))
+    (otherwise `(EVAL ',(make-body))))))

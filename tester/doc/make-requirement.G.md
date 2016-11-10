@@ -124,8 +124,9 @@ Not be evaluated.
 
 * :before :after :around
 This is used as setup or teardown.
-FORM wrapped by such forms.
+FORM is wrapped by such forms.
 In :around, you can use CALL-BODY (like CLOS:CALL-NEXT-METHOD).
+See CANONICALIZE.
 
 ## Example:
 

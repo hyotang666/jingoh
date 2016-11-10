@@ -19,8 +19,8 @@ This works as (eval-when(:execute)...).
 When parameters have key :lazy, and its value is NIL, evaluate test-form then return test-form.
 This works as (eval-when(:compile-toplevel)...).
 
-When parameters have key :around, returns test-form witch wrapped with around form.
-(This is like CLOS around method. See example below.)
+When parameters have key :before, :after and/or :around, returns test-form witch wrapped with such forms.
+(This is like CLOS standard method combinatioin. See example below.)
 
 This is helper for MAKE-REQUIREMENT
 
@@ -30,8 +30,10 @@ This is helper for MAKE-REQUIREMENT
 => :TEST
 (canonicalize :test '(:lazy t))
 => (EVAL ':TEST)
-(canonicalize :test '(:around (let((a 1))(call-body))))
-=> (LET ((A 1)) :TEST)
+(canonicalize :test '(:before :before :after :after :around (let((a 1))(call-body))))
+=> (LET ((A 1))
+     (UNWIND-PROTECT (PROGN :BEFORE :TEST)
+       :AFTER))
 ```
 
 ## Affected-By:
