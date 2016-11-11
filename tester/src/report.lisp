@@ -20,7 +20,7 @@
 
 (defstruct(unexpected-output (:include issue)))
 
-(defstruct(issue-of-multiple-values (:include test-issue)))
+(defstruct(issue-of-multiple-values (:include issue)))
 
 (defstruct(wrong-format (:include test-issue)))
 

@@ -36,9 +36,10 @@ NOTE! - :signals keyword check just signaled only.
 #?(error 'warning) :invoke-debugger WARNING
 
 #|
-to check values, use :values keyword.
+to check values, use values specifier.
+(Remember VALUES type specifier.)
 |#
-#?(? (values 1 2) :values (1 2))
+#?(? (values 1 2) => (values 1 2))
 => NIL
 
 #|
