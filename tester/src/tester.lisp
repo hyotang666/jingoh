@@ -13,10 +13,18 @@
   #.(Doc :jingoh.tester "doc/Q.M.md")
   `(check ,(apply #'make-requirement body)))
 
+(define-condition unsatisfied(error)
+  ((test-form :initarg :test-form :reader test-form)
+   (args :initarg :args :reader args)))
+
 (defmacro & (&body body)
   #.(Doc :jingoh.tester "doc/&.M.md")
   `(OR ,@(mapcar(lambda(form)
-		   `(ASSERT ,form))
+		   `(UNLESS,form
+		      (ERROR 'UNSATISFIED :TEST-FORM ',form
+			     ,@(when(and (consp form)
+					 (function-designator-p (car form)))
+				 `(:ARGS (LIST ,@(cdr form)))))))
 	    body)
        T))
 
@@ -26,7 +34,7 @@
 (defun the-push-instance-form (place type test-form expected actual position &rest options)
   #.(Doc :jingoh.tester "doc/the-push-instance-form.F.md")
   `(PUSH (MAKE-INSTANCE ',type
-			:FORM ',test-form
+			:FORM ,test-form
 			:EXPECTED ',expected
 			:ACTUAL ,actual
 			:POSITION ,position
@@ -40,16 +48,16 @@
        (PROG(,result ,output)
 	 (HANDLER-BIND(,@(unless(getf parameters :ignore-warning)
 			   `((WARNING(LAMBDA(CONDITION)
-				       ,(the-push-instance-form result 'WARNING-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):message `(PRINC-TO-STRING CONDITION))
+				       ,(the-push-instance-form result 'WARNING-WAS-SIGNALED `',test-form expected 'CONDITION (getf parameters :position):message `(PRINC-TO-STRING CONDITION))
 				       (GO ,end)))))
 		       (ERROR(LAMBDA(CONDITION)
-			       ,(the-push-instance-form result 'ERROR-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):message `(PRINC-TO-STRING CONDITION))
+			       ,(the-push-instance-form result 'ERROR-WAS-SIGNALED `',test-form expected 'CONDITION (getf parameters :position):message `(PRINC-TO-STRING CONDITION))
 			       (GO ,end))))
 	   (SETF ,output
 		 (WITH-OUTPUT-TO-STRING(*TERMINAL-IO*)
 		   ,@body)))
 	 (UNLESS(STRING= "" ,output)
-	   ,(the-push-instance-form result 'UNEXPECTED-OUTPUT test-form "" output (getf parameters :position)))
+	   ,(the-push-instance-form result 'UNEXPECTED-OUTPUT `',test-form "" output (getf parameters :position)))
 	 ,end
 	 (RETURN ,result)))))
 
@@ -62,7 +70,7 @@
       (the-standard-handling-form result parameters test-form expected
         `(LET((,actual ,form))
 	   (UNLESS(,test ,actual ',expected)
-	     ,(the-push-instance-form result 'ISSUE test-form expected actual (getf parameters :position):test `',test)))))))
+	     ,(the-push-instance-form result 'ISSUE `',test-form expected actual (getf parameters :position):test `',test)))))))
 
 (defmethod make-requirement(test-form (key(eql :signals)) expected
 				      &rest parameters)
@@ -72,7 +80,7 @@
       (labels((may-bind(type)
 		(unless(eq type expected)
 		  `((,type(LAMBDA(CONDITION)
-			    ,(the-push-instance-form result (intern(format nil "~A-WAS-SIGNALED"type)) test-form expected 'CONDITION (getf parameters :position) :MESSAGE `(PRINC-TO-STRING CONDITION))
+			    ,(the-push-instance-form result (intern(format nil "~A-WAS-SIGNALED"type)) `',test-form expected 'CONDITION (getf parameters :position) :MESSAGE `(PRINC-TO-STRING CONDITION))
 			    ,(ecase type
 			       (WARNING `(WHEN(FIND-RESTART 'MUFFLE-WARNING CONDITION)
 					   (MUFFLE-WARNING CONDITION)))
@@ -84,7 +92,7 @@
 		       (when restarts
 			 `((LET((,actual(MAPCAR #'FIND-RESTART ',(uiop:ensure-list restarts))))
 			     (WHEN(SOME #'NULL ,actual)
-			       ,(the-push-instance-form result 'MISSING-RESTARTS test-form restarts `(REMOVE NIL ,actual) (getf parameters :position)))))))
+			       ,(the-push-instance-form result 'MISSING-RESTARTS `',test-form restarts `(REMOVE NIL ,actual) (getf parameters :position)))))))
 		   (GO ,end)))
 	      )
 	`(LAMBDA()
@@ -94,10 +102,10 @@
 			   ,@(may-bind 'error))
 	       (SETF ,output (WITH-OUTPUT-TO-STRING(*TERMINAL-IO*)
 			       (SETF ,actual ,form)))
-	       ,(the-push-instance-form result 'UNEXPECTED-SUCCESS test-form expected actual(getf parameters :position)))
+	       ,(the-push-instance-form result 'UNEXPECTED-SUCCESS `',test-form expected actual(getf parameters :position)))
 	     ,end
 	     (WHEN(AND ,output (NOT(STRING= "" ,output)))
-	       ,(the-push-instance-form result 'UNEXPECTED-OUTPUT test-form "" output (getf parameters :position)))
+	       ,(the-push-instance-form result 'UNEXPECTED-OUTPUT `',test-form "" output (getf parameters :position)))
 	     (RETURN ,result)))))))
 
 (defmethod make-requirement(test-form (key (eql :invoke-debugger))
@@ -113,12 +121,12 @@
 	   (FLET((HOOK(CONDITION FUNCTION)
 		   (DECLARE(IGNORE FUNCTION))
 		   (WHEN(EQ CONDITION ,temp)
-		     ,(the-push-instance-form result 'DEBUGGER-WAS-INVOKED test-form NIL 'CONDITION (getf parameters :position) :MESSAGE`(PRINC-TO-STRING CONDITION)))
+		     ,(the-push-instance-form result 'DEBUGGER-WAS-INVOKED `',test-form NIL 'CONDITION (getf parameters :position) :MESSAGE`(PRINC-TO-STRING CONDITION)))
 		   (GO ,end))
 		 (HANDLER(CONDITION)
 		   (IF(FIND-RESTART 'MUFFLE-WARNING CONDITION)
 		     (PROGN ,@(unless(getf parameters :ignore-warning)
-				`(,(the-push-instance-form result 'WARNING-WAS-SIGNALED test-form NIL 'CONDITION (getf parameters :position) :MESSAGE `(PRINC-TO-STRING CONDITION))))
+				`(,(the-push-instance-form result 'WARNING-WAS-SIGNALED `',test-form NIL 'CONDITION (getf parameters :position) :MESSAGE `(PRINC-TO-STRING CONDITION))))
 			    (MUFFLE-WARNING CONDITION))
 		     (SETF ,temp CONDITION)))
 		 )
@@ -127,7 +135,7 @@
 			     (SETF ,actual (HANDLER-BIND((WARNING #'HANDLER))
 					     ,form)))))
 	   (WHEN(AND ,output (NOT(STRING= "" ,output)))
-	     ,(the-push-instance-form result 'UNEXPECTED-OUTPUT test-form "" output (getf parameters :position)))
+	     ,(the-push-instance-form result 'UNEXPECTED-OUTPUT `',test-form "" output (getf parameters :position)))
 	   ,end
 	   (RETURN ,result))))))
 
@@ -147,22 +155,22 @@
 			(when restarts
 			  `(LET((,actual(MAPCAR #'FIND-RESTART ',(uiop:ensure-list restarts))))
 			     (WHEN(SOME #'NULL ,actual)
-			       ,(the-push-instance-form result 'MISSING-RESTARTS test-form restarts `(REMOVE NIL ,actual) (getf parameters :position))))))
-		     ,(the-push-instance-form result 'UNMATCH-CONDITION test-form expected 'CONDITION (getf parameters :position) :MESSAGE `(PRINC-TO-STRING CONDITION)))
+			       ,(the-push-instance-form result 'MISSING-RESTARTS `',test-form restarts `(REMOVE NIL ,actual) (getf parameters :position))))))
+		     ,(the-push-instance-form result 'UNMATCH-CONDITION `',test-form expected 'CONDITION (getf parameters :position) :MESSAGE `(PRINC-TO-STRING CONDITION)))
 		   (GO ,end))
 		 (HANDLER(CONDITION)
 		   (WHEN(FIND-RESTART 'MUFFLE-WARNING CONDITION)
 		     ,@(unless(getf parameters :ignore-warning)
-			 `(,(the-push-instance-form result 'WARNING-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position) :MESSAGE `(PRINC-TO-STRING CONDITION))))
+			 `(,(the-push-instance-form result 'WARNING-WAS-SIGNALED `',test-form expected 'CONDITION (getf parameters :position) :MESSAGE `(PRINC-TO-STRING CONDITION))))
 		     (MUFFLE-WARNING CONDITION)))
 		 )
 	     (SETF *DEBUGGER-HOOK* #'HOOK
 		   ,output (WITH-OUTPUT-TO-STRING(*TERMINAL-IO*)
 			     (SETF ,actual(HANDLER-BIND((WARNING #'HANDLER))
 					    ,form)))))
-	   ,(the-push-instance-form result 'UNEXPECTED-SUCCESS test-form expected actual (getf parameters :position))
+	   ,(the-push-instance-form result 'UNEXPECTED-SUCCESS `',test-form expected actual (getf parameters :position))
 	   (WHEN(AND ,output (NOT(STRING= "" ,output)))
-	     ,(the-push-instance-form result 'UNEXPECTED-OUTPUT test-form "" output (getf parameters :position)))
+	     ,(the-push-instance-form result 'UNEXPECTED-OUTPUT `',test-form "" output (getf parameters :position)))
 	   ,end
 	   (RETURN ,result))))))
 
@@ -175,7 +183,7 @@
       (the-standard-handling-form result parameters test-form expected
 	 `(LET((,actual(MULTIPLE-VALUE-LIST ,form)))
 	    (UNLESS(,test ,actual ',expected)
-	      ,(the-push-instance-form result 'ISSUE-OF-MULTIPLE-VALUES test-form expected actual (getf parameters :position):TEST `',test)))))))
+	      ,(the-push-instance-form result 'ISSUE-OF-MULTIPLE-VALUES `',test-form expected actual (getf parameters :position):TEST `',test)))))))
 
 (defmethod make-requirement(test-form (key(eql :output)) expected
 				      &rest parameters)
@@ -187,7 +195,7 @@
         `(LET((,actual(WITH-OUTPUT-TO-STRING(,(getf parameters :stream '*standard-output*))
 			,form)))
 	   (UNLESS(,test ,expected ,actual)
-	     ,(the-push-instance-form result 'WRONG-FORMAT test-form expected actual (getf parameters :position):TEST `',test)))))))
+	     ,(the-push-instance-form result 'WRONG-FORMAT `',test-form expected actual (getf parameters :position):TEST `',test)))))))
 
 (defmethod make-requirement(test-form(key(eql :satisfies))expected
 			     &rest parameters)
@@ -198,8 +206,10 @@
        (result(gensym "RESULT")))
     (the-standard-handling-form result parameters test-form expected
       `(LET((,actual ,form))
-	 (UNLESS(,test ,actual)
-	   ,(the-push-instance-form result 'ISSUE test-form NIL actual(getf parameters :position):TEST `',test))))))
+	 (HANDLER-CASE(UNLESS(,test ,actual)
+			,(the-push-instance-form result 'ISSUE `',test-form NIL actual(getf parameters :position):TEST `',test))
+	   (UNSATISFIED(CONDITION)
+	     ,(the-push-instance-form result 'UNSATISFIED-CLAUSE `(TEST-FORM CONDITION) T NIL (getf parameters :position):TEST `',test :ARGS `(ARGS CONDITION))))))))
 
 (defmethod no-applicable-method((gf(eql #'make-requirement))&rest args)
   (error'syntax-error
@@ -238,4 +248,4 @@
     (the-standard-handling-form result parameters test-form expected
       `(LET((,actual(MULTIPLE-VALUE-LIST ,form)))
 	 (UNLESS(APPLY ,test ,actual)
-	   ,(the-push-instance-form result 'ISSUE-OF-MULTIPLE-VALUES test-form expected actual(getf parameters :position)))))))
+	   ,(the-push-instance-form result 'ISSUE-OF-MULTIPLE-VALUES `',test-form expected actual(getf parameters :position)))))))

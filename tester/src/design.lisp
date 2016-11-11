@@ -115,7 +115,8 @@ Current org (i.e. *org*) is modified.
 Like CL:AND, this is asserts all form is returns non nil value.
 |#
 #?(macroexpand-1 '(& (symbolp 'foo)))
-=> (OR (ASSERT (SYMBOLP 'FOO))
+=> (OR (UNLESS (SYMBOLP 'FOO)
+	  (ERROR 'JINGOH.TESTER::UNSATISFIED :TEST-FORM '(SYMBOLP 'FOO) :ARGS (LIST 'FOO)))
        T)
 , :test equal
 

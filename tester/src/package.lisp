@@ -26,17 +26,18 @@
     ;; main
     #:issue #:condition-issue
     ;; miscellaneous
-    #:error-was-signaled #:warning-was-signaled #:unexpected-success #:issue-of-multiple-values #:wrong-format #:debugger-was-invoked #:missing-restarts #:unexpected-output #:unmatch-condition
+    #:error-was-signaled #:warning-was-signaled #:unexpected-success #:issue-of-multiple-values #:wrong-format #:debugger-was-invoked #:missing-restarts #:unexpected-output #:unmatch-condition #:unsatisfied-clause
 
     ;;;; predicate
     ;; main
     #:issue-p #:condition-issue-p
     ;; miscellaneous
-    #:error-was-signaled-p #:warning-was-signaled-p #:unexpected-success-p #:issue-of-multiple-values-p #:wrong-format-p #:debugger-was-invoked-p #:missing-restarts-p #:unexpected-output-p #:unmatch-condition-p
+    #:error-was-signaled-p #:warning-was-signaled-p #:unexpected-success-p #:issue-of-multiple-values-p #:wrong-format-p #:debugger-was-invoked-p #:missing-restarts-p #:unexpected-output-p #:unmatch-condition-p #:unsatisfied-clause-p
 
     ;;;; accessor
     #:issue-form #:issue-expected #:issue-actual #:issue-test #:issue-position
     #:condition-issue-message
+    #:unsatisfied-clause-args
     #|NOTE! - Slot names are not exported.|#
 
     #|NOTE! - Constructor is not exported. Use MAKE-INSTANCE|#

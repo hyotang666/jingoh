@@ -1,5 +1,10 @@
 (in-package :jingoh.tester)
 
+(defun function-designator-p(symbol)
+  (and (fboundp symbol)
+       (not (macro-function symbol))
+       (not (special-operator-p symbol))))
+
 (defun encallable(form &optional not-first-p)
   #.(Doc :jingoh.tester "doc/encallable.F.md")
   (typecase form
