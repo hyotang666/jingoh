@@ -70,7 +70,7 @@
       (the-standard-handling-form result parameters test-form expected
         `(LET((,actual ,form))
 	   (UNLESS(,test ,actual ',expected)
-	     ,(the-push-instance-form result 'ISSUE `',test-form expected actual (getf parameters :position):test `',test)))))))
+	     ,(the-push-instance-form result 'TEST-ISSUE `',test-form expected actual (getf parameters :position):test `',test)))))))
 
 (defmethod make-requirement(test-form (key(eql :signals)) expected
 				      &rest parameters)
@@ -207,9 +207,9 @@
     (the-standard-handling-form result parameters test-form expected
       `(LET((,actual ,form))
 	 (HANDLER-CASE(UNLESS(,test ,actual)
-			,(the-push-instance-form result 'ISSUE `',test-form NIL actual(getf parameters :position):TEST `',test))
+			,(the-push-instance-form result 'TEST-ISSUE `',test-form NIL actual(getf parameters :position):TEST `',test))
 	   (UNSATISFIED(CONDITION)
-	     ,(the-push-instance-form result 'UNSATISFIED-CLAUSE `(TEST-FORM CONDITION) T NIL (getf parameters :position):TEST `',test :ARGS `(ARGS CONDITION))))))))
+	     ,(the-push-instance-form result 'UNSATISFIED-CLAUSE `(TEST-FORM CONDITION) T NIL (getf parameters :position):ARGS `(ARGS CONDITION))))))))
 
 (defmethod no-applicable-method((gf(eql #'make-requirement))&rest args)
   (error'syntax-error

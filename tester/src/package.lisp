@@ -35,7 +35,8 @@
     #:error-was-signaled-p #:warning-was-signaled-p #:unexpected-success-p #:issue-of-multiple-values-p #:wrong-format-p #:debugger-was-invoked-p #:missing-restarts-p #:unexpected-output-p #:unmatch-condition-p #:unsatisfied-clause-p
 
     ;;;; accessor
-    #:issue-form #:issue-expected #:issue-actual #:issue-test #:issue-position
+    #:issue-form #:issue-expected #:issue-actual #:issue-position
+    #:test-issue-test
     #:condition-issue-message
     #:unsatisfied-clause-args
     #|NOTE! - Slot names are not exported.|#

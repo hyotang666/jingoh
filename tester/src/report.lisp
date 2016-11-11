@@ -1,6 +1,9 @@
 (in-package :jingoh.tester)
 
-(defstruct issue form expected actual test position)
+(defstruct issue form expected actual position)
+
+(defstruct(test-issue(:include issue))
+  test)
 
 (defstruct(condition-issue (:include issue))
   message)
@@ -17,9 +20,9 @@
 
 (defstruct(unexpected-output (:include issue)))
 
-(defstruct(issue-of-multiple-values (:include issue)))
+(defstruct(issue-of-multiple-values (:include test-issue)))
 
-(defstruct(wrong-format (:include issue)))
+(defstruct(wrong-format (:include test-issue)))
 
 (defstruct(missing-restarts(:include issue)))
 
