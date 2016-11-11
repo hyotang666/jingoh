@@ -18,8 +18,8 @@ Like CL:DEFPACKAGE, we can define new org with deforg
 #|
 Unlike CL:DEFPACKAGE, org name is only symbol is acceptable.
 |#
-#?(deforg "test") :signals type-error,
-:lazy t
+#?(deforg "test") :signals type-error
+, :lazy t
 
 #|
 Like CL:PACKAGE, current org is in special symbol *org*
@@ -59,7 +59,7 @@ Like CL:PACKAGE, to change current subject, we need use requirements-about
 #|
 org-specifications's data structure is not specified.
 |#
-#?(org-specifications *org*) => #.unspecified
+#?(org-specifications *org*) => #.implementation-dependent
 
 #|
 so, when you want to add item to org, you should use add-requirement.
@@ -74,8 +74,8 @@ ADD-REQUIREMENT is stable
      (add-requirement 0)
      (add-requirement 1)
      (map-requirements #'identity))
-=> (0 1),
-:test equal
+=> (0 1)
+, :test equal
 
 #|
 when argument is not org, an error will be signaled.
@@ -92,14 +92,15 @@ It is *subject* and *org*.
 |#
 #?(let((*org*(make-org)))
      (add-requirement 0)
-     (map-requirements #'1+)) => (1),
-:test equal
+     (map-requirements #'1+))
+=> (1)
+, :test equal
 
 #|
 Unlike CL:MAPCAR, MAP-REQUIREMENTS does not accept some orgs.
 |#
-#?(map-requirements #'+ T (make-org)(make-org)):signals error,
-:lazy t
+#?(map-requirements #'+ T (make-org)(make-org)):signals error
+, :lazy t
 
 #|
 if you does not need result list, (because of side effect)
@@ -108,9 +109,9 @@ you can use do-requirements which like CL:DOLIST.
 #?(let((*org*(make-org)))
      (add-requirement 0)
      (do-requirements(s)
-       (print s))) :output "
-0 ",
-:test string=
+       (print s)))
+:output "
+0 "
 
 #|
 do-requirements's syntax is similar with CL:DOLIST.
@@ -121,12 +122,13 @@ It means you can specify return form.
      (add-requirement 0 o)
      (do-requirements(s t o result)
        (push s result)))
-=> (0),
-:test equal
+=> (0)
+, :test equal
 
 #|
 Like CL:HASH-TABLE-COUNT you can count how many requirements in org
 |#
 #?(let((*org*(make-org)))
     (add-requirement 0)
-    (org-requirements-count *org*)) => 1
+    (org-requirements-count *org*))
+=> 1

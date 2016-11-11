@@ -39,5 +39,5 @@ can use other character
 when conflicts restartable condition is signaled.
 |#
 #?(enable #\*)
-:signals macro-char-confliction,
-:lazy t
+:signals macro-char-confliction
+, :lazy t
