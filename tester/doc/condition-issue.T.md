@@ -22,10 +22,6 @@ Contains FORM's expected return value.
 [ACCESSOR] issue-actual
 Contains signaled condition.
 
-* TEST [Type] T
-[ACCESSOR] issue-test
-NIL bacause useless.
-
 ## Description:
 Condition issue is superclass for issue about conditions.
 When you extends new issue about conditions, it must inherit this.

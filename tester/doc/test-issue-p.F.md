@@ -1,22 +1,21 @@
-# [Function] CONDITION-ISSUE-P
+# [Function] TEST-ISSUE-P
 
 ## Syntax:
 
-(CONDITION-ISSUE-P arg) => result
+(TEST-ISSUE-P arg0) => result
 
 ## Arguments and Values:
 
-arg := any lisp object
+arg0 := any lisp object
 
 result := boolean
 
 ## Description:
-Tests arg is condition-issue object or not.
-When arg is condition-issue object, returns T, otherwise NIL.
+When arg0 is test-issue object, returns T, otherwise NIL.
+
+## Affected by:
 
 ## Example:
-
-## Affected-By:
 
 ## Side-Effects:
 
@@ -31,9 +30,11 @@ DEBUGGER-WAS-INVOKED-P
 ERROR-WAS-SIGNALED-P
 ISSUE-OF-MULTIPLE-VALUES-P
 ISSUE-P
+MISSING-RESTARTS-P
+TEST-ISSUE-P
 UNEXPECTED-OUTPUT-P
 UNEXPECTED-SUCCESS-P
-UNMATCH-CONDTIION-P
+UNMATCH-CONDITION-P
 UNSATISFIED-CLAUSE-P
 WARNING-WAS-SIGNALED-P
 WRONG-FORMAT-P

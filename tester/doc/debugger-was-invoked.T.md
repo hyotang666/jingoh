@@ -22,10 +22,6 @@ NIL bacause useless.
 [ACCESSOR] issue-actual
 Contains signaled condition.
 
-* TEST [Type] T
-[ACCESSOR] issue-test
-NIL bacause useless.
-
 ## Description:
 DEBUGGER-WAS-INVOKED is the issue of unexpected invoking debugger.
 
@@ -47,7 +43,6 @@ ISSUE-FORM
 ISSUE-OF-MULTIPLE-VALUES
 ISSUE-P
 ISSUE-POSITION
-ISSUE-TEST
 MISSING-RESTARTS
 UNEXPECTED-OUTPUT
 UNEXPECTED-SUCCESS

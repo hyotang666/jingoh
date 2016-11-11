@@ -18,10 +18,6 @@ Contains specified restart name or restart names list.
 [ACCESSOR] issue-actual
 Contains the restart object which actualy invoke debugger.
 
-* TEST [Type] T
-[ACCESSOR] issue-test
-NIL because nonsence.
-
 ## Description:
 MISSING-RESTARTS is the issue about condition was signaled but specified restarts is not found.
 
@@ -41,11 +37,11 @@ ISSUE-FORM
 ISSUE-OF-MULTIPLE-VALUES
 ISSUE-P
 ISSUE-POSITION
-ISSUE-TEST
 MISSING-RESTARTS
 UNEXPECTED-OUTPUT
 UNEXPECTED-SUCCESS
 UNMATCH-CONDITION
+UNSATISFIED-CLAUSE
 WARNING-WAS-SIGNALED
 WRONG-FORMAT
 

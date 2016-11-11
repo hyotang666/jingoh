@@ -18,11 +18,9 @@ Contains FORM's expected return value.
 [ACCESSOR] issue-actual
 Contains FORM's actual return value.
 
-* TEST [Type] T
-[ACCESSOR] issue-test
-Contains predicates which tests EXPECTED and ACTUAL.
-NOTE! - Test may fail even if EXPECTED and ACTUAL is the same value.
-e.g. (eq '(A) '(A)) => NIL
+* POSITION [Type] T
+[ACCESSOR] issue-position
+Contains file position if any.
 
 ## Description:
 ISSUE is abstract data type which manages requirement's issue, and this is the superclass of all issues.
@@ -44,12 +42,13 @@ ISSUE-FORM
 ISSUE-OF-MULTIPLE-VALUES
 ISSUE-P
 ISSUE-POSITION
-ISSUE-TEST
 MAKE-REQUIREMENT
 MISSING-RESTARTS
+TEST-ISSUE
 UNEXPECTED-OUTPUT
 UNEXPECTED-SUCCESS
 UNMATCH-CONDITION
+UNSATISFIED-CLAUSE
 WARNING-WAS-SIGNALED
 WRONG-FORMAT
 

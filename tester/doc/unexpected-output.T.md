@@ -18,10 +18,6 @@ Empty string. (i.e. "")
 [ACCESSOR] issue-actual
 Outputted string.
 
-* TEST [Type] T
-[ACCESSOR] issue-test
-NIL because useless.
-
 ## Description:
 UNEXPECTED-OUTPUT is the issue which expected no output occur.
 
@@ -41,10 +37,11 @@ ISSUE-FORM
 ISSUE-OF-MULTIPLE-VALUES
 ISSUE-P
 ISSUE-POSITION
-ISSUE-TEST
 MISSING-RESTARTS
+TEST-ISSUE
 UNEXPECTED-SUCCESS
 UNMATCH-CONDITION
+UNSATISFIED-CLAUSE
 WARNING-WAS-SIGNALED
 WRONG-FORMAT
 

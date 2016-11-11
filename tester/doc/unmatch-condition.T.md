@@ -18,10 +18,6 @@ Contains condition type which should invoke debugger.
 [ACCESSOR] issue-actual
 Contains condition type which actualy invoked debugger.
 
-* TEST [Type] T
-[ACCESSOR] issue-test
-NIL because useless.
-
 ## Description:
 UNMATCH-CONDITION is the issue that debugger was invoked but argument was not match expected type.
 
@@ -43,11 +39,12 @@ ISSUE-FORM
 ISSUE-OF-MULTIPLE-VALUES
 ISSUE-P
 ISSUE-POSITION
-ISSUE-TEST
 MISSING-RESTARTS
+TEST-ISSUE
 UNEXPECTED-OUTPUT
 UNEXPECTED-SUCCESS
 UNMATCH-CONDITION-P
+UNSATISFIED-CLAUSE
 WARNING-WAS-SIGNALED
 WRONG-FORMAT
 

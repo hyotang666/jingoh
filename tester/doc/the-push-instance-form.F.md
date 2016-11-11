@@ -29,7 +29,7 @@ Template for constructor and pushing operation.
 ```lisp
 (the-push-instance-form 0 1 2 3 4 5 6)
 =>
-(PUSH (MAKE-INSTANCE '1 :FORM '2 :EXPECTED '3 :ACTUAL 4 :POSITION 5 6) 0)
+(PUSH (MAKE-INSTANCE '1 :FORM 2 :EXPECTED '3 :ACTUAL 4 :POSITION 5 6) 0)
 ```
 
 ## Affected-By:

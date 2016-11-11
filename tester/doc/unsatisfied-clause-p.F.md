@@ -1,22 +1,21 @@
-# [Function] CONDITION-ISSUE-P
+# [Function] UNSATISFIED-CLAUSE-P
 
 ## Syntax:
 
-(CONDITION-ISSUE-P arg) => result
+(UNSATISFIED-CLAUSE-P arg0) => result
 
 ## Arguments and Values:
 
-arg := any lisp object
+arg0 := any lisp object
 
 result := boolean
 
 ## Description:
-Tests arg is condition-issue object or not.
-When arg is condition-issue object, returns T, otherwise NIL.
+
+
+## Affected by:
 
 ## Example:
-
-## Affected-By:
 
 ## Side-Effects:
 
@@ -31,9 +30,10 @@ DEBUGGER-WAS-INVOKED-P
 ERROR-WAS-SIGNALED-P
 ISSUE-OF-MULTIPLE-VALUES-P
 ISSUE-P
+MISSING-RESTARTS-P
 UNEXPECTED-OUTPUT-P
 UNEXPECTED-SUCCESS-P
-UNMATCH-CONDTIION-P
+UNMATCH-CONDITION-P
 UNSATISFIED-CLAUSE-P
 WARNING-WAS-SIGNALED-P
 WRONG-FORMAT-P

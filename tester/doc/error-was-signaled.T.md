@@ -22,10 +22,6 @@ Contains FORM's expected return value.
 [ACCESSOR] issue-actual
 Contains signaled condition.
 
-* TEST [Type] T
-[ACCESSOR] issue-test
-NIL bacause useless.
-
 ## Description:
 ERROR-WAS-SIGNALED is the issue of unexpected error.
 
@@ -35,7 +31,6 @@ ERROR-WAS-SIGNALED is the issue of unexpected error.
 
 ## See Also:
 
-&
 CONDITION-ISSUE
 CONDITION-ISSUE-MESSAGE
 CONDITION-ISSUE-P
@@ -49,11 +44,10 @@ ISSUE-FORM
 ISSUE-OF-MULTIPLE-VALUES
 ISSUE-P
 ISSUE-POSITION
-ISSUE-TEST
 MISSING-RESTARTS
 UNEXPECTED-OUTPUT
 UNEXPECTED-SUCCESS
 UNMATCH-CONDITION
+UNSATISFIED-CLAUSE
 WARNING-WAS-SIGNALED
 WRONG-FORMAT
-

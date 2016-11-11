@@ -2,7 +2,7 @@
 
 ## Class Precedence List: (case in CLISP)
 
-* issue-of-multiple-values issue structure-object t
+* issue-of-multiple-values test-issue issue structure-object t
 
 ## Effective Slots:
 
@@ -19,10 +19,8 @@ Contains the list which consists of FORM's expected return values.
 Contains the list which consists of actual FORM's return values.
 
 * TEST [Type] T
-[ACCESSOR] issue-test
+[ACCESSOR] test-issue-test
 Contains predicates which tests EXPECTED and ACTUAL.
-NOTE! - Test may fail even if EXPECTED and ACTUAL is the same value.
-e.g. (eq '(A) '(A)) => NIL
 
 ## Description:
 ISSUE-OF-MULTIPLE-VALUES is the issue especially about multiple values.
@@ -42,11 +40,13 @@ ISSUE-EXPECTED
 ISSUE-FORM
 ISSUE-OF-MULTIPLE-VALUES
 ISSUE-POSITION
-ISSUE-TEST
 MISSING-RESTARTS
+TEST-ISSUE
+TEST-ISSUE-TEST
 UNEXPECTED-OUTPUT
 UNEXPECTED-SUCCESS
 UNMATCH-CONDITION
+UNSATISFIED-CLAUSE
 WARNING-WAS-SIGNALED
 WRONG-FORMAT
 
