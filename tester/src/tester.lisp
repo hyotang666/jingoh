@@ -35,23 +35,22 @@
 
 (defun the-standard-handling-form(result parameters test-form expected &rest body)
   #.(Doc :jingoh.tester "doc/the-standard-handling-form.F.md")
-  (let((output(gensym "OUTPUT")))
+  (alexandria:with-unique-names(output end)
     `(LAMBDA()
        (PROG(,result ,output)
-	 (HANDLER-BIND((WARNING(LAMBDA(CONDITION)
-				 (UNLESS,(getf parameters :ignore-warning)
-				   ,(the-push-instance-form result 'WARNING-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):message `(PRINC-TO-STRING CONDITION)))
-				 (WHEN(FIND-RESTART 'MUFFLE-WARNING CONDITION)
-				   (MUFFLE-WARNING CONDITION))))
+	 (HANDLER-BIND(,@(unless(getf parameters :ignore-warning)
+			   `((WARNING(LAMBDA(CONDITION)
+				       ,(the-push-instance-form result 'WARNING-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):message `(PRINC-TO-STRING CONDITION))
+				       (GO ,end)))))
 		       (ERROR(LAMBDA(CONDITION)
 			       ,(the-push-instance-form result 'ERROR-WAS-SIGNALED test-form expected 'CONDITION (getf parameters :position):message `(PRINC-TO-STRING CONDITION))
-			       (GO :END))))
+			       (GO ,end))))
 	   (SETF ,output
 		 (WITH-OUTPUT-TO-STRING(*TERMINAL-IO*)
 		   ,@body)))
 	 (UNLESS(STRING= "" ,output)
 	   ,(the-push-instance-form result 'UNEXPECTED-OUTPUT test-form "" output (getf parameters :position)))
-	 :END
+	 ,end
 	 (RETURN ,result)))))
 
 (defmethod make-requirement(test-form (key(eql '=>)) expected
