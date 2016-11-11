@@ -24,13 +24,13 @@
 
     ;;;; Structure
     ;; main
-    #:issue #:condition-issue
+    #:issue #:condition-issue #:test-issue
     ;; miscellaneous
     #:error-was-signaled #:warning-was-signaled #:unexpected-success #:issue-of-multiple-values #:wrong-format #:debugger-was-invoked #:missing-restarts #:unexpected-output #:unmatch-condition #:unsatisfied-clause
 
     ;;;; predicate
     ;; main
-    #:issue-p #:condition-issue-p
+    #:issue-p #:condition-issue-p #:test-issue-p
     ;; miscellaneous
     #:error-was-signaled-p #:warning-was-signaled-p #:unexpected-success-p #:issue-of-multiple-values-p #:wrong-format-p #:debugger-was-invoked-p #:missing-restarts-p #:unexpected-output-p #:unmatch-condition-p #:unsatisfied-clause-p
 
