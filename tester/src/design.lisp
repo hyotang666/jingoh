@@ -29,11 +29,24 @@ NOTE! - :signals keyword check just signaled only.
         If you want to check actualy debugger is invoked or not,
         use :invoke-debugger keyword.
 |#
-#?(signal 'warning) :invoke-debugger NIL
-#?(warn 'warning) :invoke-debugger NIL
-, :ignore-warning T
-#?(warn 'error) :invoke-debugger TYPE-ERROR
-#?(error 'warning) :invoke-debugger WARNING
+#?(? (signal 'error) :invoke-debugger NIL)
+=> NIL
+, :ignore-signals T
+#?(? (signal 'error) :invoke-debugger error)
+:satisfies consp
+, :ignore-signals T
+#?(? (warn 'program-error) :invoke-debugger program-error)
+:satisfies consp
+, :ignore-signals T
+#?(? (warn 'warning) :invoke-debugger warning)
+:satisfies consp
+, :ignore-signals T
+#?(?( warn 'error) :invoke-debugger TYPE-ERROR)
+=> NIL
+, :ignore-signals T
+#?(? (error 'warning) :invoke-debugger WARNING)
+=> NIL
+, :ignore-signals T
 
 #|
 to check values, use values specifier.

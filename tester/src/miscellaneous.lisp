@@ -1,5 +1,10 @@
 (in-package :jingoh.tester)
 
+(defun ignore-signals(type params)
+  (let((condition(getf params :ignore-signals)))
+    (or (eq type condition)
+	(eq T condition))))
+
 (defun function-designator-p(symbol)
   (and (fboundp symbol)
        (not (macro-function symbol))
