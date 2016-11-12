@@ -29,22 +29,22 @@ NOTE! - :signals keyword check just signaled only.
         If you want to check actualy debugger is invoked or not,
         use :invoke-debugger keyword.
 |#
-#?(? (signal 'error) :invoke-debugger NIL)
+#?(? (signal 'error) :invokes-debugger NIL)
 => NIL
 , :ignore-signals T
-#?(? (signal 'error) :invoke-debugger error)
+#?(? (signal 'error) :invokes-debugger error)
 :satisfies consp
 , :ignore-signals T
-#?(? (warn 'program-error) :invoke-debugger program-error)
+#?(? (warn 'program-error) :invokes-debugger program-error)
 :satisfies consp
 , :ignore-signals T
-#?(? (warn 'warning) :invoke-debugger warning)
+#?(? (warn 'warning) :invokes-debugger warning)
 :satisfies consp
 , :ignore-signals T
-#?(?( warn 'error) :invoke-debugger TYPE-ERROR)
+#?(?( warn 'error) :invokes-debugger TYPE-ERROR)
 => NIL
 , :ignore-signals T
-#?(? (error 'warning) :invoke-debugger WARNING)
+#?(? (error 'warning) :invokes-debugger WARNING)
 => NIL
 , :ignore-signals T
 
@@ -58,7 +58,7 @@ to check values, use values specifier.
 #|
 to check output, use :output keyword.
 |#
-#?(? (print :foo) :output "
+#?(? (print :foo) :outputs "
 :FOO ")
 => NIL
 
@@ -121,7 +121,7 @@ Current org (i.e. *org*) is modified.
     (defspec (+ 1 1) => 2) ; side effect!
     (write-char #\space)
     (princ (org-requirements-count *org*))) ; now modified.
-:output "0 1"
+:outputs "0 1"
 
 (requirements-about &)
 
@@ -141,7 +141,7 @@ Supported keywords are returned by RESERVED-KEYWORDS.
 |#
 #?(reserved-keywords #'make-requirement)
 :satisfies #`(null(set-exclusive-or $result
-				    '(=> :signals :output :satisfies :values :multiple-value-satisfies :invoke-debugger)))
+				    '(=> :signals :outputs :satisfies :values :multiple-value-satisfies :invokes-debugger)))
 
 #|
 encallable makes argument to fits lisp forms first element.

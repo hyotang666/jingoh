@@ -110,7 +110,7 @@ you can use do-requirements which like CL:DOLIST.
      (add-requirement 0)
      (do-requirements(s)
        (print s)))
-:output "
+:outputs "
 0 "
 
 #|

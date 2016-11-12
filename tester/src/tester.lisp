@@ -106,7 +106,7 @@
 	       ,(the-push-instance-form result 'UNEXPECTED-OUTPUT `',test-form "" output (getf parameters :position)))
 	     (RETURN ,result)))))))
 
-(defmethod make-requirement(test-form (key (eql :invoke-debugger))
+(defmethod make-requirement(test-form (key (eql :invokes-debugger))
 				      (expected null)
 				      &rest parameters)
   (declare(ignore key expected))
@@ -137,7 +137,7 @@
 	   ,end
 	   (RETURN ,result))))))
 
-(defmethod make-requirement(test-form (key(eql :invoke-debugger))
+(defmethod make-requirement(test-form (key(eql :invokes-debugger))
 				      expected &rest parameters)
   (declare(ignore key))
   (alexandria:with-unique-names(actual result output end)
@@ -183,7 +183,7 @@
 	    (UNLESS(,test ,actual ',(cdr expected))
 	      ,(the-push-instance-form result 'ISSUE-OF-MULTIPLE-VALUES `',test-form expected `(CONS 'VALUES ,actual) (getf parameters :position):TEST `',test)))))))
 
-(defmethod make-requirement(test-form (key(eql :output)) expected
+(defmethod make-requirement(test-form (key(eql :outputs)) expected
 				      &rest parameters)
   (declare(ignore key))
   (alexandria:with-unique-names(actual result)

@@ -13,7 +13,7 @@ report reports org:*org* status.
 #?(let((*org*(make-org)))
      (defspec(+) => 1)
      (report))
-:output "1 fail in NIL.
+:outputs "1 fail in NIL.
 "
 
 #|
