@@ -46,10 +46,10 @@ Template for common signal handling form.
 				  0)
 			    (GO #:END112))))
        (SETF #:OUTPUT111 (WITH-OUTPUT-TO-STRING (*TERMINAL-IO*)
-		           (PROGN 3 4 5)))) ; <- as body.
+		           3 4 5))) ; <- as body.
     (UNLESS (STRING= "" #:OUTPUT111)
       (PUSH (MAKE-INSTANCE 'UNEXPECTED-OUTPUT
-                           :FORM 1
+                           :FORM '1
 			   :EXPECTED '""
 			   :ACTUAL #:OUTPUT111
 			   :POSITION NIL)

@@ -6,19 +6,19 @@
 
 ## Arguments and Values:
 
-place := symbol as variable.
+place := symbol as variable. (be evaluated)
 
-type := symbol as issue name.
+type := symbol as issue name. (be not evaluated)
 
-test-form := symbol as variable which contains test-form.
+test-form := symbol as variable which contains test-form. (be evaluated)
 
-expected := symbol as variable which contains expected.
+expected := symbol as variable which contains expected. (be not evaluated)
 
-actual := symbol as variable which contains actual.
+actual := symbol as variable which contains actual. (be evaluated)
 
-position := integer as file-position
+position := integer as file-position (be evaluated)
 
-params := key value pair for constructing TYPE.
+params := key value pair for constructing TYPE. (be evaluated)
 
 result := form
 
