@@ -33,7 +33,7 @@ params := param\*
 
 param := option-key option-value
 
-option-key := (member :test :lazy :stream :ignore-warning :with-restarts :before :after :around)
+option-key := (member :test :lazy :stream :ignore-signals :with-restarts :before :after :around)
 
 option-value := one lisp value
 
