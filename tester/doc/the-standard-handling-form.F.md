@@ -26,36 +26,33 @@ Template for common signal handling form.
 (the-standard-handling-form 0 nil 1 2 3 4 5)
 =>
 (LAMBDA ()
-  (PROG (0 #:OUTPUT111)
-    (HANDLER-BIND ((WARNING (LAMBDA (CONDITION)
-			      (PUSH (MAKE-INSTANCE 'WARNING-WAS-SIGNALED
-				                   :FORM '1
-						   :EXPECTED '2
-						   :ACTUAL CONDITION
-						   :POSITION NIL
-						   :MESSAGE (PRINC-TO-STRING CONDITION))
-			            0))
-                              (GO #:END112))
-                   (ERROR (LAMBDA (CONDITION)
-		            (PUSH (MAKE-INSTANCE 'ERROR-WAS-SIGNALED
-			                         :FORM '1
-						 :EXPECTED '2
-						 :ACTUAL CONDITION
-						 :POSITION NIL
-						 :MESSAGE (PRINC-TO-STRING CONDITION))
-				  0)
-			    (GO #:END112))))
-       (SETF #:OUTPUT111 (WITH-OUTPUT-TO-STRING (*TERMINAL-IO*)
-		           3 4 5))) ; <- as body.
+  (LET (0 #:OUTPUT111)
+    (HANDLER-CASE (SETF #:OUTPUT111 (WITH-OUTPUT-TO-STRING(*TERMINAL-IO*)
+				      3 4 5)) ; <--- as body.
+      (WARNING (CONDITION)
+        (PUSH (MAKE-INSTANCE 'WARNING-WAS-SIGNALED
+	                     :FORM '1
+			     :EXPECTED '2
+			     :ACTUAL CONDITION
+			     :POSITION NIL
+			     :MESSAGE (PRINC-TO-STRING CONDITION))
+              0))
+      (ERROR (CONDITION)
+        (PUSH (MAKE-INSTANCE 'ERROR-WAS-SIGNALED
+	                     :FORM '1
+			     :EXPECTED '2
+			     :ACTUAL CONDITION
+			     :POSITION NIL
+			     :MESSAGE (PRINC-TO-STRING CONDITION))
+              0)))
     (UNLESS (STRING= "" #:OUTPUT111)
       (PUSH (MAKE-INSTANCE 'UNEXPECTED-OUTPUT
-                           :FORM '1
+	                   :FORM '1
 			   :EXPECTED '""
 			   :ACTUAL #:OUTPUT111
 			   :POSITION NIL)
             0))
-    #:END112
-    (RETURN 0)))
+    0))
 ```
 
 ## Affected-By:
