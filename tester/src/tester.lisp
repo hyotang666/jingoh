@@ -205,7 +205,7 @@
     (the-standard-handling-form result parameters test-form expected
       `(LET((,actual ,form))
 	 (HANDLER-CASE(UNLESS(,test ,actual)
-			,(the-push-instance-form result 'TEST-ISSUE `',test-form `(SATISFIES ,test) NIL (getf parameters :position)))
+			,(the-push-instance-form result 'ISSUE `',test-form `(SATISFIES ,test) NIL (getf parameters :position)))
 	   (UNSATISFIED(CONDITION)
 	     ,(the-push-instance-form result 'UNSATISFIED-CLAUSE `(TEST-FORM CONDITION) T NIL (getf parameters :position):ARGS `(ARGS CONDITION))))))))
 
