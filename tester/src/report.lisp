@@ -9,25 +9,18 @@
   message)
 
 (defstruct(error-was-signaled (:include condition-issue)))
-
 (defstruct(warning-was-signaled (:include condition-issue)))
-
 (defstruct(debugger-was-invoked (:include condition-issue)))
-
 (defstruct(unmatch-condition (:include condition-issue)))
 
 (defstruct(unexpected-success (:include issue)))
-
 (defstruct(unexpected-output (:include issue)))
-
 (defstruct(issue-of-multiple-values (:include issue)))
-
-(defstruct(wrong-format (:include test-issue)))
-
 (defstruct(missing-restarts(:include issue)))
-
 (defstruct(unsatisfied-clause (:include issue))
   args)
+
+(defstruct(wrong-format (:include test-issue)))
 
 #+(or sbcl)
 (defmethod make-instance :around ((type structure-class) &rest args)
