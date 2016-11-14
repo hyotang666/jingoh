@@ -9,7 +9,8 @@
     (flet((REPORT(org)
 	    (if(zerop(Org-requirements-count org))
 	      (warn "No requirements in ~S"(Org-name org))
-	      (let((count(let((count 0))
+	      (let((count(let((count 0)
+			      (*package*(Org-package org)))
 			   (!(Do-requirements(Requirement nil org count)
 			       (incf count (length(Check requirement))))))))
 		(format t "~&~:[~D fail~:*~P in ~S~;Pass ~*~S~].~%"
@@ -35,6 +36,7 @@
 
   (defun detail(&key subject(org *org*))
     #.(Doc :jingoh.reporter "doc/detail.F.md")
-    (let((*org*(! 1(Find-org org))))
+    (let*((*org*(! 1(Find-org org)))
+	  (*package*(Org-package *org*)))
       (Do-requirements(Requirement subject)
 	(mapc #'print(Check requirement))))))

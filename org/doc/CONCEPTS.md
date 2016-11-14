@@ -43,6 +43,7 @@ ORG - type name
 ORG-CURRENT-SUBJECT - accessor
 ORG-NAME - reader
 ORG-P - predicate
+ORG-PACKAGE - reader
 ORG-SPECIFICATIONS - accessor
 
 * operators for orgs
@@ -86,6 +87,7 @@ SUBJECT-DESIGNATOR - type
 * ORG-DESIGNATOR
 * ORG-NAME
 * ORG-P
+* ORG-PACKAGE
 * ORG-REQUIREMENTS-COUNT
 * ORG-SPECIFICATIONS
 * REGISTER-ORG

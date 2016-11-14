@@ -15,6 +15,7 @@
     #:org-p ; predicate
     #:make-org ; constructor
     #:org-name ; reader
+    #:org-package ; reader
     #:org-current-subject ; accessor
     #:org-options ; accessor
     #:org-specifications ; reader

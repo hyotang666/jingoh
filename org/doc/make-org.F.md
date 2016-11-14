@@ -4,6 +4,7 @@
 
 (MAKE-ORG &key 
           (name nil)
+	  (package *package*)
 	  (current-subject nil)
 	  (specifications (make-array 0 :fill-pointer 0 :adjustable t)))
 => result
@@ -11,6 +12,8 @@
 ## Arguments and Values:
 
 name := symbol
+
+package := package
 
 current-subject := subject-designator
 
