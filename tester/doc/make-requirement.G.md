@@ -45,21 +45,18 @@ MAKE-REQUIREMENT creates requirement tester which generates issue list when CHEC
 ### reserved-keyword
 
 * =>
-Specifying return value of FORM.
-When you want to specify multiple values, specified values are must the form (values ...)
+Specifying return primary value of FORM.
 
 * :values
 Specifying every return value of FORM.
-Specified values are must the form (values ...)
 ```lisp
-(? (values 1 2) :values (values 1 2))
+(? (values 1 2) :values (1 2))
 ```
 NOTE! - In this case, check is done by CL:EQUAL.
 ```lisp
 ;; above form is equivalant as below.
 (equal (multiple-value-list(values 1 2)) (1 2))
 ```
-This is dispatched from the keyword =>.
 
 * :outputs
 Specifying FORM outputs specified string.

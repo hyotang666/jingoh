@@ -60,15 +60,14 @@
 
 (defmethod make-requirement(test-form (key(eql '=>)) expected
 				      &rest parameters)
-  (if(typep expected '(CONS (EQL VALUES)T))
-    (apply #'make-requirement test-form :values expected parameters)
-    (alexandria:with-unique-names(actual result)
-      (let((test(encallable(getf parameters :test #'eql)))
-	   (form(canonicalize test-form parameters)))
-	(the-standard-handling-form result parameters test-form expected
-          `(LET((,actual ,form))
-	     (UNLESS(,test ,actual ',expected)
-	       ,(the-push-instance-form result 'TEST-ISSUE `',test-form expected actual (getf parameters :position):test `',test))))))))
+  (declare(ignore key))
+  (alexandria:with-unique-names(actual result)
+    (let((test(encallable(getf parameters :test #'eql)))
+	 (form(canonicalize test-form parameters)))
+      (the-standard-handling-form result parameters test-form expected
+        `(LET((,actual ,form))
+	   (UNLESS(,test ,actual ',expected)
+	     ,(the-push-instance-form result 'TEST-ISSUE `',test-form expected actual (getf parameters :position):test `',test)))))))
 
 (defmethod make-requirement(test-form (key(eql :signals)) expected
 				      &rest parameters)
@@ -180,8 +179,8 @@
 	 (form(canonicalize test-form parameters)))
       (the-standard-handling-form result parameters test-form expected
 	 `(LET((,actual(MULTIPLE-VALUE-LIST ,form)))
-	    (UNLESS(,test ,actual ',(cdr expected))
-	      ,(the-push-instance-form result 'ISSUE-OF-MULTIPLE-VALUES `',test-form expected `(CONS 'VALUES ,actual) (getf parameters :position):TEST `',test)))))))
+	    (UNLESS(,test ,actual ',expected)
+	      ,(the-push-instance-form result 'ISSUE-OF-MULTIPLE-VALUES `',test-form expected actual (getf parameters :position):TEST `',test)))))))
 
 (defmethod make-requirement(test-form (key(eql :outputs)) expected
 				      &rest parameters)
@@ -245,7 +244,5 @@
        (result(gensym"RESULT")))
     (the-standard-handling-form result parameters test-form expected
       `(LET((,actual(MULTIPLE-VALUE-LIST ,form)))
-	 (HANDLER-CASE(UNLESS(APPLY ,test ,actual)
-			,(the-push-instance-form result 'ISSUE-OF-MULTIPLE-VALUES `',test-form `(SATISFIES ,expected) `(CONS 'VALUES ,actual)(getf parameters :position)))
-	   (UNSATISFIED(CONDITION)
-	     ,(the-push-instance-form result 'UNSATISFIED-CLAUSE `(TEST-FORM CONDITION) T NIL (getf parameters :position) :ARGS `(ARGS CONDITION))))))))
+	 (UNLESS(APPLY ,test ,actual)
+	   ,(the-push-instance-form result 'ISSUE-OF-MULTIPLE-VALUES `',test-form expected actual(getf parameters :position)))))))

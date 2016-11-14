@@ -49,10 +49,9 @@ NOTE! - :signals keyword check just signaled only.
 , :ignore-signals T
 
 #|
-to check values, use values specifier.
-(Remember VALUES type specifier.)
+to check values, use :values keyword.
 |#
-#?(? (values 1 2) => (values 1 2))
+#?(? (values 1 2) :values (1 2))
 => NIL
 
 #|
