@@ -8,7 +8,7 @@
 (defsystem :jingoh.reader
   :description "Dispatch macro for jingoh"
   :in-order-to ((test-op (test-op :jingoh.reader-test)))
-  :depends-on (:jingoh.tester :millet :named-readtables :musam :documentation-embedder)
+  :depends-on (:jingoh.tester :millet :named-readtables :musam :documentation-embedder :read-as-string)
   :pathname "src/"
   :components((:file "reader")))
 

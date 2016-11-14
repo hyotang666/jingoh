@@ -1,11 +1,15 @@
 (in-package :cl-user)
-(defpackage :jingoh.reader(:use :cl :jingoh.tester :named-readtables)
+(defpackage :jingoh.reader(:use :cl :jingoh.tester :named-readtables :read-as-string)
   (:import-from :documentation-embedder #:Doc)
   (:export
     ;;;; main api
     #:enable
     #:replace-macro-character
     #:|#?reader|
+
+    ;;;; special symbol for debug/trace
+    #:*read-verbose*
+    #:*read-print*
     
     ;;;; readtable name
     #:syntax
@@ -38,20 +42,46 @@
 (define-condition macro-char-confliction(simple-error)()
   (:documentation #.(Doc :jingoh.reader "doc/macro-char-confliction.T.md")))
 
+(defparameter *read-verbose* NIL)
+(defparameter *read-print* NIL)
+
 (defun |#?reader|(stream character number)
   #.(Doc :jingoh.reader "doc/#Qreader.F.md")
   (declare(ignore character number))
   (let((position(file-position stream)))
-    `(EVAL-WHEN(:COMPILE-TOPLEVEL :LOAD-TOPLEVEL)
-       (DEFSPEC ,(read stream t t t) ; as test form
-		,(read stream t t t) ; as reserved keyword
-		,(read stream t t t) ; as expected result
-		:POSITION ,position
-		,@(loop :for char = (peek-char t  stream nil nil)
-			:while (eql #\, char)
-			:do (read-char stream) ; discard #\,
-			:collect (read stream t t t)
-			:collect (read stream t t t))))))
+    (labels((read-form(as)
+	      (let((form(read stream t t t)))
+		(when *read-print*
+		  (format *trace-output* "~%~S: ~S"as form))
+		form))
+
+	    (peek()
+	      (let((position(file-position stream))
+		   (char(peek-char t stream nil nil)))
+		(case char
+		  (#\, char)
+		  (#\; (read-line stream) (peek))
+		  (#\# (read-char stream) ; discard
+		   (if(eql #\| (peek-char t stream nil nil)) 
+		     (progn (file-position stream position)
+			    (read-as-string stream) ; discard comment
+			    (peek))
+		     (progn (file-position stream position)
+			    char)))
+		  (t char)))))
+      (let((form `(EVAL-WHEN(:COMPILE-TOPLEVEL :LOAD-TOPLEVEL)
+		    (DEFSPEC ,(read-form :test-form)
+			     ,(read-form :keyword)
+			     ,(read-form :expected)
+			     :POSITION ,position
+			     ,@(loop :for char = (peek)
+				     :while (eql #\, char)
+				     :do (read-char stream) ; discard #\,
+				     :collect (read-form :option-key)
+				     :collect (read-form :option-value))))))
+	(when (or *read-verbose* *read-print*)
+	  (format *trace-output* "~%READ: ~S"form))
+	form))))
 
 (defreadtable syntax
   (:merge :standard)

@@ -23,11 +23,15 @@ REPLACE-MACRO-CHARACTER
 * conditions
 MACRO-CHAR-CONFLICTION
 
+* special symbols for debug/trace
+`*READ-PRINT*` `*READ-VERBOSE*`
 ## Background
 
 ## Dictionary
 
 * |#?reader|
+* `*READ-PRINT*`
+* `*READ-VERBOSE*`
 * ENABLE
 * MACRO-CHAR-CONFLICTION
 * REPLACE-MACRO-CHARACTER
