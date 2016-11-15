@@ -251,3 +251,13 @@
       `(LET((,actual(MULTIPLE-VALUE-LIST ,form)))
 	 (UNLESS(APPLY ,test ,actual)
 	   ,(the-push-instance-form result 'ISSUE-OF-MULTIPLE-VALUES `',test-form expected actual(getf parameters :position)))))))
+
+(defmethod make-requirement(test-form(key(eql :be-the))
+			     expected &rest parameters)
+  (declare(ignore key))
+  (let((form(canonicalize test-form parameters)))
+    (alexandria:with-unique-names(actual result)
+      (the-standard-handling-form result parameters test-form expected
+        `(LET((,actual ,form))
+	   (UNLESS(TYPEP ,actual ',expected)
+	     ,(the-push-instance-form result 'ISSUE `',test-form expected `(LIST 'THE (type-of ,actual) ,actual) (getf parameters :position))))))))

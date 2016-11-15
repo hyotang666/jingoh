@@ -82,6 +82,12 @@ NOTE! - unspecified MUST be used with #. dispatch macro.
 => NIL
 
 #|
+to check return type, you can use :be-the keyword.
+|#
+#?(? (make-pathname) :be-the pathname)
+=> NIL
+
+#|
 to check with complex test, you can use :satisfies keyword.
 |#
 #?(? #P"" :satisfies pathnamep)
@@ -140,7 +146,7 @@ Supported keywords are returned by RESERVED-KEYWORDS.
 |#
 #?(reserved-keywords #'make-requirement)
 :satisfies #`(null(set-exclusive-or $result
-				    '(=> :signals :outputs :satisfies :values :multiple-value-satisfies :invokes-debugger)))
+				    '(=> :signals :outputs :satisfies :values :multiple-value-satisfies :invokes-debugger :be-the)))
 
 #|
 encallable makes argument to fits lisp forms first element.

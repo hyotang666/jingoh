@@ -13,6 +13,7 @@ form key expected
 * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL =>)) (EXPECTED T) &REST PARAMETERS)
 * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL =>)) (EXPECTED (EQL #:IMPLEMENTATION-DEPENDENT)) &REST PARAMETERS)
 * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL =>)) (EXPECTED (EQL #:UNSPECIFIED)) &REST PARAMETERS)
+* (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL :BE-THE)) (EXPECTED T) &REST PARAMETERS)
 * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL :OUTPUTS)) (EXPECTED T) &REST PARAMETERS)
 * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL :VALUES)) (EXPECTED T) &REST PARAMETERS)
 * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL :SATISFIES)) (EXPECTED T) &REST PARAMETERS)
@@ -26,7 +27,7 @@ form key expected
 
 form := one lisp expression to test
 
-key := (MEMBER => :signals :values :outputs :satisfies :multiple-value-satisfies :invokes-debugger)
+key := (MEMBER => :signals :values :outputs :satisfies :multiple-value-satisfies :invokes-debugger :be-the)
 
 expected := one lisp value which should be return value of form.
 
@@ -47,6 +48,9 @@ MAKE-REQUIREMENT creates requirement tester which generates issue list when CHEC
 
 * =>
 Specifying return primary value of FORM.
+
+* :be-the
+Specifying the type of FORM's return value.
 
 * :values
 Specifying every return value of FORM.
