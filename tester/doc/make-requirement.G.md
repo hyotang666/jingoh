@@ -20,6 +20,7 @@ form key expected
 * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL :SIGNALS)) (EXPECTED T) &REST PARAMETERS)
 * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL :INVOKES-DEBUGGER)) (EXPECTED T) &REST PARAMETERS)
 * (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL :INVOKES-DEBUGGER)) (EXPECTED NULL) &REST PARAMETERS)
+* (MAKE-REQUIREMENT (TEST-FORM T) (KEY (EQL :INVOKES-DEBUGGER)) (EXPECTED (EQL 'NOT)) &REST PARAMETERS)
 
 ## Arguments and Values:
 
@@ -85,9 +86,9 @@ Specified function must accept FORM's every return values as arguments.
 * :invokes-debugger
 Specifying FORM invokes debugger.
 Specified value is condition type which invokes debugger.
-But when value is specified NIL, it means FORM never invoke debugger.
+But when value is specified NIL or NOT, it means FORM never invoke debugger.
 ```lisp
-(? (signal 'error) :invokes-debugger nil)
+(? (signal 'error) :invokes-debugger not)
 (? (error 'warning) :invokes-debugger warning)
 (? (warning 'error) :invokes-debugger type-error)
 ```

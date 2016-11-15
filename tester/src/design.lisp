@@ -27,9 +27,9 @@ to check signals or not, use :signals keyword.
 #|
 NOTE! - :signals keyword check just signaled only.
         If you want to check actualy debugger is invoked or not,
-        use :invoke-debugger keyword.
+        use :invokes-debugger keyword.
 |#
-#?(? (signal 'error) :invokes-debugger NIL)
+#?(? (signal 'error) :invokes-debugger not)
 => NIL
 , :ignore-signals T
 #?(? (signal 'error) :invokes-debugger error)

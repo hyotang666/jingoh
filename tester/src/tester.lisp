@@ -136,6 +136,11 @@
 	   ,end
 	   (RETURN ,result))))))
 
+(defmethod make-requirement(test-form (key (eql :invokes-debugger))
+				      (expected (eql 'not))
+				      &rest parameters)
+  (apply #'make-requirement test-form key NIL parameters))
+
 (defmethod make-requirement(test-form (key(eql :invokes-debugger))
 				      expected &rest parameters)
   (declare(ignore key))
