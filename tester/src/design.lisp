@@ -30,11 +30,11 @@ NOTE! - :signals keyword check just signaled only.
         use :invokes-debugger keyword.
 |#
 #?(? (signal 'error) :invokes-debugger not)
-=> NIL
-, :ignore-signals T
-#?(? (signal 'error) :invokes-debugger error)
-:satisfies consp
-, :ignore-signals T
+=> #.unspecified
+;; ecl invokes debugger, but others
+;; ANSI-CL say 'If the condition is not handled, signal returns nil.'
+;; but 'toplevel never handle the condition.'
+;; i.e. it is unpsecified.
 #?(? (warn 'program-error) :invokes-debugger program-error)
 :satisfies consp
 , :ignore-signals T

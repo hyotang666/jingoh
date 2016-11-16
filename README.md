@@ -43,5 +43,6 @@ Additionaly, it will be enough to be used as tutolials for end users.
 
 * Product's goal - ?
 * License - MIT
-* Supported implementation CLISP, CCL, ECL, SBCL
+* Developed with - CLISP
+* Tested with - CCL, SBCL, ECL
 
