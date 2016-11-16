@@ -54,31 +54,21 @@
 		(when *read-print*
 		  (format *trace-output* "~%~S: ~S"as form))
 		form))
-
-	    (peek()
-	      (let((position(file-position stream))
-		   (char(peek-char t stream nil nil)))
-		(case char
-		  (#\, char)
-		  (#\; (read-line stream) (peek))
-		  (#\# (read-char stream) ; discard
-		   (if(eql #\| (peek-char t stream nil nil)) 
-		     (progn (file-position stream position)
-			    (read-as-string stream) ; discard comment
-			    (peek))
-		     (progn (file-position stream position)
-			    char)))
-		  (t char)))))
+	    (options()
+	      (loop :while (have-option?)
+		    :collect (read-form :option-key)
+		    :collect (read-form :option-value)))
+	    (have-option?()
+	      (case (peek-char t stream nil nil t)
+		(#\, (read-char stream t t t))
+		(#\; (read-line stream t t t)(have-option?))))
+	    )
       (let((form `(EVAL-WHEN(:COMPILE-TOPLEVEL :LOAD-TOPLEVEL)
 		    (DEFSPEC ,(read-form :test-form)
 			     ,(read-form :keyword)
 			     ,(read-form :expected)
 			     :POSITION ,position
-			     ,@(loop :for char = (peek)
-				     :while (eql #\, char)
-				     :do (read-char stream) ; discard #\,
-				     :collect (read-form :option-key)
-				     :collect (read-form :option-value))))))
+			     ,@(options)))))
 	(when (or *read-verbose* *read-print*)
 	  (format *trace-output* "~%READ: ~S"form))
 	form))))
