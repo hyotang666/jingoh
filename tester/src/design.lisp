@@ -96,9 +96,9 @@ to check with complex test, you can use :satisfies keyword.
 #|
 satisfies accepts lambda form.
 |#
-#?(? #P"" :satisfies (lambda(result)
-		       (& (pathnamep result)
-			  (= 0 (length(namestring result))))))
+#?(? (make-pathname) :satisfies (lambda(result)
+				  (& (pathnamep result)
+				     (= 0 (length(namestring result))))))
 => NIL
 
 #|

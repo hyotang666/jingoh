@@ -18,7 +18,7 @@ Like CL:DEFPACKAGE, we can define new org with deforg
 #|
 Unlike CL:DEFPACKAGE, org name is only symbol is acceptable.
 |#
-#?(deforg "test") :signals type-error
+#?(deforg "test") :signals error
 , :lazy t
 
 #|
