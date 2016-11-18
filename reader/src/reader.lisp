@@ -1,5 +1,5 @@
 (in-package :cl-user)
-(defpackage :jingoh.reader(:use :cl :jingoh.tester :named-readtables :read-as-string)
+(defpackage :jingoh.reader(:use :cl :jingoh.tester :named-readtables)
   (:import-from :documentation-embedder #:Doc)
   (:export
     ;;;; main api
