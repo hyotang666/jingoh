@@ -21,13 +21,15 @@ Target of REQUIREMENT.
 | ORG | ; e.g. system
 +-----+
    |
-+----------+
-| SUBJECTs | ; e.g. functions or macros
-+----------+
-   |
-+--------------+
-| REQUIREMENTS | ; i.e. behaviors
-+--------------+
++----------------------------------------+
+|+----------+    			 | ; called "specifications"
+|| SUBJECTs | ; e.g. functions or macros |
+|+----------+				 |
+|   |					 |
+|+--------------+			 |
+|| REQUIREMENTS | ; i.e. behaviors       |
+|+--------------+			 |
++----------------------------------------+
 ```
 
 ## Background

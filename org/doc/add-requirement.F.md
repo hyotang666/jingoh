@@ -16,7 +16,7 @@ result := requirement
 Adding requirement to org's specifications as under current subject (i.e. `*subject*`).
 When current subject is not found in specifications, new key-value-pair is created automatically.
 Returns added requirement.
-Added order is stable.
+Added order is kept.
 
 ## Example:
 

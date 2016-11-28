@@ -12,7 +12,7 @@ This keeps options for current subject.
 
 ## note:
 Do not confuse it as symbol.
-This is just symbol-macro, so you can not access its value by CL:SYMBOL-VALUE.
+This is just symbol-macro, so you can not access its value by CL:SYMBOL-VALUE, nor dynamic bindings with e.g. LET.
 
 ## See also:
 

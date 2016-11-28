@@ -22,9 +22,9 @@ result := implicit progn
 ## Description:
 Like CL:DOLIST, DO-REQUIREMENTS iterates over the requirements of an org's specifications.
 
-DO-REQUIREMENTS evaluates org, which should prodece an org object.
+DO-REQUIREMENTS evaluates org, which should produce an org object.
 It then evaluates subject-designator which should produce an subject designator, to retrieve subject from org's specifications.
-It then executes the body once for each requirement in the subject, in order in the implecit progn, with var bound to the requirement.
+It then executes the body once for each requirement in the subject, in order in the implicit progn, with var bound to the requirement.
 Finally return is evaluated.
 
 When subject is T, current subject (i.e. `*subject*`) 's requirements are iterated.
@@ -36,7 +36,7 @@ Unlike CL:DOLIST, at the time RETURN is processed, VAR is invisible.
 Like CL:DOLIST, an implicit block named NIL surrounds DO-REQUIREMENTS.
 CL:RETURN may be used to terminate the loop immediately without performing any further iterations, returning zero or more values.
 
-Unlike CL:DOLIST, body form does not wrapped with CL:TAGBODY.
+Unlike CL:DOLIST, body form is not wrapped with CL:TAGBODY.
 
 The scope of the binding of VAR does not include the ORG, SUBJECT-DESIGNATOR, nor RETURN.
 
