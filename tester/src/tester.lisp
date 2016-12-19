@@ -261,3 +261,17 @@
         `(LET((,actual ,form))
 	   (UNLESS(TYPEP ,actual ',expected)
 	     ,(the-push-instance-form result 'ISSUE `',test-form expected `(LIST 'THE (type-of ,actual) ,actual) (getf parameters :position))))))))
+
+(defmethod make-requirement(test-form(key(eql :equivalents))
+			     expected &rest parameters)
+  (declare(ignore key))
+  (let((form1(canonicalize test-form parameters))
+       (form2(canonicalize expected parameters))
+       (test(encallable(getf parameters :test #'eql))))
+    (alexandria:with-unique-names(actual1 actual2 result)
+      (the-standard-handling-form result parameters test-form expected
+      `(LET((,actual1 ,form1)
+	    (,actual2 ,form2))
+	 (UNLESS(,test ,actual1 ,actual2)
+	   ,(the-push-instance-form result 'ISSUE `(LIST ',test ',test-form ',expected)T `(LIST ',test ,actual1 ,actual2)(getf parameters :position))))))))
+
