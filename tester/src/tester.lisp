@@ -45,7 +45,7 @@
   #.(Doc :jingoh.tester "doc/the-standard-handling-form.F.md")
   (alexandria:with-unique-names(output)
     `(LAMBDA()
-       (LET(,result ,output)
+       (LET(,result (,output ""))
 	 (HANDLER-CASE (SETF ,output(WITH-OUTPUT-TO-STRING(*TERMINAL-IO*)
 				      ,@body))
 	   ,@(unless(ignore-signals 'warning parameters)
@@ -93,7 +93,7 @@
 		   (GO ,end)))
 	      )
 	`(LAMBDA()
-	   (PROG(,result ,actual ,output)
+	   (PROG(,result ,actual (,output ""))
 	     (HANDLER-BIND((,expected ,(restart-checker))
 			   ,@(may-bind 'warning)
 			   ,@(may-bind 'error))
@@ -112,7 +112,7 @@
   (alexandria:with-unique-names(result output end temp)
     (let((form(canonicalize test-form parameters)))
       `(LAMBDA()
-	 (PROG(*DEBUGGER-HOOK* ,result ,output ,temp)
+	 (PROG(*DEBUGGER-HOOK* ,result (,output "") ,temp)
 	   ;; In order to make tag visible from hook,
 	   ;; we need to set hook in body.
 	   (FLET((HOOK(CONDITION FUNCTION)
@@ -147,7 +147,7 @@
   (alexandria:with-unique-names(actual result output end)
     (let((form(canonicalize test-form parameters)))
       `(LAMBDA()
-	 (PROG(*DEBUGGER-HOOK* ,actual ,result ,output)
+	 (PROG(*DEBUGGER-HOOK* ,actual ,result (,output ""))
 	   ;; In order to make tag visible from hook,
 	   ;; we need to set hook in body.
 	   (FLET((HOOK(CONDITION FUNCTION)
