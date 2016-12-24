@@ -161,3 +161,51 @@ if optional argument is passed as true, applyable form is returned.
 |#
 #?(encallable '#'car t) => #'CAR
 , :test equal
+
+#|
+sexp= is tests sexp1 and sexp2 is same sexp.
+Its behavior is almost same with CL:EQUAL, but can handle uninterned symbol.
+This is designed for test macroexpanded form.
+|#
+#?(sexp= (let((var(gensym "VAR")))
+	   `(let((,var 0)),var))
+	 '(let((foo 0)) foo))
+=> T
+
+#|
+NOTE! - Macroexpanded form must be first argument.
+|#
+#?(sexp= '(let((foo 0)) foo)
+	 '(let((#0=#:foo 0)) #0#))
+=> NIL
+
+#|
+NOTE! - For its raison d'etre, uninterned symbol is treat as special.
+If arg1 is uninterned symbol and arg2 is symbol, keeps its pair.
+And evaluated to be T.
+|#
+#?(sexp= '#:foo 'bar) => T
+#?(sexp= '#:foo 0) => NIL
+#?(sexp= '(#0=#:foo #0#) '(hoge hoge)) => T
+#?(sexp= '(#0=#:foo #0#) '(hoge fuga)) => NIL
+
+#|
+In common lisp, vector can be written as literal.
+Macro may generate vector, which may contains GENSYMed symbol.
+SEXP= can handle it.
+|#
+#?(sexp= #(#:foo #:bar) #(foo bar)) => T
+
+#|
+Also array.
+|#
+#?(sexp= #2A((1 #:foo)) #2A((1 foo))) => T
+#|
+Also structure.
+|#
+(eval-when(:compile-toplevel :load-toplevel)
+  (defstruct foo bar)
+  (defmethod make-load-form((s foo)&optional environment)
+    (make-load-form-saving-slots s :environment environment))
+  )
+#?(sexp= #S(foo :bar #:foo) #S(foo :bar foo)) => T

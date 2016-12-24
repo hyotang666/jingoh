@@ -279,3 +279,12 @@
 	 (UNLESS(,test ,actual1 ,actual2)
 	   ,(the-push-instance-form result 'ISSUE `(LIST ',test ',test-form ',expected)T `(LIST ',test ,actual1 ,actual2)(getf parameters :position))))))))
 
+
+(defmethod make-requirement(test-form(key (eql :expanded-to))
+			     expected &rest parameters)
+  (declare(ignore key))
+  (alexandria:with-unique-names(result actual)
+    (the-standard-handling-form result parameters test-form expected
+      `(LET((,actual(MACROEXPAND-1 ',test-form)))
+	 (UNLESS(SEXP= ,actual ',expected)
+	   ,(the-push-instance-form result 'ISSUE `',test-form expected actual (getf parameters :position)))))))
