@@ -45,7 +45,7 @@
   (labels((MAKE-BODY()
 	    (SET-AROUND (let((after(getf parameters :after)))
 			  (if after
-			    `(UNWIND-PROTECT ,(make-primary)
+			    `(UNWIND-PROTECT ,(MAKE-PRIMARY)
 					     ,after)
 			    (MAKE-PRIMARY)))))
 	  (MAKE-PRIMARY()

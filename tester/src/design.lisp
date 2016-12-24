@@ -4,6 +4,7 @@
 
 (jingoh:setup :jingoh.tester)
 
+;;;;
 (requirements-about ?)
 
 #|
@@ -133,12 +134,13 @@ Current org (i.e. *org*) is modified.
 #|
 Like CL:AND, this is asserts all form is returns non nil value.
 |#
-#?(macroexpand-1 '(& (symbolp 'foo)))
-=> (OR (UNLESS (SYMBOLP 'FOO)
-	  (ERROR 'JINGOH.TESTER::UNSATISFIED :TEST-FORM '(SYMBOLP 'FOO) :ARGS (LIST 'FOO)))
-       T)
-, :test equal
+#?(& (symbolp 'foo))
+:expanded-to
+(OR (UNLESS (SYMBOLP 'FOO)
+	    (ERROR 'JINGOH.TESTER::UNSATISFIED :TEST-FORM '(SYMBOLP 'FOO) :ARGS (LIST 'FOO)))
+    T)
 
+;;;;
 (requirements-about internal-dsl)
 
 #|
