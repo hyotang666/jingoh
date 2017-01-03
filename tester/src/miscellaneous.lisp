@@ -40,9 +40,16 @@
 	:into result
 	:finally (return (delete-duplicates result))))
 
+(deftype option-key()
+  '(member :test :lazy :ignore-signals :with-restarts :stream :before :after :around :position))
+
 (defun canonicalize(test-form parameters)
   #.(Doc :jingoh.tester "doc/canonicalize.F.md")
-  (labels((MAKE-BODY()
+  (labels((CHECK()
+	    (loop :for key :in parameters :by #'cddr
+		  :unless (typep key 'option-key)
+		  :do (error "Unknown options key ~S in ~S"key parameters)))
+	  (MAKE-BODY()
 	    (SET-AROUND (let((after(getf parameters :after)))
 			  (if after
 			    `(UNWIND-PROTECT ,(MAKE-PRIMARY)
@@ -59,12 +66,13 @@
 		(subst body '(CALL-BODY) around :test #'equal)
 		body)))
 	  )
-  (case(getf parameters :lazy :does-not-exist)
-    (:does-not-exist (MAKE-BODY))
-    ((NIL)(let((body(MAKE-BODY)))
-	    (eval body)
-	    body))
-    (otherwise `(EVAL ',(make-body))))))
+    (CHECK)
+    (case(getf parameters :lazy :does-not-exist)
+      (:does-not-exist (MAKE-BODY))
+      ((NIL)(let((body(MAKE-BODY)))
+	      (eval body)
+	      body))
+      (otherwise `(EVAL ',(make-body))))))
 
 (defun sexp=(sexp1 sexp2)
   (let(env)
