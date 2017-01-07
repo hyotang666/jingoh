@@ -1,12 +1,13 @@
-# JINGOH 0.0.0 - DSL to notate specification, rather than test framework.
+# JINGOH 0.0.0
+## DSL to notate specification, rather than test framework.
 
-* Current lisp world
+### Current lisp world
 There are many test frameworks, e.g. 5am, prove, etc...
 
-* Issues
+### Issues
 Such frameworks looks like too much test.
 
-* Proposal
+### Proposal
 Jingoh provides DSL to notate specification, rather than test framework.
 Once you writes your library's specifications of requirements design with jingoh, such file works as test.
 Additionaly, it will be enough to be used as tutolials for end users.
@@ -46,3 +47,10 @@ Additionaly, it will be enough to be used as tutolials for end users.
 * Developed with - CLISP
 * Tested with - CCL, SBCL, ECL
 
+## Known issues.
+### sbcl
+SBCL can not handling compiler error outputs.
+```lisp
+#? a :signals error ; undefined variable.
+```
+Test form above outputs style-warning message.
