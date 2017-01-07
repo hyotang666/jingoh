@@ -8,7 +8,7 @@
 
 (defsystem :jingoh
   :version #.(demb:version :demb (first (demb:cached-file-lines "README.md")))
-  :description #.(demb:description :demb (first (demb:cached-file-lines)))
+  :description #.(demb:description :demb (third (demb:cached-file-lines)))
   :long-description #.(format nil "~{~A~&~}"(demb:cached-file-lines))
   :license #.(demb:license :demb (find-if (demb:searcher "* License")
                                           (demb:cached-file-lines)))
