@@ -101,8 +101,10 @@
 	     (HANDLER-BIND((,expected ,(restart-checker))
 			   ,@(may-bind 'warning)
 			   ,@(may-bind 'error))
-	       (SETF ,output (WITH-OUTPUT-TO-STRING(*TERMINAL-IO*)
-			       (SETF ,actual ,form)))
+	       (LET((*ERROR-OUTPUT*(MAKE-BROADCAST-STREAM)))
+		 (SETF ,output (WITH-OUTPUT-TO-STRING(*TERMINAL-IO*)
+				 (SETF ,actual (FUNCALL(COERCE '(LAMBDA(),form)
+							       'FUNCTION))))))
 	       ,(the-push-instance-form result 'UNEXPECTED-SUCCESS `',test-form expected actual(getf parameters :position)))
 	     ,end
 	     (WHEN(AND ,output (NOT(STRING= "" ,output)))
