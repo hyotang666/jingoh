@@ -1,5 +1,6 @@
 (in-package :cl-user)
-(defpackage :design-?(:use :cl :jingoh.tester :jingoh.reader :jingoh.org :jingoh.reporter))
+(defpackage :design-?(:use :cl :jingoh.tester :jingoh.reader :jingoh.org :jingoh.reporter)
+  (:import-from :jingoh.tester #:sexp=))
 (in-package :design-?)
 
 (jingoh:setup :jingoh.tester)
