@@ -104,6 +104,16 @@ satisfies accepts lambda form.
 => NIL
 
 #|
+to check complex output format, you can use :output-satisfies keyword.
+|#
+#?(? (format t "foo :bar (bazz)")
+     :output-satisfies (lambda(formatted-string)
+			 (with-input-from-string(s formatted-string)
+			   (& (eq 'foo (read s))
+			      (eq :bar (read s))
+			      (equal '(bazz) (read s))))))
+=> NIL
+#|
 Unknown keyword comes, an error will be signaled.
 |#
 #?(? 0 :no-such-keyword :hoge)
@@ -149,7 +159,7 @@ Supported keywords are returned by RESERVED-KEYWORDS.
 |#
 #?(reserved-keywords #'make-requirement)
 :satisfies #`(null(set-exclusive-or $result
-				    '(=> :signals :outputs :satisfies :values :multiple-value-satisfies :invokes-debugger :be-the)))
+				    '(=> :signals :outputs :satisfies :values :multiple-value-satisfies :invokes-debugger :be-the :equivalents :expanded-to :output-satisfies)))
 
 #|
 encallable makes argument to fits lisp forms first element.

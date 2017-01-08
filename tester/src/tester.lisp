@@ -290,3 +290,17 @@
       `(LET((,actual(MACROEXPAND-1 ',test-form)))
 	 (UNLESS(SEXP= ,actual ',expected)
 	   ,(the-push-instance-form result 'ISSUE `',test-form expected actual (getf parameters :position)))))))
+
+(defmethod make-requirement(test-form (key(eql :output-satisfies)) expected
+				      &rest parameters)
+  (declare(ignore key))
+  (alexandria:with-unique-names(actual result)
+    (let((test(encallable expected))
+	 (form(canonicalize test-form parameters)))
+      (the-standard-handling-form result parameters test-form expected
+        `(LET((,actual(WITH-OUTPUT-TO-STRING(,(getf parameters :stream '*standard-output*))
+			,form)))
+	   (HANDLER-CASE(UNLESS(,test ,actual)
+			  ,(the-push-instance-form result 'ISSUE `',test-form `(SATISFIES ,test) NIL (getf parameters :position)))
+	     (UNSATISFIED(CONDITION)
+	       ,(the-push-instance-form result 'UNSATISFIED-CLAUSE `(TEST-FORM CONDITION) T NIL (getf parameters :position) :ARGS `(ARGS CONDITION)))))))))
