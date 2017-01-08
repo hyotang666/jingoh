@@ -20,11 +20,14 @@
 (defmacro & (&body body)
   #.(Doc :jingoh.tester "doc/&.M.md")
   `(OR ,@(mapcar(lambda(form)
+		  (if(typep form '(cons (satisfies function-designator-p)T))
+		    (let((temp(gensym "TEMP")))
+		      `(LET((,temp (LIST ,@(cdr form))))
+			 (UNLESS(APPLY #',(car form) ,temp)
+			   (ERROR 'UNSATISFIED :TEST-FORM ',form
+				  :ARGS ,temp))))
 		   `(UNLESS,form
-		      (ERROR 'UNSATISFIED :TEST-FORM ',form
-			     ,@(when(and (consp form)
-					 (function-designator-p (car form)))
-				 `(:ARGS (LIST ,@(cdr form)))))))
+		      (ERROR 'UNSATISFIED :TEST-FORM ',form))))
 	    body)
        T))
 
