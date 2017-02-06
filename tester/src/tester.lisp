@@ -48,7 +48,7 @@
        (LET(,result (,output ""))
 	 (HANDLER-CASE (SETF ,output(WITH-OUTPUT-TO-STRING(*TERMINAL-IO*)
 				      ,@(let((it (getf parameters :ignore-warining)))
-					  (if(subtypep it 'warning)
+					  (if(and it(subtypep it 'warning))
 					    `((HANDLER-BIND((,it #'MUFFLE-WARNING))
 						,@body))
 					    body))))
