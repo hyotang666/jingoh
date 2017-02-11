@@ -5,6 +5,7 @@
     ;;;; main api
     #:report
     #:detail
+    #:verify
 
     ;;;; reporter and detailer. 
     *reporter*
