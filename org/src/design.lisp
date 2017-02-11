@@ -123,6 +123,15 @@ Unlike CL:MAPCAR, MAP-REQUIREMENTS does not accept some orgs.
 #?(map-requirements #'+ T (make-org)(make-org)):signals error
 , :lazy t
 
+#+syntax(do-requirements(var &optional subject org return)&body body)
+#+BNF (var := [requirement-var || (requirement-var subject-var)]
+       requirement-var := symbol
+       subject-var := symbol
+       subject := subject-designator-generate-form
+       org := org-generate-form
+       return := return-form
+       body := forms)
+
 #|
 if you does not need result list, (because of side effect)
 you can use do-requirements which like CL:DOLIST.
