@@ -25,6 +25,7 @@
     ;;;; from reporter
     #:report
     #:detail
+    #:verify
     ))
 (in-package :jingoh)
 
