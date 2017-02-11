@@ -126,9 +126,10 @@ Unknown keyword comes, an error will be signaled.
 DEFSPEC defines new specifications of requirement.
 Returns currnt *subject*
 |#
-#?(let((*org*(make-org :current-subject :foo)))
+#?(let((*org*(make-org :current-subjects '(:foo))))
     (defspec (+ 1 1) => 2))
-=> :FOO
+=> (:FOO)
+,:test equal
 
 #|
 Current org (i.e. *org*) is modified.

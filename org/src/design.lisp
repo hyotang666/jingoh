@@ -43,16 +43,37 @@ Like CL:PACKAGE, in order to change current org, we need to in.
 		(eq :test (org-name $a)))
 
 #|
-Like CL:PACKAGE, current subject is in special symbol *subject*
-and default subject is nil.
+Current subjects is in psuedo special symbol *subjects*.
 |#
-#?*subject*
-=> NIL
+#?*subjects* :expanded-to (ORG-CURRENT-SUBJECTS *ORG*)
 
 #|
-Like CL:PACKAGE, to change current subject, we need use requirements-about
+And default subjects is (nil).
 |#
-#?(requirements-about requirements-about) => REQUIREMENTS-ABOUT
+#?*subjects*
+=> (NIL)
+,:test equal
+
+#|
+To change current subject, we need to use REQUIREMENTS-ABOUT.
+|#
+#?(requirements-about requirements-about) => (REQUIREMENTS-ABOUT)
+,:test equal
+
+#|
+Sometimes, we need to specify same behavior for some operators.
+(e.g. APPEND and NCONC.)
+In such cases, we can use COMMON-REQUIREMENTS-ABOUT with :AS keyword.
+|#
+
+#?(common-requirements-about (append nconc) :as op)
+=> (APPEND NCONC)
+,:test equal
+
+#|
+When missing :AS, an error will be signaled.
+|#
+#?(common-requirements-about (append nconc)) :signals ERROR
 
 (requirements-about org-object)
 
@@ -88,7 +109,7 @@ when argument is not org, an error will be signaled.
 some operation to every requirement, you can use map-requirements.
 map-requirements return new list like CL:MAPCAR
 But unlike CL:MAPCAR, map-requirements has default arguments.
-It is *subject* and *org*.
+It is *subjects* and *org*.
 |#
 #?(let((*org*(make-org)))
      (add-requirement 0)

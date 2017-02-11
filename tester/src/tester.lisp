@@ -6,8 +6,11 @@
 
 (defmacro defspec(&body body)
   #.(Doc :jingoh.tester "doc/defspec.M.md")
-  `(PROGN (ADD-REQUIREMENT ,(apply #'make-requirement (append body *options*)))
-	  *SUBJECT*))
+  `(PROGN ,@(mapcar (lambda(subject)
+		      (let((*substituter*(constantly subject)))
+			`(ADD-REQUIREMENT ,(apply #'make-requirement(append body *options*)))))
+		    *subjects*)
+	  *SUBJECTS*))
 
 (defmacro ? (&body body)
   #.(Doc :jingoh.tester "doc/Q.M.md")
