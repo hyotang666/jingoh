@@ -7,34 +7,37 @@
 
 (requirements-about main-api
 		    :around (let((*org*(make-org)))
-			      (call-body)))
+			      (call-body))
+		    :after (requirements-about main-api))
+
+#+syntax(deforg name)
+#+BNF(name := symbol)
 
 #|
-Like CL:DEFPACKAGE, we can define new org with deforg
+We can define new org with deforg, it likes CL:DEFPACKAGE but without options.
 |#
-#?(deforg :test)
-:satisfies org-p
+#?(deforg :test) :be-the ORG
 
 #|
-Unlike CL:DEFPACKAGE, org name is only symbol is acceptable.
+Org name is only symbol is acceptable, it differs CL:DEFPACKAGE.
 |#
 #?(deforg "test") :signals error
 , :lazy t
 
 #|
-Like CL:PACKAGE, current org is in special symbol *org*
+Current org is in special symbol *org*, it likes CL:PACKAGE.
 |#
-#?*org* :satisfies org-p
+#?*org* :be-the ORG
 
 #|
-Like CL:DEFPACKAGE, definition does not change current org.
+Definition does not change current org, it same with CL:DEFPACKAGE.
 |#
 #?(progn (deforg :test)
 	 (eq :test (org-name *org*)))
 => NIL
 
 #|
-Like CL:PACKAGE, in order to change current org, we need to in.
+In order to change current org, we need to in, it likes CL:IN-PACKAGE.
 |#
 #?(progn (deforg :test)
 	 (in-org :test)
@@ -89,12 +92,20 @@ so, when you want to add item to org, you should use add-requirement.
     (add-requirement 0 o)) => 0
 
 #|
-ADD-REQUIREMENT is stable
+When second argument is omitted, *ORG* is used.
 |#
 #?(let((*org*(make-org)))
-     (add-requirement 0)
-     (add-requirement 1)
-     (map-requirements #'identity))
+    (add-requirement 0)
+    (org-requirements-count *org*))
+=> 1
+
+#|
+ADD-REQUIREMENT has stable order.
+|#
+#?(let((o(make-org)))
+     (add-requirement 0 o)
+     (add-requirement 1 o)
+     (map-requirements #'identity t o))
 => (0 1)
 , :test equal
 
