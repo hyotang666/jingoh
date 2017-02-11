@@ -18,7 +18,7 @@ You can refer it as test which usual test framework has.
 Target of REQUIREMENT.
 ```management hierarchy
 +-----+
-| ORG | ; e.g. system
+| ORG | ; e.g. system or package
 +-----+
    |
 +----------------------------------------+
