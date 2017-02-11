@@ -47,3 +47,7 @@
     #:syntax-error
 
     ))
+
+(in-package :jingoh.tester)
+
+(defvar *substituter* #'identity)

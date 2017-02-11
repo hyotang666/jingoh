@@ -4,7 +4,7 @@
   #.(Doc :jingoh.org "doc/org.T.md")
   (name nil :type symbol :read-only t)
   (package *package* :type package :read-only t)
-  (current-subject nil :type symbol)
+  (current-subjects `(nil) :type cons)
   (options nil :type list)
   (specifications (make-array 0 :fill-pointer 0 :adjustable t) :type vector))
 

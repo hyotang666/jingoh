@@ -8,6 +8,7 @@
     #:deforg
     #:in-org
     #:requirements-about
+    #:common-requirements-about
 
     #| api for hackers |#
     ;;;; structure
@@ -16,7 +17,7 @@
     #:make-org ; constructor
     #:org-name ; reader
     #:org-package ; reader
-    #:org-current-subject ; accessor
+    #:org-current-subjects ; accessor
     #:org-options ; accessor
     #:org-specifications ; reader
     #|NOTE! - Slot names are not exported.|#
@@ -38,7 +39,7 @@
 
     ;;;; variable
     *org* ; current org
-    *subject* ; current subject (psued variable)
+    *subjects* ; current subjects (psued variable)
     *options* ; current subject's options (psued variable)
 
     ;;;; conditions

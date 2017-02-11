@@ -26,7 +26,7 @@
        (LET((,gname ,subject-designator))
 	 (CASE,gname
 	   ((NIL),(the-nil-subject-procedure org var body return))
-	   ((T),(the-subject-procedure var body '*SUBJECT* org return))
+	   ((T),(the-subject-procedure var body '*SUBJECTS* org return))
 	   (OTHERWISE,(the-subject-procedure var body gname org return)))))))
 
 (define-compiler-macro do-requirements(&whole whole (var &optional(subject-designator T)(org '*org*) return)&body body)
@@ -41,7 +41,7 @@
 		    ,FORM)))
        ,(case subject-designator
 	  ((NIL)(the-nil-subject-procedure org var body return))
-	  ((T)(the-subject-procedure var body '*SUBJECT* org return))
+	  ((T)(the-subject-procedure var body '*SUBJECTS* org return))
 	  (otherwise
 	    (the-subject-procedure var body subject-designator org return))))))
 
@@ -62,9 +62,9 @@
        (loop :for (NIL . v) :across (! 0(org-specifications org))
 	     :nconc(map 'list function v)))
       ((T) ; current subject
-       (block() ; in order to keep same behavior.
-	 (map 'list function(cdr(?!(find *subject*(! 0(org-specifications org))
-					 :key #'car))))))
+       (loop :for subject :in *subjects*
+	     :append (map 'list function (cdr(?!(find subject(! 0 (org-specifications org))
+						      :key #'car))))))
       (otherwise
 	(block() ; in order to keep same behavior.
 	  (map 'list function(cdr(?!(find subject (! 0(org-specifications org))
@@ -72,16 +72,20 @@
 
   (defun add-requirement(requirement &optional(org *org*))
     #.(Doc :jingoh.org "doc/add-requirement.F.md")
-    (let((subject(find *subject* (! 1(org-specifications org))
-		       :key #'car)))
+    (let((subject (loop :for subject :in *subjects*
+			:when (find subject (! 1 (org-specifications org))
+				    :key #'car)
+			:collect it)))
       (if subject
-	(vector-push-extend requirement(cdr subject))
-	(vector-push-extend(cons *subject*
-				 (make-array 1
-					     :fill-pointer 1
-					     :adjustable t
-					     :initial-contents (list requirement)))
-	  (org-specifications org))))
+	(dolist(sub subject)
+	  (vector-push-extend requirement (cdr sub)))
+	(dolist(subject *subjects*)
+	  (vector-push-extend (cons subject
+				    (make-array 1
+						:fill-pointer 1
+						:adjustable t
+						:initial-contents (list requirement)))
+			      (org-specifications org)))))
     requirement)
 
   (defun org-requirements-count(org)
