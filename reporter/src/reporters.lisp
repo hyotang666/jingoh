@@ -62,15 +62,21 @@
 	    (setf current-subject sub)
 	    (format t "~&~A"current-subject))
 	  (if result
-	    (write-char #\!)
-	    (write-char #\.)))))
-    (when(<= 1 *verbose*)
-      (if(zerop(Org-requirements-count *org*))
-	(warn "No requirements in ~S"(Org-name *org*))
-	(let((count(length issues)))
-	  (format t "~&~:[~D fail~:*~P in ~S~;Pass ~*~S~]~%"
-		  (zerop count)
-		  count
+	    (cl-ansi-text:with-color(:red)
+	      (write-char #\!))
+	    (cl-ansi-text:with-color(:green)
+	      (write-char #\.))))))
+    (if(zerop(Org-requirements-count *org*))
+      (warn "No requirements in ~S"(Org-name *org*))
+      (let((count(length issues)))
+	(if (zerop count)
+	  (format t "~&~A ~S"
+		  (cl-ansi-text:green "Ok")
+		  (Org-name *org*))
+	  (format t "~&~A in ~S"
+		  (cl-ansi-text:red (format nil "~D fail~:*~P"count))
 		  (Org-name *org*)))))
     :end
-    (mapc #'print issues)))
+    (when(or (<= 1 *verbose*)
+	     *break-on-fails*)
+      (mapc #'print issues))))

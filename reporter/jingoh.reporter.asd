@@ -7,7 +7,7 @@
 
 (defsystem :jingoh.reporter
   :description "Jingoh's printing issues feature."
-  :depends-on (:jingoh.org :jingoh.tester :resignal-bind :documentation-embedder)
+  :depends-on (:jingoh.org :jingoh.tester :resignal-bind :documentation-embedder :cl-ansi-text)
   :in-order-to ((test-op (test-op :jingoh.reporter-test)))
   :pathname "src/"
   :serial t
