@@ -49,7 +49,7 @@
 (defun verify(org &key subject ((:verbose *verbose*)*verbose*))
   (prog*((*org*(find-org org))
 	 (*package*(Org-package *org*))
-	 (current-subject)
+	 (current-subject '#:dummy)
 	 (issues))
     (Do-requirements((requirement sub)subject)
       (let((result(Check requirement)))
