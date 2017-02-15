@@ -22,6 +22,9 @@
     #:?
     #:&
 
+    ;;;; Issues for pretty printings.
+    #:issue #:condition-issue #:test-issue #:error-was-signaled #:warning-was-signaled #:unexpected-success #:issue-of-multiple-values #:wrong-format #:debugger-was-invoked #:missing-restarts #:unexpected-output #:unmatch-condition #:unsatisfied-clause
+
     ;;;; from reporter
     #:report
     #:detail
