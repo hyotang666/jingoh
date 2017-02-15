@@ -23,5 +23,5 @@
   :pathname "src/"
   :components ((:file "design"))
   :perform (test-op(o s)
-             (uiop:symbol-call :jingoh 'verify :jingoh.tester)))
+             (uiop:symbol-call :jingoh 'verify)))
 

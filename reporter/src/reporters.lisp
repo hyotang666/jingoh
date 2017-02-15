@@ -46,7 +46,7 @@
 
 (defparameter *break-on-fails* nil)
 
-(defun verify(org &key subject ((:verbose *verbose*)*verbose*))
+(defun verify(&key (org *org*)subject ((:verbose *verbose*)*verbose*))
   (prog*((*org*(find-org org))
 	 (*package*(Org-package *org*))
 	 (current-subject '#:dummy)
