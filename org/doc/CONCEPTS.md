@@ -18,7 +18,7 @@ You can refer it as test which usual test framework has.
 Target of REQUIREMENT.
 ```management hierarchy
 +-----+
-| ORG | ; e.g. system
+| ORG | ; e.g. system or package
 +-----+
    |
 +----------------------------------------+
@@ -37,12 +37,12 @@ Target of REQUIREMENT.
 ## Symbol categories
 
 * main apis
-DEFORG IN-ORG REQUIREMENTS-ABOUT
+DEFORG IN-ORG REQUIREMENTS-ABOUT COMMON-REQUIREMENTS-ABOUT
 
 * data structure org
 MAKE-ORG - constructor
 ORG - type name
-ORG-CURRENT-SUBJECT - accessor
+ORG-CURRENT-SUBJECTS - accessor
 ORG-NAME - reader
 ORG-P - predicate
 ORG-PACKAGE - reader
@@ -55,7 +55,7 @@ DELETE-ORG FIND-ORG ORG-REQUIREMENTS-COUNT REGISTER-ORG
 ADD-REQUIREMENT DELETE-SUBJECT DO-REQUIREMENTS MAP-REQUIREMENTS
 
 * (psued) variables
-`*ORG*` `*SUBJECT*`
+`*ORG*` `*SUBJECTS*`
 
 * conditions
 API DATUM - readers
@@ -68,9 +68,10 @@ SUBJECT-DESIGNATOR - type
 ## Dictionary
 
 * `*ORG*`
-* `*SUBJECT*`
+* `*SUBJECTS*`
 * ADD-REQUIREMENT
 * API
+* COMMON-REQUIREMENTS-ABOUT
 * DATUM
 * DEFORG
 * DELETE-ORG

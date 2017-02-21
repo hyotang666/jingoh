@@ -40,3 +40,43 @@
 	  (*package*(Org-package *org*)))
       (Do-requirements(Requirement subject)
 	(mapc #'print(Check requirement))))))
+
+; subject, detail, summary
+(defvar *verbose* 2)
+
+(defparameter *break-on-fails* nil)
+
+(defun verify(&key (org *org*)subject ((:verbose *verbose*)*verbose*))
+  (prog*((*org*(find-org org))
+	 (*package*(Org-package *org*))
+	 (current-subject '#:dummy)
+	 (issues))
+    (Do-requirements((requirement sub)subject)
+      (let((result(Check requirement)))
+	(setf issues(nconc issues result))
+	(when(and result *break-on-fails*)
+	  (format t "~&Stop to verify cause *BREAK-ON-FAILS*~&@~A"sub)
+	  (go :end))
+	(when(<= 2 *verbose*)
+	  (unless(eq sub current-subject)
+	    (setf current-subject sub)
+	    (format t "~&~A"current-subject))
+	  (if result
+	    (cl-ansi-text:with-color(:red)
+	      (write-char #\!))
+	    (cl-ansi-text:with-color(:green)
+	      (write-char #\.))))))
+    (if(zerop(Org-requirements-count *org*))
+      (warn "No requirements in ~S"(Org-name *org*))
+      (let((count(length issues)))
+	(if (zerop count)
+	  (format t "~&~A ~S"
+		  (cl-ansi-text:green "Ok")
+		  (Org-name *org*))
+	  (format t "~&~A in ~S"
+		  (cl-ansi-text:red (format nil "~D fail~:*~P"count))
+		  (Org-name *org*)))))
+    :end
+    (when(or (<= 1 *verbose*)
+	     *break-on-fails*)
+      (mapc #'print issues))))

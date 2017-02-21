@@ -8,7 +8,7 @@
 (defsystem :jingoh.org
   :description "Jingoh's background database system"
   :pathname "src/"
-  :depends-on (:resignal-bind :documentation-embedder)
+  :depends-on (:resignal-bind :documentation-embedder :alexandria)
   :in-order-to ((test-op (test-op :jingoh.org-test)))
   :components((:file "package")
               ; bottom
@@ -25,4 +25,4 @@
   :pathname "src/"
   :components ((:file "design"))
   :perform (test-op(o s)
-             (uiop:symbol-call :jingoh 'report :jingoh.org)))
+             (uiop:symbol-call :jingoh 'verify)))

@@ -5,7 +5,7 @@
 (defparameter *org*(make-org)
   #.(Doc :jingoh.org "doc/AorgA.V.md"))
 
-(define-symbol-macro *subject* (ORG-CURRENT-SUBJECT *ORG*))
+(define-symbol-macro *subjects* (ORG-CURRENT-SUBJECTS *ORG*))
 (define-symbol-macro *options* (ORG-OPTIONS *ORG*))
 
 (defmacro deforg(name)
@@ -33,9 +33,10 @@
 	     :repeat (fill-pointer spec)
 	     :do (vector-pop spec)))
       ((T) ; delete current.
-       (setf (org-specifications org)
-	     (delete *subject* (! 1 (org-specifications org))
-		     :key #'car)))
+       (dolist(subject *subjects*)
+	 (setf (org-specifications org)
+	       (delete subject (! 1 (org-specifications org))
+		       :key #'car))))
       (otherwise ; delete specified.
 	(setf (org-specifications org)
 	      (delete subject-designator (! 1(org-specifications org))
@@ -61,7 +62,14 @@
   (check-type subject symbol)
   `(EVAL-WHEN(:LOAD-TOPLEVEL :COMPILE-TOPLEVEL :EXECUTE)
      (SETF *OPTIONS* ',options)
-     (SETF *SUBJECT* ',subject)))
+     (SETF *SUBJECTS* (LIST ',subject))))
+
+(defmacro common-requirements-about(subjects &rest options &key(as (error "Keyword parameter :AS is required.")))
+  (declare(ignore as))
+  (assert (every #'symbolp subjects))
+  `(EVAL-WHEN(:LOAD-TOPLEVEL :COMPILE-TOPLEVEL :EXECUTE)
+     (SETF *OPTIONS* ',options)
+     (SETF *SUBJECTS* ',subjects)))
 
 (macrolet((?!(form)
 	    `(OR ,form

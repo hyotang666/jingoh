@@ -6,8 +6,11 @@
 
 (defmacro defspec(&body body)
   #.(Doc :jingoh.tester "doc/defspec.M.md")
-  `(PROGN (ADD-REQUIREMENT ,(apply #'make-requirement (append body *options*)))
-	  *SUBJECT*))
+  `(PROGN ,@(mapcar (lambda(subject)
+		      (let((*substituter*(constantly subject)))
+			`(ADD-REQUIREMENT ,(apply #'make-requirement(append body *options*)))))
+		    *subjects*)
+	  *SUBJECTS*))
 
 (defmacro ? (&body body)
   #.(Doc :jingoh.tester "doc/Q.M.md")
@@ -19,16 +22,13 @@
 
 (defmacro & (&body body)
   #.(Doc :jingoh.tester "doc/&.M.md")
-  `(OR ,@(mapcar(lambda(form)
-		  (if(typep form '(cons (satisfies function-designator-p)T))
-		    (let((temp(gensym "TEMP")))
-		      `(LET((,temp (LIST ,@(cdr form))))
-			 (UNLESS(APPLY #',(car form) ,temp)
-			   (ERROR 'UNSATISFIED :TEST-FORM ',form
-				  :ARGS ,temp))))
-		   `(UNLESS,form
-		      (ERROR 'UNSATISFIED :TEST-FORM ',form))))
-	    body)
+  `(PROGN ,@(mapcar(lambda(form)
+		     `(ASSERT,form()
+			'UNSATISFIED :TEST-FORM ',form
+			,@(when(and (consp form)
+				    (function-designator-p (car form)))
+			    `(:ARGS (LIST ,@(cdr form))))))
+	      body)
        T))
 
 (defgeneric make-requirement(form key expected &rest params)
@@ -51,7 +51,7 @@
        (LET(,result (,output ""))
 	 (HANDLER-CASE (SETF ,output(WITH-OUTPUT-TO-STRING(*TERMINAL-IO*)
 				      ,@(let((it (getf parameters :ignore-warining)))
-					  (if(subtypep it 'warning)
+					  (if(and it(subtypep it 'warning))
 					    `((HANDLER-BIND((,it #'MUFFLE-WARNING))
 						,@body))
 					    body))))
@@ -290,6 +290,20 @@
   (declare(ignore key))
   (alexandria:with-unique-names(result actual)
     (the-standard-handling-form result parameters test-form expected
-      `(LET((,actual(MACROEXPAND-1 ',test-form)))
+      `(LET((,actual(MACROEXPAND-1 ',(canonicalize test-form parameters))))
 	 (UNLESS(SEXP= ,actual ',expected)
 	   ,(the-push-instance-form result 'ISSUE `',test-form expected actual (getf parameters :position)))))))
+
+(defmethod make-requirement(test-form (key(eql :output-satisfies)) expected
+				      &rest parameters)
+  (declare(ignore key))
+  (alexandria:with-unique-names(actual result)
+    (let((test(encallable expected))
+	 (form(canonicalize test-form parameters)))
+      (the-standard-handling-form result parameters test-form expected
+        `(LET((,actual(WITH-OUTPUT-TO-STRING(,(getf parameters :stream '*standard-output*))
+			,form)))
+	   (HANDLER-CASE(UNLESS(,test ,actual)
+			  ,(the-push-instance-form result 'ISSUE `',test-form `(SATISFIES ,test) NIL (getf parameters :position)))
+	     (UNSATISFIED(CONDITION)
+	       ,(the-push-instance-form result 'UNSATISFIED-CLAUSE `(TEST-FORM CONDITION) T NIL (getf parameters :position) :ARGS `(ARGS CONDITION)))))))))

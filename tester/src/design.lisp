@@ -104,6 +104,16 @@ satisfies accepts lambda form.
 => NIL
 
 #|
+to check complex output format, you can use :output-satisfies keyword.
+|#
+#?(? (format t "foo :bar (bazz)")
+     :output-satisfies (lambda(formatted-string)
+			 (with-input-from-string(s formatted-string)
+			   (& (eq 'foo (read s))
+			      (eq :bar (read s))
+			      (equal '(bazz) (read s))))))
+=> NIL
+#|
 Unknown keyword comes, an error will be signaled.
 |#
 #?(? 0 :no-such-keyword :hoge)
@@ -116,9 +126,10 @@ Unknown keyword comes, an error will be signaled.
 DEFSPEC defines new specifications of requirement.
 Returns currnt *subject*
 |#
-#?(let((*org*(make-org :current-subject :foo)))
+#?(let((*org*(make-org :current-subjects '(:foo))))
     (defspec (+ 1 1) => 2))
-=> :FOO
+=> (:FOO)
+,:test equal
 
 #|
 Current org (i.e. *org*) is modified.
@@ -137,9 +148,10 @@ Like CL:AND, this is asserts all form is returns non nil value.
 |#
 #?(& (symbolp 'foo))
 :expanded-to
-(OR (UNLESS (SYMBOLP 'FOO)
-	    (ERROR 'JINGOH.TESTER::UNSATISFIED :TEST-FORM '(SYMBOLP 'FOO) :ARGS (LIST 'FOO)))
-    T)
+(PROGN
+  (ASSERT(SYMBOLP 'FOO)()
+    'JINGOH.TESTER::UNSATISFIED :TEST-FORM '(SYMBOLP 'FOO) :ARGS (LIST 'FOO))
+  T)
 
 ;;;;
 (requirements-about internal-dsl)
@@ -149,7 +161,7 @@ Supported keywords are returned by RESERVED-KEYWORDS.
 |#
 #?(reserved-keywords #'make-requirement)
 :satisfies #`(null(set-exclusive-or $result
-				    '(=> :signals :outputs :satisfies :values :multiple-value-satisfies :invokes-debugger :be-the)))
+				    '(=> :signals :outputs :satisfies :values :multiple-value-satisfies :invokes-debugger :be-the :equivalents :expanded-to :output-satisfies)))
 
 #|
 encallable makes argument to fits lisp forms first element.

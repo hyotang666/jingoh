@@ -43,7 +43,14 @@
 
     #|NOTE! - Constructor is not exported. Use MAKE-INSTANCE|#
 
+    ;;;; printer control
+    #:*print-vivid*
+
     ;;;; condition
     #:syntax-error
 
     ))
+
+(in-package :jingoh.tester)
+
+(defvar *substituter* #'identity)

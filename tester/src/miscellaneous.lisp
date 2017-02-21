@@ -41,10 +41,13 @@
 	:finally (return (delete-duplicates result))))
 
 (deftype option-key()
-  '(member :test :lazy :ignore-signals :with-restarts :stream :before :after :around :position))
+  '(member :test :lazy :ignore-signals :with-restarts :stream :before :after :around :position :as))
 
 (defun canonicalize(test-form parameters)
   #.(Doc :jingoh.tester "doc/canonicalize.F.md")
+  (alexandria:when-let((as(getf parameters :as)))
+    (setf test-form(trestrul:asubst *substituter* as test-form)))
+  (setf test-form (copy-tree test-form))
   (labels((CHECK()
 	    (loop :for key :in parameters :by #'cddr
 		  :unless (typep key 'option-key)
