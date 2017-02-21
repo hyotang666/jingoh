@@ -290,7 +290,7 @@
   (declare(ignore key))
   (alexandria:with-unique-names(result actual)
     (the-standard-handling-form result parameters test-form expected
-      `(LET((,actual(MACROEXPAND-1 ',test-form)))
+      `(LET((,actual(MACROEXPAND-1 ',(canonicalize test-form parameters))))
 	 (UNLESS(SEXP= ,actual ',expected)
 	   ,(the-push-instance-form result 'ISSUE `',test-form expected actual (getf parameters :position)))))))
 
