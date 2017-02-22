@@ -8,7 +8,8 @@
   #.(Doc :jingoh.tester "doc/defspec.M.md")
   `(PROGN ,@(mapcar (lambda(subject)
 		      (let((*substituter*(constantly subject)))
-			`(ADD-REQUIREMENT ,(apply #'make-requirement(append body *options*)))))
+			`(ADD-REQUIREMENT ',subject
+					  ,(apply #'make-requirement(append body *options*)))))
 		    *subjects*)
 	  *SUBJECTS*))
 

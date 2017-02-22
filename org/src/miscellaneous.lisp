@@ -78,15 +78,12 @@
 	  (map 'list function(cdr(?!(find subject (! 0(org-specifications org))
 					  :key #'car))))))))
 
-  (defun add-requirement(requirement &optional(org *org*))
+  (defun add-requirement(subject requirement &optional(org *org*))
     #.(Doc :jingoh.org "doc/add-requirement.F.md")
-    (let((subject (loop :for subject :in *subjects*
-			:when (find subject (! 1 (org-specifications org))
-				    :key #'car)
-			:collect it)))
+    (let((subject (find subject (! 1 (org-specifications org))
+				    :key #'car)))
       (if subject
-	(dolist(sub subject)
-	  (vector-push-extend requirement (cdr sub)))
+	(vector-push-extend requirement (cdr subject))
 	(dolist(subject *subjects*)
 	  (vector-push-extend (cons subject
 				    (make-array 1
