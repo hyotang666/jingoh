@@ -47,6 +47,7 @@
   #.(Doc :jingoh.tester "doc/canonicalize.F.md")
   (alexandria:when-let((as(getf parameters :as)))
     (setf test-form(trestrul:asubst *substituter* as test-form)))
+  (setf test-form (copy-tree test-form))
   (labels((CHECK()
 	    (loop :for key :in parameters :by #'cddr
 		  :unless (typep key 'option-key)

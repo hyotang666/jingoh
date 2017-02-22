@@ -46,10 +46,10 @@
 
 (defparameter *break-on-fails* nil)
 
-(defun verify(org &key subject ((:verbose *verbose*)*verbose*))
+(defun verify(&key (org *org*)subject ((:verbose *verbose*)*verbose*))
   (prog*((*org*(find-org org))
 	 (*package*(Org-package *org*))
-	 (current-subject)
+	 (current-subject '#:dummy)
 	 (issues))
     (Do-requirements((requirement sub)subject)
       (let((result(Check requirement)))
@@ -62,15 +62,19 @@
 	    (setf current-subject sub)
 	    (format t "~&~A"current-subject))
 	  (if result
-	    (write-char #\!)
-	    (write-char #\.)))))
-    (when(<= 1 *verbose*)
-      (if(zerop(Org-requirements-count *org*))
-	(warn "No requirements in ~S"(Org-name *org*))
-	(let((count(length issues)))
-	  (format t "~&~:[~D fail~:*~P in ~S~;Pass ~*~S~]~%"
-		  (zerop count)
-		  count
+	    (cl-ansi-text:with-color(:red)
+	      (write-char #\!))
+	    (cl-ansi-text:with-color(:green)
+	      (write-char #\.))))))
+    (if(zerop(Org-requirements-count *org*))
+      (warn "No requirements in ~S"(Org-name *org*))
+      (let((count(length issues)))
+	(if (zerop count)
+	  (format t "~&~A ~S"
+		  (cl-ansi-text:green "Ok")
+		  (Org-name *org*))
+	  (format t "~&~A in ~S"
+		  (cl-ansi-text:red (format nil "~D fail~:*~P"count))
 		  (Org-name *org*)))))
     :end
     (when(or (<= 1 *verbose*)
@@ -78,7 +82,7 @@
       (dolist(issue issues)
 	(print issue)
 	(when (and (<= 3)
-		   (typep (issue-expected issue) (or sequence array pathname structure)))
+		   (typep (issue-expected issue) '(or sequence array pathname structure)))
 	  (dolist(line (uiop:split-string
 			 (with-output-to-string(*standard-output*)
 			   (prin1(mismatch-sexp (issue-form issue)
@@ -149,9 +153,8 @@
 				     sexp2
 				     (markup sexp2))
 				   ; unseen.
-				   (let((pair(rassoc sexp2 env :test #'eq)))
-				     (push (cons sexp1 sexp2) env)
-				     sexp2))))))
+				   (progn (push (cons sexp1 sexp2) env)
+					  sexp2))))))
 		(string (if (not(stringp sexp2))
 			  (markup sexp2)
 			  (if(string= sexp1 sexp2)

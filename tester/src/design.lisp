@@ -148,9 +148,10 @@ Like CL:AND, this is asserts all form is returns non nil value.
 |#
 #?(& (symbolp 'foo))
 :expanded-to
-(OR (UNLESS (SYMBOLP 'FOO)
-	    (ERROR 'JINGOH.TESTER::UNSATISFIED :TEST-FORM '(SYMBOLP 'FOO) :ARGS (LIST 'FOO)))
-    T)
+(PROGN
+  (ASSERT(SYMBOLP 'FOO)()
+    'JINGOH.TESTER::UNSATISFIED :TEST-FORM '(SYMBOLP 'FOO) :ARGS (LIST 'FOO))
+  T)
 
 ;;;;
 (requirements-about internal-dsl)

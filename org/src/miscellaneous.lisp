@@ -2,19 +2,26 @@
 
 (defun the-nil-subject-procedure(org var body return)
   (let((v(gensym "V")))
-    `(LOOP :FOR (NIL . ,v) :ACROSS (!(ORG-SPECIFICATIONS ,org))
-	   :DO (MAP NIL (LAMBDA(,var),@body),v)
-	   :FINALLY(RETURN ,return))))
+    `(LOOP :FOR (,(cadr var) . ,v) :ACROSS (!(ORG-SPECIFICATIONS ,org))
+	   :DO (MAP NIL (LAMBDA(,(car var)),@body),v)
+	   :FINALLY(RETURN (LET(,@var)
+			     (DECLARE(IGNORABLE ,@var))
+			     ,return)))))
 
 (defun the-subject-procedure(var body gname org return)
-  `(BLOCK()
-     (MAP NIL(LAMBDA(,var),@body)
-	  (CDR(?!(FIND ,gname (!(ORG-SPECIFICATIONS ,org))
-		       :KEY #'CAR))))
-     ,return))
+  (alexandria:with-unique-names(specifications subject)
+    `(LET((,specifications(!(ORG-SPECIFICATIONS ,org))))
+       (DOLIST(,(or (cadr var)subject)(UIOP:ENSURE-LIST ,gname)
+		(LET(,(car var))
+		  (DECLARE(IGNORABLE ,(car var)))
+		  ,return))
+	 (MAP NIL (LAMBDA(,(car var)),@body)
+	      (CDR(?!(FIND ,(or (cadr var)subject)
+			   ,specifications :KEY #'CAR))))))))
 
 (defmacro do-requirements((var &optional(subject-designator T)(org '*org*) return)&body body)
   #.(Doc :jingoh.org "doc/do-requirements.M.md")
+  (setf var (uiop:ensure-list var))
   (let((gname(gensym "NAME")))
     `(MACROLET((?!(form)
 		 `(OR ,form
@@ -30,6 +37,7 @@
 	   (OTHERWISE,(the-subject-procedure var body gname org return)))))))
 
 (define-compiler-macro do-requirements(&whole whole (var &optional(subject-designator T)(org '*org*) return)&body body)
+  (setf var (uiop:ensure-list var))
   (if(not(constantp subject-designator))
     whole
     `(MACROLET((?!(form)

@@ -22,13 +22,13 @@
 
 (defmacro & (&body body)
   #.(Doc :jingoh.tester "doc/&.M.md")
-  `(OR ,@(mapcar(lambda(form)
-		   `(UNLESS,form
-		      (ERROR 'UNSATISFIED :TEST-FORM ',form
-			     ,@(when(and (consp form)
-					 (function-designator-p (car form)))
-				 `(:ARGS (LIST ,@(cdr form)))))))
-	    body)
+  `(PROGN ,@(mapcar(lambda(form)
+		     `(ASSERT,form()
+			'UNSATISFIED :TEST-FORM ',form
+			,@(when(and (consp form)
+				    (function-designator-p (car form)))
+			    `(:ARGS (LIST ,@(cdr form))))))
+	      body)
        T))
 
 (defgeneric make-requirement(form key expected &rest params)
@@ -290,7 +290,7 @@
   (declare(ignore key))
   (alexandria:with-unique-names(result actual)
     (the-standard-handling-form result parameters test-form expected
-      `(LET((,actual(MACROEXPAND-1 ',test-form)))
+      `(LET((,actual(MACROEXPAND-1 ',(canonicalize test-form parameters))))
 	 (UNLESS(SEXP= ,actual ',expected)
 	   ,(the-push-instance-form result 'ISSUE `',test-form expected actual (getf parameters :position)))))))
 

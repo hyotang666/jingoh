@@ -8,7 +8,7 @@
 (defsystem :jingoh.tester
   :description "Jingoh's requirement's tester."
   :in-order-to ((test-op (test-op :jingoh.tester-test)))
-  :depends-on (:jingoh.org :millet :closer-mop :documentation-embedder :alexandria :trestrul)
+  :depends-on (:jingoh.org :millet :closer-mop :documentation-embedder :alexandria :trestrul :cl-ansi-text :cl-ppcre)
   :pathname "src/"
   :components ((:file "package")
                ; bottom
@@ -23,5 +23,5 @@
   :pathname "src/"
   :components ((:file "design"))
   :perform (test-op(o s)
-             (uiop:symbol-call :jingoh 'verify :jingoh.tester)))
+             (uiop:symbol-call :jingoh 'verify)))
 
