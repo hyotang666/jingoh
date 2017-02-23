@@ -39,7 +39,7 @@
     (call-next-method)
     (let((string (with-output-to-string(stream)
 		   (let((i(copy-structure issue)))
-		     (when(and (not (typep issue '(condition-issue unexpected-success unexpected-output missing-restarts)))
+		     (when(and (not (typep issue '(or condition-issue unexpected-success unexpected-output missing-restarts)))
 			       (or (typep (issue-expected issue)
 					  '(or sequence pathname array))
 				   (typep (class-of(issue-expected issue))
