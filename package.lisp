@@ -10,6 +10,7 @@
     #:deforg
     #:in-org
     #:requirements-about
+    #:common-requirements-about
 
     ;;;; from reader
     #:enable
