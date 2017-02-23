@@ -81,6 +81,13 @@
   (let(env)
     (labels((rec(sexp1 sexp2)
 	      (typecase sexp1
+		((cons (member let let* do do* prog prog* flet labels macrolet multiple-value-bind destructuring-bind progv lambda defun defmethod defmacro)
+		       T)
+		 (and (consp sexp2)
+		      (when(eq (car sexp1)(car sexp2))
+			(loop :for s1 :in (cdr sexp1)
+			      :for s2 :in (cdr sexp2)
+			      :always (sexp= s1 s2)))))
 		(cons (and (consp sexp2)
 			   (rec (car sexp1)(car sexp2))
 			   (rec (cdr sexp1)(cdr sexp2))))
