@@ -83,14 +83,17 @@
 	(print issue)
 	(when (and (<= 3)
 		   (typep (issue-expected issue) '(or sequence array pathname structure)))
-	  (format t "~&;;;; hint ?")
-	  (dolist(line (uiop:split-string
-			 (with-output-to-string(*standard-output*)
-			   (prin1(mismatch-sexp (issue-actual issue)
-						(issue-expected issue))))
-			 :separator
-			 '(#\newline)))
-	    (format t "~&; ~A"line)))))))
+	  (hint issue))))))
+
+(defun hint(issue)
+  (format t "~&;;;; hint ?")
+  (dolist(line (uiop:split-string
+		 (with-output-to-string(*standard-output*)
+		   (prin1(mismatch-sexp (issue-actual issue)
+					(issue-expected issue))))
+		 :separator
+		 '(#\newline)))
+    (format t "~&; ~A"line)))
 
 (defstruct(diff(:constructor markup (object)))
   object)
