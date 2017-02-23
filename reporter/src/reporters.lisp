@@ -83,10 +83,11 @@
 	(print issue)
 	(when (and (<= 3)
 		   (typep (issue-expected issue) '(or sequence array pathname structure)))
+	  (format t "~&;;;; hint ?")
 	  (dolist(line (uiop:split-string
 			 (with-output-to-string(*standard-output*)
-			   (prin1(mismatch-sexp (issue-form issue)
-						(issue-actual issue))))
+			   (prin1(mismatch-sexp (issue-actual issue)
+						(issue-expected issue))))
 			 :separator
 			 '(#\newline)))
 	    (format t "~&; ~A"line)))))))
@@ -141,20 +142,24 @@
 		 (if(eq sexp1 sexp2)
 		   sexp2
 		   (markup sexp2)))
-		(symbol (and (symbolp sexp2)
-			     (if(symbol-package sexp1)
-			       (if(eq sexp1 sexp2)
-				 sexp2
-				 (markup sexp2))
-			       ;; sexp1 is uninterned symbol.
-			       (let((pair(assoc sexp1 env :test #'eq)))
-				 (if pair ; seen.
-				   (if(eq sexp2 (cdr pair))
-				     sexp2
-				     (markup sexp2))
-				   ; unseen.
-				   (progn (push (cons sexp1 sexp2) env)
-					  sexp2))))))
+		(symbol (if(not (symbolp sexp2))
+			  (markup sexp2)
+			  (if(symbol-package sexp1)
+			    (if(eq sexp1 sexp2)
+			      sexp2
+			      (markup sexp2))
+			    ;; sexp1 is uninterned symbol.
+			    (let((pair(assoc sexp1 env :test #'eq)))
+			      (if pair ; seen.
+				(if(eq sexp2 (cdr pair))
+				  sexp2
+				  (markup sexp2))
+				; unseen.
+				(let((pair(rassoc sexp2 env :test #'eq)))
+				  (if pair ; seen.
+				    (markup sexp2)
+				    (progn (push (cons sexp1 sexp2) env)
+					   sexp2))))))))
 		(string (if (not(stringp sexp2))
 			  (markup sexp2)
 			  (if(string= sexp1 sexp2)
@@ -217,3 +222,6 @@
 					    (slot-value sexp2 slot2)))))))))
 	    )
       (rec sexp1 sexp2))))
+
+(defun slots<=obj(obj)
+  (mapcar #'closer-mop:slot-definition-name (closer-mop:class-slots(class-of obj))))
