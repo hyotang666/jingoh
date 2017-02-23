@@ -79,21 +79,7 @@
     :end
     (when(or (<= 1 *verbose*)
 	     *break-on-fails*)
-      (dolist(issue issues)
-	(print issue)
-	(when (and (<= 3)
-		   (typep (issue-expected issue) '(or sequence array pathname structure)))
-	  (hint issue))))))
-
-(defun hint(issue)
-  (format t "~&;;;; hint ?")
-  (dolist(line (uiop:split-string
-		 (with-output-to-string(*standard-output*)
-		   (prin1(mismatch-sexp (issue-actual issue)
-					(issue-expected issue))))
-		 :separator
-		 '(#\newline)))
-    (format t "~&; ~A"line)))
+      (mapc #'print issues))))
 
 (defstruct(diff(:constructor markup (object)))
   object)
