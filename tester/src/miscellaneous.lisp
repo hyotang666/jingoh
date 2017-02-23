@@ -117,6 +117,3 @@
 					     (slot-value sexp2 slot2))))
 		     (equal sexp1 sexp2))))))
       (rec sexp1 sexp2))))
-
-(defun slots<=obj(obj)
-  (mapcar #'closer-mop:slot-definition-name (closer-mop:class-slots(class-of obj))))
