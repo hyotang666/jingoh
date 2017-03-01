@@ -22,16 +22,6 @@
 
 (defstruct(wrong-format (:include test-issue)))
 
-#+(or sbcl)
-(defmethod make-instance :around ((type structure-class) &rest args)
-  (loop :with instance = (closer-mop:class-prototype type)
-	:for slot :in (closer-mop:class-slots type)
-	:for name = (closer-mop:slot-definition-name slot)
-	:do(setf (slot-value instance name)
-		 (or (getf args (intern(symbol-name name):keyword))
-		     (funcall(closer-mop:slot-definition-initfunction slot))))
-	:finally (return instance)))
-
 (defparameter *print-vivid* T)
 
 (defmethod print-object((issue issue)stream)
@@ -39,16 +29,18 @@
     (call-next-method)
     (let((string (with-output-to-string(stream)
 		   (let((i(copy-structure issue)))
-		     (when(and (not (typep issue '(or condition-issue unexpected-success unexpected-output missing-restarts)))
-			       (or (typep (issue-expected issue)
-					  '(or sequence pathname array))
-				   (typep (class-of(issue-expected issue))
-					  'structure-class)))
+		     (when(should-print-vivid-p i)
 		       (setf (issue-actual i)
 			     (mismatch-sexp (issue-actual issue)
 					    (issue-expected issue))))
 		     (call-next-method i stream)))))
       (princ(regex-replace issue string)stream))))
+
+(defun should-print-vivid-p(issue)
+  (and (not (typep issue '(or condition-issue unexpected-success unexpected-output missing-restarts)))
+       (or (typep (issue-expected issue) '(or sequence pathname array))
+	   (typep (class-of(issue-expected issue))
+		  'structure-class))))
 
 (defun regex-replace(issue string)
   (labels((REC(slots acc)
@@ -58,10 +50,10 @@
 		    (cdr slots)
 		    :yellow
 		    acc)))
-	  (BODY(slot-name rest color &optional acc)
-	    (destructuring-bind(pre post)(ppcre:split slot-name string :limit 2)
+	  (BODY(name rest color &optional acc)
+	    (destructuring-bind(pre post)(ppcre:split name string :limit 2)
 	      (setf string post)
-	      (REC rest (list* (uiop:symbol-call :cl-ansi-text color slot-name)
+	      (REC rest (list* (uiop:symbol-call :cl-ansi-text color name)
 			       pre acc))))
 	  (DO-RETURN(acc)
 	    (apply #'concatenate 'string (nreverse(push string acc))))
@@ -76,8 +68,9 @@
 	    (:constructor markup-string (object origin)))
   origin)
 (defmethod print-object((object diff)*standard-output*)
-  (cl-ansi-text:with-color(:red)
-    (prin1(diff-object object))))
+  (let((*print-vivid* NIL))
+    (cl-ansi-text:with-color(:red)
+      (prin1(diff-object object)))))
 
 (defvar *color-hook* #'cl-ansi-text:red)
 
@@ -95,8 +88,10 @@
 	(post-string(nreverse(subseq rev-object 0 rev-end))))
     (prin1 (concatenate 'string
 			pre-string
-			(funcall *color-hook* (subseq (string-diff-object object)
-						      pre-end post-start))
+			(if(<= pre-end post-start)
+			  (funcall *color-hook* (subseq (string-diff-object object)
+							pre-end post-start))
+			  "")
 			(cond
 			  ;; too much short
 			  ((= pre-end (length (string-diff-object object)))

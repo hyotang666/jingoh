@@ -8,8 +8,9 @@
     #:=>
     #:unspecified
     #:implementation-dependent
-    #:&
     #:call-body
+    #:&
+    #:sexp=
     ;; evaluator
     #:?
     #:check
@@ -53,4 +54,4 @@
 
 (in-package :jingoh.tester)
 
-(defvar *substituter* #'identity)
+(defvar *substituter*)

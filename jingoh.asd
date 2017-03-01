@@ -12,7 +12,7 @@
   :long-description #.(format nil "~{~A~&~}"(demb:cached-file-lines))
   :license #.(demb:license :demb (find-if (demb:searcher "* License")
                                           (demb:cached-file-lines)))
-  :depends-on (:jingoh.org :jingoh.tester :jingoh.reporter :jingoh.reader
+  :depends-on (:jingoh.org :jingoh.tester :jingoh.examiner :jingoh.reader
                            :named-readtables :documentation-embedder)
   :in-order-to ((test-op (test-op :jingoh-test)))
   :components((:file "package")))
@@ -24,4 +24,4 @@
                   (*load-verbose* nil)
                   (*load-print* nil)
                   (*compile-print* nil))
-               (mapc #'test-system '(:jingoh.org :jingoh.tester :jingoh.reporter :jingoh.reader)))))
+               (mapc #'test-system '(:jingoh.org :jingoh.tester :jingoh.examiner :jingoh.reader)))))

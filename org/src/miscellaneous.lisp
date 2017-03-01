@@ -1,9 +1,13 @@
 (in-package :jingoh.org)
 
 (defun the-nil-subject-procedure(org var body return)
-  (let((v(gensym "V")))
-    `(LOOP :FOR (,(cadr var) . ,v) :ACROSS (!(ORG-SPECIFICATIONS ,org))
-	   :DO (MAP NIL (LAMBDA(,(car var)),@body),v)
+  ; iterate all requirements
+  (let((s(gensym "S"))
+       (sub?(cadr var)))
+    `(LOOP :FOR ,s :ACROSS (!(ORG-SPECIFICATIONS ,org))
+	   ,@(when sub?
+	       `(:for ,sub? = (SPEC-SUBJECT ,s)))
+	   :DO (MAP NIL (LAMBDA(,(car var)),@body)(SPEC-REQUIREMENTS ,s))
 	   :FINALLY(RETURN (LET(,@var)
 			     (DECLARE(IGNORABLE ,@var))
 			     ,return)))))
@@ -16,8 +20,9 @@
 		  (DECLARE(IGNORABLE ,(car var)))
 		  ,return))
 	 (MAP NIL (LAMBDA(,(car var)),@body)
-	      (CDR(?!(FIND ,(or (cadr var)subject)
-			   ,specifications :KEY #'CAR))))))))
+	      (SPEC-REQUIREMENTS(?!(FIND ,(or (cadr var)subject)
+					 ,specifications
+					 :KEY #'SPEC-SUBJECT))))))))
 
 (defmacro do-requirements((var &optional(subject-designator T)(org '*org*) return)&body body)
   #.(Doc :jingoh.org "doc/do-requirements.M.md")
@@ -26,14 +31,14 @@
     `(MACROLET((?!(form)
 		 `(OR ,form
 		      (ERROR'MISSING-SUBJECT :API 'DO-REQUIREMENTS
-					     :DATUM ,',subject-designator)))
+					     :DATUM ,',gname)))
 	       (!(form)
 		 `(RESIGNAL-BIND((TYPE-ERROR()'NOT-ORG :API 'DO-REQUIREMENTS))
 		    ,FORM)))
        (LET((,gname ,subject-designator))
 	 (CASE,gname
 	   ((NIL),(the-nil-subject-procedure org var body return))
-	   ((T),(the-subject-procedure var body '*SUBJECTS* org return))
+	   ((T),(the-subject-procedure var body `(SETF ,gname (ORG-CURRENT-SUBJECTS *ORG*)) org return))
 	   (OTHERWISE,(the-subject-procedure var body gname org return)))))))
 
 (define-compiler-macro do-requirements(&whole whole (var &optional(subject-designator T)(org '*org*) return)&body body)
@@ -49,7 +54,7 @@
 		    ,FORM)))
        ,(case subject-designator
 	  ((NIL)(the-nil-subject-procedure org var body return))
-	  ((T)(the-subject-procedure var body '*SUBJECTS* org return))
+	  ((T)(the-subject-procedure var body '(ORG-CURRENT-SUBJECTS *ORG*) org return))
 	  (otherwise
 	    (the-subject-procedure var body subject-designator org return))))))
 
@@ -61,41 +66,41 @@
 	       ,form))
 	  (?!(form)
 	    `(OR ,form
-		 (ERROR 'MISSING-SUBJECT :API 'map-topic :DATUM SUBJECT))))
+		 (ERROR 'MISSING-SUBJECT :API 'map-requirements :DATUM SUB))))
 
   (defun map-requirements(function &optional(subject T)(org *org*))
-    #++(Doc :jingoh.org "doc/map-topic.F.md")
-    (case subject
-      ((NIL) ; all subject.
-       (loop :for (NIL . v) :across (! 0(org-specifications org))
-	     :nconc(map 'list function v)))
-      ((T) ; current subject
-       (loop :for subject :in *subjects*
-	     :append (map 'list function (cdr(?!(find subject(! 0 (org-specifications org))
-						      :key #'car))))))
-      (otherwise
-	(block() ; in order to keep same behavior.
-	  (map 'list function(cdr(?!(find subject (! 0(org-specifications org))
-					  :key #'car))))))))
+    (flet((s-reqs(sub)
+	    (spec-requirements(?!(find sub(! 0 (org-specifications org))
+				       :key #'spec-subject)))))
+      (case subject
+	((NIL) ; all subject.
+	 (loop :for spec :across (! 0(org-specifications org))
+	       :nconc(map 'list function (spec-requirements spec))))
+	((T) ; current subject
+	 (loop :for sub :in (org-current-subjects *org*)
+	       :nconc (map 'list function(s-reqs sub))))
+	(otherwise
+	  (map 'list function(s-reqs subject))))))
 
   (defun add-requirement(subject requirement &optional(org *org*))
     #.(Doc :jingoh.org "doc/add-requirement.F.md")
-    (let((sub (find subject (! 1 (org-specifications org))
-				    :key #'car)))
-      (if sub
-	(vector-push-extend requirement (cdr sub))
-	(vector-push-extend (cons subject
-				  (make-array 1
-					      :fill-pointer 1
-					      :adjustable t
-					      :initial-contents (list requirement)))
+    (check-type subject symbol)
+    (let((spec (find subject (! 1 (org-specifications org))
+				    :key #'spec-subject)))
+      (if spec
+	(vector-push-extend requirement (spec-requirements spec))
+	(vector-push-extend (spec subject requirement)
 			    (org-specifications org))))
     requirement)
 
   (defun org-requirements-count(org)
     #.(Doc :jingoh.org "doc/org-requirements-count.F.md")
-    (loop :for (NIL . v) :across (! 2(org-specifications org))
-	  :sum (length v)))
+    (loop :for s :across (! 2(org-specifications org))
+	  :sum (length (spec-requirements s))))
 
   ) ; end of macrolet
 
+(defun find-subject(subject &optional(org *org*))
+  (loop :for s :across (org-specifications org)
+	:when (eq subject (spec-subject s))
+	:return s))

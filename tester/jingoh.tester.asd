@@ -7,8 +7,7 @@
 
 (defsystem :jingoh.tester
   :description "Jingoh's requirement's tester."
-  :in-order-to ((test-op (test-op :jingoh.tester-test)))
-  :depends-on (:jingoh.org :millet :closer-mop :documentation-embedder :alexandria :trestrul :cl-ansi-text :cl-ppcre)
+  :depends-on (:jingoh.org :millet :closer-mop :documentation-embedder :alexandria :cl-ansi-text :cl-ppcre :structure-ext)
   :pathname "src/"
   :components ((:file "package")
                ; bottom
@@ -18,10 +17,5 @@
                (:file "tester" :depends-on ("miscellaneous" "report"))
 	       ))
 
-(defsystem :jingoh.tester-test
-  :depends-on (:jingoh :named-readtables)
-  :pathname "src/"
-  :components ((:file "design"))
-  :perform (test-op(o s)
-             (uiop:symbol-call :jingoh 'verify)))
-
+(defmethod perform ((o test-op) (c (eql (find-system "jingoh.tester"))))
+  (test-system :jingoh.tester.test))

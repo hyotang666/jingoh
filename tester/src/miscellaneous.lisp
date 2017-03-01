@@ -6,7 +6,8 @@
 	(eq T condition))))
 
 (defun function-designator-p(symbol)
-  (and (fboundp symbol)
+  (and (symbolp symbol)
+       (fboundp symbol)
        (not (macro-function symbol))
        (not (special-operator-p symbol))))
 
@@ -19,13 +20,14 @@
     (FUNCTION(if not-first-p
 	       form
 	       (or (millet:function-name form)
+		   (function-lambda-expression form)
 		   `(LAMBDA(&REST ARGS)
 		      (APPLY ,form ARGS)))))
     ((CONS (EQL LAMBDA) T)form)
     ((OR (CONS (EQL FUNCTION)(CONS SYMBOL NULL))
 	 (CONS (EQL QUOTE)(CONS SYMBOL NULL)))
      (if not-first-p
-       form
+       `(function ,(cadr form))
        (second form)))
     (T (error'syntax-error
 	 :format-control "?: ~S is not function name"
@@ -45,13 +47,13 @@
 
 (defun canonicalize(test-form parameters)
   #.(Doc :jingoh.tester "doc/canonicalize.F.md")
-  (alexandria:when-let((as(getf parameters :as)))
-    (setf test-form(trestrul:asubst *substituter* as test-form)))
   (setf test-form (copy-tree test-form))
   (labels((CHECK()
 	    (loop :for key :in parameters :by #'cddr
 		  :unless (typep key 'option-key)
-		  :do (error "Unknown options key ~S in ~S"key parameters)))
+		  :do (error "Unknown options key ~S in ~S~&Allowed are ~S "
+			     key parameters
+			     (millet:type-expand 'option-key))))
 	  (MAKE-BODY()
 	    (SET-AROUND (let((after(getf parameters :after)))
 			  (if after

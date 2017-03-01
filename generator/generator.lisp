@@ -21,8 +21,22 @@
       (let((*macroexpand-hook* #'HOOK))
 	(asdf:load-system system :force t))
       (let((*default-pathname-defaults*(spec-directory system)))
+	(add-perform system)
 	(generate-asd system forms)
 	(map nil #'generate forms)))))
+
+(defun add-perform (system)
+  (let((directory(asdf:system-source-file system)))
+    (with-open-file(*standard-output* directory :direction :output
+		      :if-exists :append)
+      (%add-perform (asdf:coerce-name system)))))
+
+(defun %add-perform(name)
+  (let((*package*(find-package :asdf)))
+    (format t "~&~(~S~)"
+	    `(defmethod asdf:perform((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name))))
+	       (asdf:test-system ,(intern(format nil "~:@(~A~).TEST"name)
+			       :keyword))))))
 
 (defun spec-directory(system)
   (uiop:subpathname (asdf:system-source-directory (asdf:find-system system))
@@ -51,7 +65,7 @@
 			  :depends-on (:jingoh ,(asdf:coerce-name system))
 			  :components ,(mapcar #'component forms)
 			  :perform (asdf:test-op(asdf::o asdf::c)
-				     (uiop:symbol-call :jingoh :verify)))))))
+				     (uiop:symbol-call :jingoh :examine)))))))
 
 (defmethod generate((form list) &key)
   (assert(typep form '(CONS (EQL DEFPACKAGE) T)))
@@ -135,7 +149,7 @@
 	  ~@[~A~]~
 	  ~&|#~2%~
 	  ;; Value type is ~A~%~
-	  #? ~A :be-the ???~2%~
+	  ;#? ~A :be-the ???~2%~
 	  ;; Initial value is ~S~2%~
 	  #| Affected By: |#~2%~
 	  #| Notes: |#~2%"
@@ -155,7 +169,7 @@
 	  ~@[~A~]~
 	  ~&|#~2%~
 	  ;; Expanded-form is ~S~%~
-	  #? ~A :expanded-to ???~2%"
+	  ;#? ~A :expanded-to ???~2%"
 	  symbol
 	  (documentation symbol 'function)
 	  (macroexpand-1 symbol)
@@ -258,24 +272,25 @@
 
 (defun function-template(symbol roll)
   (let((lambda-list(millet:lambda-list symbol))
-       (setf-expander(setf-expander symbol)))
+       (setf-expander(setf-expander symbol))
+       (notation(ensure-symbol-notation symbol)))
     (format t "(requirements-about ~A)~2%~
     ;;;; [~:(~A~)] ~A~2%~
     #| Description: ~@[~%~A ~]|#~2%~
     #+syntax~%(~A~@[ ~{~(~S~)~^ ~}~]) ; => result~2%~
-    ~@[~S ; => new-value~2%~]~
+    ~@[#+setf~%~S ; => new-value~2%~]~
     ~@[#| Argument Precedence Order:~%~{~(~S~)~^ ~}~%|#~2%~]~
     ~@[#| Method signature:~%~{~S~%~}|#~2%~]~
     ;;; Arguments and Values:~2%~
     ~{#| ~(~A~) := |#~2%~}#| result := |#~2%~
     ~{#| ~:(~A~): |#~2%~}"
-    symbol ; requirements-about
+    notation ; requirements-about
     (if setf-expander ; roll
       :accessor
       roll)
-    symbol ; name
+    notation ; name
     (documentation symbol 'function) ; description
-    symbol
+    notation
     lambda-list ; lambda-list
     (when setf-expander ; setf
       (destructuring-bind(op name)(millet:function-name setf-expander)
@@ -291,6 +306,11 @@
 						     roll))
     '(|affected by| side-effects notes exceptional-situations)
     )))
+
+(defun ensure-symbol-notation(symbol)
+  (if(some #'lower-case-p (symbol-name))
+    (format nil "|~A|"symbol)
+    (symbol-name symbol)))
 
 (defun setf-expander(symbol)
   (ignore-errors(fdefinition `(SETF ,symbol))))

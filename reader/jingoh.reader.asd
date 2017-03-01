@@ -7,15 +7,9 @@
 
 (defsystem :jingoh.reader
   :description "Dispatch macro for jingoh"
-  :in-order-to ((test-op (test-op :jingoh.reader-test)))
   :depends-on (:jingoh.tester :millet :named-readtables :musam :documentation-embedder)
   :pathname "src/"
   :components((:file "reader")))
 
-(defsystem :jingoh.reader-test
-  :depends-on (:jingoh :named-readtables)
-  :pathname "src/"
-  :components ((:file "design"))
-  :perform (test-op(o s)
-             (uiop:symbol-call :jingoh 'verify)))
-
+(defmethod perform ((o test-op) (c (eql (find-system "jingoh.reader"))))
+  (test-system :jingoh.reader.test))

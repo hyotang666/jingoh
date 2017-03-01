@@ -24,15 +24,15 @@
   (let((var (gensym "CHAR"))
        (it(gensym "TEMP")))
     `(LET*((,var ,char)
-	     (,it(GET-DISPATCH-MACRO-CHARACTER #\# ,var)))
-	 (IF(NULL ,it) ; Noone use it.
-	   #0=(REPLACE-MACRO-CHARACTER ,var)
-	   (IF(EQ '|#?reader| (MILLET:FUNCTION-NAME ,it)) ; it's me!
-	     #0#
-	     (RESTART-CASE(ERROR'MACRO-CHAR-CONFLICTION 
-			    :FORMAT-CONTROL "Dispatch macro #~C is used. ~S"
-			    :FORMAT-ARGUMENTS (LIST ,var ,it))
-	       (REPLACE() :REPORT "Replace it." #0#)))))))
+	   (,it(GET-DISPATCH-MACRO-CHARACTER #\# ,var)))
+       (IF(NULL ,it) ; Noone use it.
+	 #0=(REPLACE-MACRO-CHARACTER ,var)
+	 (IF(EQ '|#?reader| (MILLET:FUNCTION-NAME ,it)) ; it's me!
+	   #0#
+	   (RESTART-CASE(ERROR'MACRO-CHAR-CONFLICTION 
+			  :FORMAT-CONTROL "Dispatch macro #~C is used. ~S"
+			  :FORMAT-ARGUMENTS (LIST ,var ,it))
+	     (REPLACE() :REPORT "Replace it." #0#)))))))
 
 (defun replace-macro-character(char)
   #.(Doc :jingoh.reader "doc/replace-macro-character.F.md")

@@ -5,19 +5,13 @@
   (defsystem :doc-bootstrap
     :defsystem-depends-on (:documentation-embedder)))
 
-(defsystem :jingoh.reporter
+(defsystem :jingoh.examiner
   :description "Jingoh's printing issues feature."
   :depends-on (:jingoh.org :jingoh.tester :resignal-bind :documentation-embedder :cl-ansi-text)
-  :in-order-to ((test-op (test-op :jingoh.reporter-test)))
   :pathname "src/"
   :serial t
   :components ((:file "package")
-	       (:file "reporters")))
+	       (:file "examine")))
 
-(defsystem :jingoh.reporter-test
-  :depends-on (:jingoh :millet :named-readtables)
-  :pathname "src/"
-  :components ((:file "design"))
-  :perform (test-op(o s)
-             (uiop:symbol-call :jingoh 'verify)))
-
+(defmethod perform ((o test-op) (c (eql (find-system "jingoh.examiner"))))
+  (test-system :jingoh.examiner.test))

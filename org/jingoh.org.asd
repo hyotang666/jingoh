@@ -9,7 +9,6 @@
   :description "Jingoh's background database system"
   :pathname "src/"
   :depends-on (:resignal-bind :documentation-embedder :alexandria)
-  :in-order-to ((test-op (test-op :jingoh.org-test)))
   :components((:file "package")
               ; bottom
               (:file "conditions" :depends-on ("package"))
@@ -20,9 +19,5 @@
               (:file "miscellaneous" :depends-on ("deforg" "conditions"))
               ))
 
-(defsystem :jingoh.org-test
-  :depends-on (:jingoh :named-readtables)
-  :pathname "src/"
-  :components ((:file "design"))
-  :perform (test-op(o s)
-             (uiop:symbol-call :jingoh 'verify)))
+(defmethod perform ((o test-op)(c (eql (find-system :jingoh.org))))
+  (test-system :jingoh.org.test))
