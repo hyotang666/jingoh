@@ -1,110 +1,4 @@
-(defpackage :jingoh.generator(:use :cl)
-  (:export
-    #:generate
-    ))
 (in-package :jingoh.generator)
-
-(defgeneric generate(arg &key))
-
-(defmethod generate ((system asdf:system) &key)
-  (let(forms)
-    (labels((LOAD-DEPENDENCIES(system)
-	      (mapc #'asdf:load-system(asdf:system-depends-on system)))
-	    (HOOK(expander form env)
-	      (when(DEFPACKAGEP form)
-		(push form forms))
-	      (funcall expander form env))
-	    (DEFPACKAGEP(form)
-	      (typep form '(CONS(EQL DEFPACKAGE)T)))
-	    )
-      (LOAD-DEPENDENCIES system)
-      (let((*macroexpand-hook* #'HOOK))
-	(asdf:load-system system :force t))
-      (let((*default-pathname-defaults*(spec-directory system)))
-	(generate-asd system forms)
-	(map nil #'generate forms)))))
-
-(defun spec-directory(system)
-  (uiop:subpathname (asdf:system-source-directory (asdf:find-system system))
-		    "spec/"))
-
-(defun generate-asd(system forms)
-  (ensure-directories-exist *default-pathname-defaults*)
-  (with-open-file(*standard-output* (format nil "~A~A.test.asd"
-					    *default-pathname-defaults*
-					    (asdf:coerce-name system))
-				    :direction :output
-				    :if-exists :supersede
-				    :if-does-not-exist :create)
-    (%generate-asd system forms)))
-
-(defun %generate-asd(system forms)
-  (labels((component(form)
-	    `(:file ,(string-downcase(second form)))))
-    (let((*package* (find-package :asdf)))
-      (format t "; vim: ft=lisp et~%~
-	      (in-package :asdf)~%~
-	      ~(~S~)"
-	      `(asdf:defsystem ,(intern (format nil "~:@(~A~).TEST"
-						(asdf:coerce-name system))
-					:keyword)
-			  :depends-on (:jingoh ,(asdf:coerce-name system))
-			  :components ,(mapcar #'component forms)
-			  :perform (asdf:test-op(asdf::o asdf::c)
-				     (uiop:symbol-call :jingoh :verify)))))))
-
-(defmethod generate((form list) &key)
-  (assert(typep form '(CONS (EQL DEFPACKAGE) T)))
-  (macrolet((expand(existp)
-	      `(WITH-OPEN-FILE(*STANDARD-OUTPUT* PATH
-				:DIRECTION :OUTPUT
-				,@(if existp
-				    `(:IF-EXISTS :APPEND)
-				    `(:IF-DOES-NOT-EXIST :CREATE)))
-		 ,@(unless existp
-		     `((GENERATE-HEADER(SECOND FORM))))
-		 (DOLIST(SYMBOL (EXPORTS FORM))
-		   (SYMBOL-GENERATE SYMBOL (SECOND FORM))))))
-    (labels((exports(form)
-	      (loop :for elt :in form
-		    :when (typep elt '(CONS(EQL :EXPORT)T))
-		    :append (cdr elt))))
-      (let((path(format nil "~A~(~A~).lisp"
-			*default-pathname-defaults*
-			(second form)))
-	   (*package*(find-package(second form))))
-	(if (probe-file path)
-	  (expand t)
-	  (expand nil))))))
-
-(defun generate-header(package-name)
-  (let((spec-name(intern (format nil "~A.SPEC"package-name)
-			 :keyword)))
-    (format t "~(~S~)~%~
-	    (in-package ~(~S~))~%~
-	    (setup ~(~:*~S~))~2%"
-	    `(defpackage ,spec-name (:use :cl :jingoh ,package-name))
-	    spec-name
-	    )))
-
-(defmethod generate ((symbol symbol) &key system)
-  (if(keywordp symbol)
-    (generate(asdf:find-system symbol))
-    (let*((*package* (symbol-package symbol))
-	  (package-name(package-name *package*))
-	  (system(asdf:find-system (or system (string-downcase package-name))))
-	  (*default-pathname-defaults*(spec-directory system))
-	  (forms `((defpackage ,package-name
-		     (:export ,symbol))))
-	  (path(format nil "~A.test.asd"
-		       *default-pathname-defaults*)))
-      (macrolet((expand(existsp)
-		  `(PROGN ,@(unless existsp
-			      `((GENERATE-ASD SYSTEM FORMS)))
-			  (MAP NIL #'GENERATE FORMS))))
-	(if(probe-file path)
-	  (expand T)
-	  (expand nil))))))
 
 (defun symbol-generate(symbol package)
   (let((symbol(find-symbol (string symbol)package)))
@@ -273,9 +167,9 @@
     (if setf-expander ; roll
       :accessor
       roll)
-    symbol ; name
+    (ensure-symbol-notation symbol) ; name
     (documentation symbol 'function) ; description
-    symbol
+    (ensure-symbol-notation symbol)
     lambda-list ; lambda-list
     (when setf-expander ; setf
       (destructuring-bind(op name)(millet:function-name setf-expander)
@@ -291,6 +185,11 @@
 						     roll))
     '(|affected by| side-effects notes exceptional-situations)
     )))
+
+(defun ensure-symbol-notation(symbol)
+  (if(some #'lower-case-p (symbol-name symbol))
+    (format nil "|~A|"symbol)
+    (symbol-name symbol)))
 
 (defun setf-expander(symbol)
   (ignore-errors(fdefinition `(SETF ,symbol))))
