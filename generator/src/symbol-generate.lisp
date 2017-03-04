@@ -23,18 +23,22 @@
 (defun symbol-macrop(symbol)
   (nth-value 1 (macroexpand-1 symbol)))
 
+(defun comentize(string)
+  (format nil "~{; ~A~%~}"
+	  (uiop:split-string (or string "")
+			     :separator '(#\newline))))
+
 (defun |variable|(symbol)
   (format t "(requirements-about ~A)~2%~
-	  #| [Variable] ~:*~A~%~
-	  ~@[~A~]~
-	  ~&|#~2%~
-	  ;; Value type is ~A~%~
-	  #? ~A :be-the ???~2%~
-	  ;; Initial value is ~S~2%~
-	  #| Affected By: |#~2%~
-	  #| Notes: |#~2%"
+	  ;;;; Description:~%~
+	  ~A~%~
+	  ;;;; Value type is ~A~%~
+	  ;#? ~A :be-the ???~2%~
+	  ; Initial value is ~S~2%~
+	  ;;;; Affected By:~2%~
+	  ;;;; Notes:~2%"
 	  symbol
-	  (documentation symbol 'variable)
+	  (comentize (documentation symbol 'variable))
 	  (if(boundp symbol)
 	    (type-of(symbol-value symbol))
 	    :unbound)
@@ -45,13 +49,11 @@
 
 (defun |symbol-macro|(symbol)
   (format t "(requirements-about ~A)~2%~
-	  #| [Symbol-macro] ~:*~S~%~
-	  ~@[~A~]~
-	  ~&|#~2%~
-	  ;; Expanded-form is ~S~%~
-	  #? ~A :expanded-to ???~2%"
+	  ;;;; Description:~%~A~~&
+	  ; Expanded-form is ~S~%~
+	  ;#? ~A :expanded-to ???~2%"
 	  symbol
-	  (documentation symbol 'function)
+	  (comentize(documentation symbol 'function))
 	  (macroexpand-1 symbol)
 	  symbol))
 
@@ -73,39 +75,36 @@
 	  :class)))))
 
 (defun %type-template(symbol)
-  (format t "#| [Type] ~A~%~
-	  ~@[~A~2%~]~
-	  |#~2%~
-	  ;; Compound Type Specifier Kind:~2%~
-	  ;; Compound Type Specifier Syntax:~2%~
-	  ;; Compound Type Specifier Arguments:~2%~
-	  ;; Compound Type Specifier Description:~2%"
+  (format t "(requirements-about ~A)~%~
+	  ;;;; Description:~%~
+	  ~A~&~
+	  ;;;; Compound Type Specifier Kind:~2%~
+	  ;;;; Compound Type Specifier Syntax:~2%~
+	  ;;;; Compound Type Specifier Arguments:~2%~
+	  ;;;; Compound Type Specifier Description:~2%"
 	  symbol
-	  (documentation symbol 'type)))
+	  (comentize(documentation symbol 'type))))
 
 (defun class-template(type symbol)
+  (declare(ignore type))
   (let((class(find-class symbol)))
     (format t "(requirements-about ~A)~2%~
-	    #|~
-	    [~:(~A~)] ~A~%~
-	    ~@[~A~]~
-	    ~&|#~2%~
-	    ;; Class Precedence List: (case in ~A)~%~
-	    ;; ~{~(~A~)~^ ~}~2%~
-	    ;; Effective Slots:~2%"
+	    ;;;; Description:~%~
+	    ~A~&~
+	    ;;;; Class Precedence List: (case in ~A)~%~
+	    ; ~{~(~A~)~^ ~}~2%~
+	    ;;;; Effective Slots:~2%"
 	    symbol
-	    type
-	    symbol
-	    (documentation symbol 'type)
+	    (comentize(documentation symbol 'type))
 	    uiop:*implementation-type*
 	    (mapcar #'class-name(closer-mop:class-precedence-list class)))
     (dolist(slot(applicables class))
       (apply #'format t
-	     ";; ~A [Type] ~A~%~
-	     ~{~@[~{;; [~A] ~{~(~S~)~^ ~}~}~%~]~}~%~
+	     "; ~A [Type] ~A~%~
+	     ~{~@[~{; [~A] ~{~(~S~)~^ ~}~}~%~]~}~%~
 	     ~@[~A~]~&"
 	     slot))
-    (format t "#| Notes: |#~2%")
+    (format t ";;;; Notes:~2%")
     ))
 
 (defun applicables(class)
@@ -139,7 +138,8 @@
 				       w)))
 			       (when it (list :writer it)))
 			     (when a (list :accessor a)))
-		       (documentation slot t))))
+		       (handler-bind((warning #'muffle-warning))
+			 (documentation slot t)))))
 
 (defun |function|(symbol)
   (function-template symbol :function))
@@ -154,22 +154,18 @@
   (let((lambda-list(millet:lambda-list symbol))
        (setf-expander(setf-expander symbol)))
     (format t "(requirements-about ~A)~2%~
-    ;;;; [~:(~A~)] ~A~2%~
-    #| Description: ~@[~%~A ~]|#~2%~
+    ;;;; Description:~%~
+    ~A~%~
     #+syntax~%(~A~@[ ~{~(~S~)~^ ~}~]) ; => result~2%~
-    ~@[~S ; => new-value~2%~]~
-    ~@[#| Argument Precedence Order:~%~{~(~S~)~^ ~}~%|#~2%~]~
-    ~@[#| Method signature:~%~{~S~%~}|#~2%~]~
-    ;;; Arguments and Values:~2%~
-    ~{#| ~(~A~) := |#~2%~}#| result := |#~2%~
-    ~{#| ~:(~A~): |#~2%~}"
-    symbol ; requirements-about
-    (if setf-expander ; roll
-      :accessor
-      roll)
-    (ensure-symbol-notation symbol) ; name
-    (documentation symbol 'function) ; description
-    (ensure-symbol-notation symbol)
+    ~@[#+setf~%~S ; => new-value~2%~]~
+    ~@[;;;; Argument Precedence Order:~%~{~(~S~)~^ ~}~%~2%~]~
+    ~@[;;;; Method signature:~%~{#+signature~S~%~}|#~2%~]~
+    ;;;; Arguments and Values:~2%~
+    ~{; ~(~A~) := ~2%~}; result := ~2%~
+    ~{;;;; ~:(~A~):~2%~}"
+    notation ; requirements-about
+    (comentize(documentation symbol 'function)) ; description
+    notation
     lambda-list ; lambda-list
     (when setf-expander ; setf
       (destructuring-bind(op name)(millet:function-name setf-expander)
