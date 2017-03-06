@@ -1,12 +1,10 @@
 (in-package :jingoh.tester)
 
 (defun check(requirement)
-  #.(Doc :jingoh.tester "doc/check.F.md")
   (funcall (coerce (apply #'make-requirement requirement)
 		    'function)))
 
 (defmacro defspec(&body body)
-  #.(Doc :jingoh.tester "doc/defspec.M.md")
   `(PROGN
      ,@(mapcar (lambda(subject)
 		 `(ADD-REQUIREMENT ',subject
@@ -20,7 +18,6 @@
      (ORG-CURRENT-SUBJECTS *ORG*)))
 
 (defmacro ? (&body body)
-  #.(Doc :jingoh.tester "doc/Q.M.md")
   `(check ',body))
 
 (define-condition unsatisfied(error)
@@ -28,7 +25,6 @@
    (args :initform nil :initarg :args :reader args)))
 
 (defmacro & (&body body)
-  #.(Doc :jingoh.tester "doc/&.M.md")
   `(PROGN ,@(mapcar(lambda(form)
 		     (if(typep form '(cons (satisfies function-designator-p)T))
 		       (let((vars(loop :repeat (length (cdr form))
@@ -42,11 +38,9 @@
 	      body)
        T))
 
-(defgeneric make-requirement(form key expected &rest params)
-  (:documentation #.(Doc :jingoh.tester "doc/make-requirement.G.md")))
+(defgeneric make-requirement(form key expected &rest params))
 
 (defun the-push-instance-form (place type test-form expected actual position &rest options)
-  #.(Doc :jingoh.tester "doc/the-push-instance-form.F.md")
   `(PUSH (MAKE-INSTANCE ',type
 			:FORM ,test-form
 			:EXPECTED ',expected
@@ -56,7 +50,6 @@
 	 ,place))
 
 (defun the-standard-handling-form(result parameters test-form expected &rest body)
-  #.(Doc :jingoh.tester "doc/the-standard-handling-form.F.md")
   (alexandria:with-unique-names(output)
     `(LAMBDA()
        (LET(,result (,output ""))
