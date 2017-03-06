@@ -38,7 +38,7 @@
     #:subject-designator
 
     ;;;; variable
-    *org* ; current org
+    #:*org* ; current org
 
     ;;;; conditions
     #:not-org
