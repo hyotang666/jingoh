@@ -2,11 +2,9 @@
 
 (defvar *orgs* (make-hash-table :test #'eq))
 
-(defparameter *org*(make-org)
-  #.(Doc :jingoh.org "doc/AorgA.V.md"))
+(defparameter *org*(make-org))
 
 (defmacro deforg(name)
-  #.(Doc :jingoh.org "doc/deforg.M.md")
   (check-type name symbol)
   `(EVAL-WHEN(:LOAD-TOPLEVEL :COMPILE-TOPLEVEL :EXECUTE)
      (REGISTER-ORG ',name (MAKE-ORG :NAME ',name))))
@@ -17,13 +15,11 @@
 	       ,form)))
 
   (defun register-org(name org)
-    #.(Doc :jingoh.org "doc/register-org.F.md")
     (check-type name symbol)
     (! 0(check-type org org))
     (setf(gethash name *orgs*)org))
 
   (defun delete-subject(subject-designator &optional(org *org*))
-    #.(Doc :jingoh.org "doc/delete-subject.F.md")
     (flet((del-sub(sub)
 	    (setf (org-specifications org)
 		  (delete sub (! 1 (org-specifications org))
@@ -42,19 +38,16 @@
   ) ; end of macrolet
 
 (defun delete-org(org-designator)
-  #.(Doc :jingoh.org "doc/delete-org.F.md")
   (remhash (org-name(find-org org-designator))
 	   *orgs*))
 
 (defmacro in-org(name)
-  #.(Doc :jingoh.org "doc/in-org.M.md")
   (check-type name symbol)
   `(EVAL-WHEN(:LOAD-TOPLEVEL :COMPILE-TOPLEVEL :EXECUTE)
      (RESIGNAL-BIND((MISSING-ORG()'MISSING-ORG :API 'IN-ORG))
        (SETF *ORG*(FIND-ORG ',name)))))
 
 (defmacro requirements-about(subject &rest option*)
-  #.(Doc :jingoh.org "doc/requirements-about.M.md")
   (check-type subject symbol)
   `(EVAL-WHEN(:LOAD-TOPLEVEL :COMPILE-TOPLEVEL :EXECUTE)
      (SETF (ORG-OPTIONS *ORG*) ',option*)
@@ -73,7 +66,6 @@
 		   (ERROR'MISSING-ORG :API 'FIND-ORG :DATUM ORG-DESIGNATOR)))))
 
   (defun find-org(org-designator &optional(errorp t))
-    #.(Doc :jingoh.org "doc/find-org.F.md")
     (typecase org-designator
       (org org-designator)
       (null (make-org))

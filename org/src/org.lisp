@@ -1,7 +1,6 @@
 (in-package :jingoh.org)
 
 (defstruct(org (:copier nil))
-  #.(Doc :jingoh.org "doc/org.T.md")
   (name nil :type symbol :read-only t)
   (package *package* :type package :read-only t)
   (current-subjects `(nil) :type cons)
@@ -36,10 +35,8 @@
 		count)))))
 
 (deftype org-designator()
-  #.(Doc :jingoh.org "doc/org-designator.T.md")
   '(or (and symbol (not boolean))
        org))
 
 (deftype subject-designator()
-  #.(Doc :jingoh.org "doc/subject-designator.T.md")
   'symbol)

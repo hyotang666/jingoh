@@ -25,7 +25,6 @@
 					 :KEY #'SPEC-SUBJECT))))))))
 
 (defmacro do-requirements((var &optional(subject-designator T)(org '*org*) return)&body body)
-  #.(Doc :jingoh.org "doc/do-requirements.M.md")
   (setf var (uiop:ensure-list var))
   (let((gname(gensym "NAME")))
     `(MACROLET((?!(form)
@@ -83,7 +82,6 @@
 	  (map 'list function(s-reqs subject))))))
 
   (defun add-requirement(subject requirement &optional(org *org*))
-    #.(Doc :jingoh.org "doc/add-requirement.F.md")
     (check-type subject symbol)
     (let((spec (find subject (! 1 (org-specifications org))
 				    :key #'spec-subject)))
@@ -94,7 +92,6 @@
     requirement)
 
   (defun org-requirements-count(org)
-    #.(Doc :jingoh.org "doc/org-requirements-count.F.md")
     (loop :for s :across (! 2(org-specifications org))
 	  :sum (length (spec-requirements s))))
 

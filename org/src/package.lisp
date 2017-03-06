@@ -1,6 +1,5 @@
 (in-package :cl-user)
 (defpackage :jingoh.org(:use :cl :resignal-bind)
-  (:import-from :documentation-embedder #:Doc)
   (:nicknames :org)
   (:export
 
@@ -38,7 +37,7 @@
     #:subject-designator
 
     ;;;; variable
-    *org* ; current org
+    #:*org* ; current org
 
     ;;;; conditions
     #:not-org
@@ -49,5 +48,10 @@
     #:api
     #:datum
 
-    ))
+    )
+  (:documentation #.(uiop:read-file-string
+		      (uiop:subpathname (asdf:system-source-directory
+					  (asdf:find-system :jingoh.org))
+					"CONCEPTS.md")))
+  )
 
