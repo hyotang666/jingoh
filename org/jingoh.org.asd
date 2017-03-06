@@ -1,14 +1,9 @@
 ; vim: ft=lisp et
 (in-package :asdf)
-(unless(uiop:featurep :doc-bootstrap)
-  (pushnew :doc-bootstrap *features*)
-  (defsystem :doc-bootstrap
-    :defsystem-depends-on (:documentation-embedder)))
-
 (defsystem :jingoh.org
   :description "Jingoh's background database system"
   :pathname "src/"
-  :depends-on (:resignal-bind :documentation-embedder :alexandria)
+  :depends-on (:resignal-bind :alexandria)
   :components((:file "package")
               ; bottom
               (:file "conditions" :depends-on ("package"))
