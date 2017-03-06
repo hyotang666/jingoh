@@ -12,7 +12,6 @@
        (not (special-operator-p symbol))))
 
 (defun encallable(form &optional not-first-p)
-  #.(Doc :jingoh.tester "doc/encallable.F.md")
   (typecase form
     (SYMBOL(if not-first-p
 	     `(FUNCTION ,form)
@@ -33,8 +32,7 @@
 	 :format-control "?: ~S is not function name"
 	 :format-arguments (list form)))))
 
-(define-condition syntax-error(simple-error program-error)()
-  (:documentation #.(Doc :jingoh.tester "doc/syntax-error.T.md")))
+(define-condition syntax-error(simple-error program-error)())
 
 (defun reserved-keywords(gf)
   (loop :for method :in (closer-mop:generic-function-methods gf)
@@ -46,7 +44,6 @@
   '(member :test :lazy :ignore-signals :with-restarts :stream :before :after :around :position :as))
 
 (defun canonicalize(test-form parameters)
-  #.(Doc :jingoh.tester "doc/canonicalize.F.md")
   (setf test-form (copy-tree test-form))
   (labels((CHECK()
 	    (loop :for key :in parameters :by #'cddr

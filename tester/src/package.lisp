@@ -1,6 +1,5 @@
 (in-package :cl-user)
 (defpackage :jingoh.tester(:use :cl :jingoh.org)
-  (:import-from :documentation-embedder #:Doc)
   (:export
     ;;;; main api
     ;; notations
