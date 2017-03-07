@@ -58,12 +58,12 @@
 		   (cl-ansi-text:green "Pass"))
 
 #| result := nil |#
-#?(let((*standard-output*(make-broadcast-stream))
-       (*org* (make-org))
+#?(let((*org* (make-org))
        *issues*)
     (eval '(defspec (+) => 0))
     (examine))
 => NIL
+,:stream NIL
 
 #| Affected By: *verbose* 
 	        *stop-on-fails*
@@ -133,11 +133,11 @@
 #| [Variable] *BREAK-ON-FAILS* Breaks when fails |#
 #?(let((*org*(make-org))
        (*break-on-fails* T)
-       (*error-output*(make-broadcast-stream))
        *issues*)
     (eval '(defspec (+) => 1))
     (examine))
 :invokes-debugger error
+,:stream NIL
 
 ;; Value type is NULL
 #? *BREAK-ON-FAILS* :be-the boolean
@@ -153,7 +153,6 @@
 
 #| [Variable] *ISSUES* Previous issues. |#
 #?(let((*org*(make-org))
-       (*standard-output* (make-broadcast-stream))
        *issues*)
     (eval '(defspec (+) => 1))
     (examine)
@@ -161,6 +160,7 @@
 :satisfies #`(& (listp $result)
 		(= 1 (length $result))
 		(every #'issue-p $result))
+,:stream NIL
 
 ;; Value type is LIST
 #? *ISSUES* :be-the list
