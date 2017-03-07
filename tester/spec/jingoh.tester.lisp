@@ -318,8 +318,9 @@ form key expected
 #?(the-standard-handling-form 0 () 1 2 3)
 => (lambda()
      (let(0 (output ""))
-       (handler-case(setf output (with-output-to-string(*terminal-io*)
-				   3))
+       (handler-case(setf output (with-output-to-string(*standard-output*)
+				   (with-integrated-output-stream(*standard-output*)
+				     3)))
 	 (warning(condition)
 	   (push (make-instance 'warning-was-signaled :form '1 :expected '2
 				:actual condition :position nil
