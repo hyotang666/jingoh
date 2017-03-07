@@ -21,6 +21,7 @@
     #:reserved-keywords
     #:encallable
     #:canonicalize
+    #:with-integrated-output-stream
 
     ;;;; Structure
     ;; main
