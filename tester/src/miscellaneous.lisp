@@ -58,10 +58,19 @@
 					     ,after)
 			    (MAKE-PRIMARY)))))
 	  (MAKE-PRIMARY()
-	    (let((before(getf parameters :before)))
+	    (let((before(getf parameters :before))
+		 (ignore-output-p(null(getf parameters :stream '#:not-specified))))
 	      (if before
-		`(PROGN ,before ,test-form)
-		test-form)))
+		(if ignore-output-p
+		  `(LET((*STANDARD-OUTPUT*(MAKE-BROADCAST-STREAM)))
+		     (WITH-INTEGRATED-OUTPUT-STREAM(*STANDARD-OUTPUT*)
+		       ,before ,test-form))
+		  `(PROGN ,before ,test-form))
+		(if ignore-output-p
+		  `(LET((*STANDARD-OUTPUT*(MAKE-BROADCAST-STREAM)))
+		     (WITH-INTEGRATED-OUTPUT-STREAM(*STANDARD-OUTPUT*)
+		       ,test-form))
+		  test-form))))
 	  (SET-AROUND(body)
 	    (let((around(getf parameters :around)))
 	      (if around
@@ -116,3 +125,11 @@
 					     (slot-value sexp2 slot2))))
 		     (equal sexp1 sexp2))))))
       (rec sexp1 sexp2))))
+
+(defmacro with-integrated-output-stream((var)&body body)
+  `(let((*standard-output* ,var)
+	(*error-output* ,var)
+	(*trace-output* ,var)
+	(*query-io* ,var)
+	(*terminal-io* ,var))
+     ,@body))
