@@ -1,13 +1,10 @@
 ; vim: ft=lisp et
 (in-package :asdf)
-(unless(uiop:featurep :doc-bootstrap)
-  (pushnew :doc-bootstrap *features*)
-  (defsystem :doc-bootstrap
-    :defsystem-depends-on (:documentation-embedder)))
-
 (defsystem :jingoh.reader
   :description "Dispatch macro for jingoh"
-  :depends-on (:jingoh.tester :millet :named-readtables :musam :documentation-embedder)
+  :long-description #.(uiop:read-file-string
+                        (uiop:subpathname "CONCEPTS.md" *load-pathname*))
+  :depends-on (:jingoh.tester :millet :named-readtables :musam)
   :pathname "src/"
   :components((:file "reader")))
 

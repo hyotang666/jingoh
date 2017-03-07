@@ -1,6 +1,5 @@
 (in-package :cl-user)
 (defpackage :jingoh.reader(:use :cl :jingoh.tester :named-readtables)
-  (:import-from :documentation-embedder #:Doc)
   (:export
     ;;;; main api
     #:enable
@@ -20,7 +19,6 @@
 (in-package :jingoh.reader)
 
 (defmacro enable(&optional(char #\?))
-  #.(Doc :jingoh.reader "doc/enable.M.md")
   (let((var (gensym "CHAR"))
        (it(gensym "TEMP")))
     `(LET*((,var ,char)
@@ -35,17 +33,14 @@
 	     (REPLACE() :REPORT "Replace it." #0#)))))))
 
 (defun replace-macro-character(char)
-  #.(Doc :jingoh.reader "doc/replace-macro-character.F.md")
   (set-dispatch-macro-character #\# char #'|#?reader|))
 
-(define-condition macro-char-confliction(simple-error)()
-  (:documentation #.(Doc :jingoh.reader "doc/macro-char-confliction.T.md")))
+(define-condition macro-char-confliction(simple-error)())
 
 (defparameter *read-verbose* NIL)
 (defparameter *read-print* NIL)
 
 (defun |#?reader|(stream character number)
-  #.(Doc :jingoh.reader "doc/#Qreader.F.md")
   (declare(ignore character))
   (let((position(file-position stream)))
     (labels((read-form(as)
