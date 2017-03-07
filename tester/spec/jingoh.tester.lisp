@@ -319,7 +319,7 @@ form key expected
 => (lambda()
      (let(0 (output ""))
        (handler-case(setf output (with-output-to-string(*standard-output*)
-				   (jingoh.tester::with-integrated-output-stream(*standard-output*)
+				   (with-integrated-output-stream(*standard-output*)
 				     3)))
 	 (warning(condition)
 	   (push (make-instance 'warning-was-signaled :form '1 :expected '2
