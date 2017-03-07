@@ -2,6 +2,8 @@
 (in-package :asdf)
 (defsystem :jingoh.examiner
   :description "Jingoh's printing issues feature."
+  :long-description #.(uiop:read-file-string
+                        (uiop:subpathname "CONCEPTS.md" *load-pathname*))
   :depends-on (:jingoh.org :jingoh.tester :resignal-bind :cl-ansi-text)
   :pathname "src/"
   :serial t
