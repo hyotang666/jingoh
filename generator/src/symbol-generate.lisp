@@ -159,8 +159,8 @@
     ~A~%~
     #+syntax~%(~A~@[ ~{~(~S~)~^ ~}~]) ; => result~2%~
     ~@[#+setf~%~S ; => new-value~2%~]~
-    ~@[;;;; Argument Precedence Order:~%~{~(~S~)~^ ~}~%~2%~]~
-    ~@[;;;; Method signature:~%~{#+signature~S~%~}~2%~]~
+    ~@[;;;; Argument Precedence Order:~%; ~{~(~S~)~^ ~}~2%~]~
+    ~@[;;;; Method signature:~%~{#+signature~S~%~}~%~]~
     ;;;; Arguments and Values:~2%~
     ~{; ~(~A~) := ~2%~}; result := ~2%~
     ~{;;;; ~:(~A~):~2%~}"
