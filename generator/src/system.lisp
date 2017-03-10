@@ -27,7 +27,7 @@
 
 (defun %add-perform(name)
   (let((*package*(find-package :asdf)))
-    (format t "~&~(~S~)"
+    (format t "~&;; Perform method below is added by JINGOH.GENERATOR.~%~(~S~)"
 	    `(defmethod asdf:perform((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name))))
 	       (asdf:test-system ,(intern(format nil "~:@(~A~).TEST"name)
 			       :keyword))))))
