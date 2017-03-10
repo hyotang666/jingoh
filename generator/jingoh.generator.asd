@@ -6,7 +6,10 @@
   :components ((:file "package")
                (:file "asd" :depends-on ("package"))
                (:file "symbol-generate" :depends-on ("package"))
+
                (:file "system" :depends-on ("asd"))
                (:file "symbol" :depends-on ("asd"))
                (:file "defpackage-form" :depends-on ("symbol-generate"))
                ))
+(defmethod perform ((o test-op) (c (eql (find-system "jingoh.generator"))))
+ (test-system :jingoh.generator.test))
