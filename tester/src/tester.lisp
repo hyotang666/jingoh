@@ -1,41 +1,46 @@
 (in-package :jingoh.tester)
 
 (defun check(requirement)
-  #.(Doc :jingoh.tester "doc/check.F.md")
-  (funcall(coerce requirement 'function)))
+  (funcall (coerce (apply #'make-requirement requirement)
+		    'function)))
 
 (defmacro defspec(&body body)
-  #.(Doc :jingoh.tester "doc/defspec.M.md")
-  `(PROGN ,@(mapcar (lambda(subject)
-		      (let((*substituter*(constantly subject)))
-			`(ADD-REQUIREMENT ,(apply #'make-requirement(append body *options*)))))
-		    *subjects*)
-	  *SUBJECTS*))
+  `(PROGN
+     ,@(mapcar (lambda(subject)
+		 `(ADD-REQUIREMENT ',subject
+				   ',(let((as(getf (org-options *org*) :as)))
+				       (if as
+					 (append (list(subst subject as (car body)))
+						 (cdr body)
+						 (org-options *org*))
+					 (append body (org-options *org*))))))
+	       (org-current-subjects *org*))
+     (ORG-CURRENT-SUBJECTS *ORG*)))
 
 (defmacro ? (&body body)
-  #.(Doc :jingoh.tester "doc/Q.M.md")
-  `(check ,(apply #'make-requirement body)))
+  `(check ',body))
 
 (define-condition unsatisfied(error)
   ((test-form :initarg :test-form :reader test-form)
-   (args :initarg :args :reader args)))
+   (args :initform nil :initarg :args :reader args)))
 
 (defmacro & (&body body)
-  #.(Doc :jingoh.tester "doc/&.M.md")
   `(PROGN ,@(mapcar(lambda(form)
-		     `(ASSERT,form()
-			'UNSATISFIED :TEST-FORM ',form
-			,@(when(and (consp form)
-				    (function-designator-p (car form)))
-			    `(:ARGS (LIST ,@(cdr form))))))
+		     (if(typep form '(cons (satisfies function-designator-p)T))
+		       (let((vars(loop :repeat (length (cdr form))
+				       :collect (gensym))))
+			 `(LET,(mapcar #'list vars (cdr form))
+			    (ASSERT(,(car form),@vars)()
+			      'UNSATISFIED :TEST-FORM ',form
+			      :ARGS (LIST ,@vars))))
+		       `(ASSERT,form()
+			  'UNSATISFIED :TEST-FORM ',form)))
 	      body)
        T))
 
-(defgeneric make-requirement(form key expected &rest params)
-  (:documentation #.(Doc :jingoh.tester "doc/make-requirement.G.md")))
+(defgeneric make-requirement(form key expected &rest params))
 
 (defun the-push-instance-form (place type test-form expected actual position &rest options)
-  #.(Doc :jingoh.tester "doc/the-push-instance-form.F.md")
   `(PUSH (MAKE-INSTANCE ',type
 			:FORM ,test-form
 			:EXPECTED ',expected
@@ -45,16 +50,16 @@
 	 ,place))
 
 (defun the-standard-handling-form(result parameters test-form expected &rest body)
-  #.(Doc :jingoh.tester "doc/the-standard-handling-form.F.md")
   (alexandria:with-unique-names(output)
     `(LAMBDA()
        (LET(,result (,output ""))
-	 (HANDLER-CASE (SETF ,output(WITH-OUTPUT-TO-STRING(*TERMINAL-IO*)
-				      ,@(let((it (getf parameters :ignore-warining)))
-					  (if(and it(subtypep it 'warning))
-					    `((HANDLER-BIND((,it #'MUFFLE-WARNING))
-						,@body))
-					    body))))
+	 (HANDLER-CASE (SETF ,output(WITH-OUTPUT-TO-STRING(*STANDARD-OUTPUT*)
+				      (with-integrated-output-stream(*standard-output*)
+					,@(let((it (getf parameters :ignore-signals)))
+					    (if(and it(subtypep it 'warning))
+					      `((HANDLER-BIND((,it #'MUFFLE-WARNING))
+						  ,@body))
+					      body)))))
 	   ,@(unless(ignore-signals 'warning parameters)
 	       `((WARNING(CONDITION)
 		   ,(the-push-instance-form result 'WARNING-WAS-SIGNALED `',test-form expected 'CONDITION (getf parameters :position):message `(PRINC-TO-STRING CONDITION)))))
@@ -82,7 +87,8 @@
   (alexandria:with-unique-names(actual result end output)
     (let((form(canonicalize test-form parameters)) )
       (labels((may-bind(type)
-		(unless(eq type expected)
+		(unless(or (subtypep type expected)
+			   (subtypep type (getf parameters :ignore-signals)))
 		  `((,type(LAMBDA(CONDITION)
 			    ,(the-push-instance-form result (intern(format nil "~A-WAS-SIGNALED"type)) `',test-form expected 'CONDITION (getf parameters :position) :MESSAGE `(PRINC-TO-STRING CONDITION))
 			    ,(ecase type
@@ -104,10 +110,11 @@
 	     (HANDLER-BIND((,expected ,(restart-checker))
 			   ,@(may-bind 'warning)
 			   ,@(may-bind 'error))
-	       (LET((*ERROR-OUTPUT*(MAKE-BROADCAST-STREAM)))
-		 (SETF ,output (WITH-OUTPUT-TO-STRING(*TERMINAL-IO*)
-				 (SETF ,actual (FUNCALL(COERCE '(LAMBDA(),form)
-							       'FUNCTION))))))
+	       (SETF ,output (WITH-OUTPUT-TO-STRING(*STANDARD-OUTPUT*)
+			       (with-integrated-output-stream(*standard-output*)
+				 (LET((*ERROR-OUTPUT*(MAKE-BROADCAST-STREAM)))
+				   (SETF ,actual (FUNCALL (COERCE '(LAMBDA(),form)
+								  'FUNCTION)))))))
 	       ,(the-push-instance-form result 'UNEXPECTED-SUCCESS `',test-form expected actual(getf parameters :position)))
 	     ,end
 	     (WHEN(AND ,output (NOT(STRING= "" ,output)))
@@ -137,9 +144,10 @@
 		     (SETF ,temp CONDITION)))
 		 )
 	     (SETF *DEBUGGER-HOOK* #'HOOK
-		   ,output (WITH-OUTPUT-TO-STRING(*TERMINAL-IO*)
-			     (HANDLER-BIND((WARNING #'HANDLER))
-			       ,form))))
+		   ,output (WITH-OUTPUT-TO-STRING(*STANDARD-OUTPUT*)
+			     (with-integrated-output-stream(*standard-output*)
+			       (HANDLER-BIND((WARNING #'HANDLER))
+				 ,form)))))
 	   (WHEN(AND ,output (NOT(STRING= "" ,output)))
 	     ,(the-push-instance-form result 'UNEXPECTED-OUTPUT `',test-form "" output (getf parameters :position)))
 	   ,end
@@ -176,9 +184,10 @@
 		     (MUFFLE-WARNING CONDITION)))
 		 )
 	     (SETF *DEBUGGER-HOOK* #'HOOK
-		   ,output (WITH-OUTPUT-TO-STRING(*TERMINAL-IO*)
-			     (SETF ,actual(HANDLER-BIND((WARNING #'HANDLER))
-					    ,form)))))
+		   ,output (WITH-OUTPUT-TO-STRING(*STANDARD-OUTPUT*)
+			     (with-integrated-output-stream(*standard-output*)
+			       (SETF ,actual(HANDLER-BIND((WARNING #'HANDLER))
+					      ,form))))))
 	   ,(the-push-instance-form result 'UNEXPECTED-SUCCESS `',test-form expected actual (getf parameters :position))
 	   (WHEN(AND ,output (NOT(STRING= "" ,output)))
 	     ,(the-push-instance-form result 'UNEXPECTED-OUTPUT `',test-form "" output (getf parameters :position)))
@@ -230,19 +239,12 @@
 			    (second args)
 			    (cons '? args))))
 
-;; These 2 vars are treated as constant.
-;; but if defined with defconstant, does not work correctly in sbcl.
-(defvar unspecified '#:UNSPECIFIED
-  #.(Doc :jingoh.tester "doc/unspecified.V.md"))
-(defvar implementation-dependent '#:IMPLEMENTATION-DEPENDENT
-  #.(Doc :jingoh.tester "doc/implementation-dependent.V.md"))
-
-(defmethod make-requirement(test-form(key(eql '=>))(expected(eql unspecified))&rest parameters)
+(defmethod make-requirement(test-form(key(eql '=>))(expected(eql 'unspecified))&rest parameters)
   (declare(ignore test-form key expected parameters))
-  `(CONSTANTLY NIL))
+  '(LAMBDA()NIL))
 
 (defmethod make-requirement(test-form(key(eql '=>))
-			     (expected(eql implementation-dependent))
+			     (expected(eql 'implementation-dependent))
 			     &rest parameters)
   (declare(ignore key))
   (let((result(gensym "RESULT")))
@@ -258,8 +260,10 @@
        (result(gensym"RESULT")))
     (the-standard-handling-form result parameters test-form expected
       `(LET((,actual(MULTIPLE-VALUE-LIST ,form)))
-	 (UNLESS(APPLY ,test ,actual)
-	   ,(the-push-instance-form result 'ISSUE-OF-MULTIPLE-VALUES `',test-form expected actual(getf parameters :position)))))))
+	 (HANDLER-CASE(UNLESS(APPLY ,test ,actual)
+			,(the-push-instance-form result 'ISSUE-OF-MULTIPLE-VALUES `',test-form expected actual(getf parameters :position)))
+	   (UNSATISFIED(CONDITION)
+	     ,(the-push-instance-form result 'UNSATISFIED-CLAUSE `(TEST-FORM CONDITION) T NIL (getf parameters :position):ARGS `(ARGS CONDITION))))))))
 
 (defmethod make-requirement(test-form(key(eql :be-the))
 			     expected &rest parameters)
@@ -290,7 +294,7 @@
   (declare(ignore key))
   (alexandria:with-unique-names(result actual)
     (the-standard-handling-form result parameters test-form expected
-      `(LET((,actual(MACROEXPAND-1 ',(canonicalize test-form parameters))))
+      `(LET((,actual(MACROEXPAND-1 ',(copy-tree test-form))))
 	 (UNLESS(SEXP= ,actual ',expected)
 	   ,(the-push-instance-form result 'ISSUE `',test-form expected actual (getf parameters :position)))))))
 

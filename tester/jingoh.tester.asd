@@ -1,14 +1,10 @@
 ; vim: ft=lisp et
 (in-package :asdf)
-(unless(uiop:featurep :doc-bootstrap)
-  (pushnew :doc-bootstrap *features*)
-  (defsystem :doc-bootstrap
-    :defsystem-depends-on (:documentation-embedder)))
-
 (defsystem :jingoh.tester
   :description "Jingoh's requirement's tester."
-  :in-order-to ((test-op (test-op :jingoh.tester-test)))
-  :depends-on (:jingoh.org :millet :closer-mop :documentation-embedder :alexandria :trestrul :cl-ansi-text :cl-ppcre)
+  :long-description #.(uiop:read-file-string (merge-pathnames "CONCEPTS.md"
+                                                              *load-pathname*))
+  :depends-on (:jingoh.org :millet :closer-mop :alexandria :cl-ansi-text :cl-ppcre :structure-ext)
   :pathname "src/"
   :components ((:file "package")
                ; bottom
@@ -18,10 +14,5 @@
                (:file "tester" :depends-on ("miscellaneous" "report"))
 	       ))
 
-(defsystem :jingoh.tester-test
-  :depends-on (:jingoh :named-readtables)
-  :pathname "src/"
-  :components ((:file "design"))
-  :perform (test-op(o s)
-             (uiop:symbol-call :jingoh 'verify)))
-
+(defmethod perform ((o test-op) (c (eql (find-system "jingoh.tester"))))
+  (test-system :jingoh.tester.test))

@@ -1,6 +1,6 @@
 (in-package :cl-user)
 (defpackage :jingoh
-  (:use :cl :jingoh.org :jingoh.reporter :jingoh.tester :jingoh.reader
+  (:use :cl :jingoh.org :jingoh.examiner :jingoh.tester :jingoh.reader
 	:named-readtables)
   (:export
     ;;;; main api
@@ -10,6 +10,7 @@
     #:deforg
     #:in-org
     #:requirements-about
+    #:common-requirements-about
 
     ;;;; from reader
     #:enable
@@ -21,14 +22,13 @@
     #:implementation-dependent
     #:?
     #:&
+    #:call-body
 
     ;;;; Issues for pretty printings.
     #:issue #:condition-issue #:test-issue #:error-was-signaled #:warning-was-signaled #:unexpected-success #:issue-of-multiple-values #:wrong-format #:debugger-was-invoked #:missing-restarts #:unexpected-output #:unmatch-condition #:unsatisfied-clause
 
-    ;;;; from reporter
-    #:report
-    #:detail
-    #:verify
+    ;;;; from examiner
+    #:examine
     ))
 (in-package :jingoh)
 

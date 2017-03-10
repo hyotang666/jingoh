@@ -6,12 +6,12 @@
 	(eq T condition))))
 
 (defun function-designator-p(symbol)
-  (and (fboundp symbol)
+  (and (symbolp symbol)
+       (fboundp symbol)
        (not (macro-function symbol))
        (not (special-operator-p symbol))))
 
 (defun encallable(form &optional not-first-p)
-  #.(Doc :jingoh.tester "doc/encallable.F.md")
   (typecase form
     (SYMBOL(if not-first-p
 	     `(FUNCTION ,form)
@@ -19,20 +19,20 @@
     (FUNCTION(if not-first-p
 	       form
 	       (or (millet:function-name form)
+		   (function-lambda-expression form)
 		   `(LAMBDA(&REST ARGS)
 		      (APPLY ,form ARGS)))))
     ((CONS (EQL LAMBDA) T)form)
     ((OR (CONS (EQL FUNCTION)(CONS SYMBOL NULL))
 	 (CONS (EQL QUOTE)(CONS SYMBOL NULL)))
      (if not-first-p
-       form
+       `(function ,(cadr form))
        (second form)))
     (T (error'syntax-error
 	 :format-control "?: ~S is not function name"
 	 :format-arguments (list form)))))
 
-(define-condition syntax-error(simple-error program-error)()
-  (:documentation #.(Doc :jingoh.tester "doc/syntax-error.T.md")))
+(define-condition syntax-error(simple-error program-error)())
 
 (defun reserved-keywords(gf)
   (loop :for method :in (closer-mop:generic-function-methods gf)
@@ -44,14 +44,13 @@
   '(member :test :lazy :ignore-signals :with-restarts :stream :before :after :around :position :as))
 
 (defun canonicalize(test-form parameters)
-  #.(Doc :jingoh.tester "doc/canonicalize.F.md")
-  (alexandria:when-let((as(getf parameters :as)))
-    (setf test-form(trestrul:asubst *substituter* as test-form)))
   (setf test-form (copy-tree test-form))
   (labels((CHECK()
 	    (loop :for key :in parameters :by #'cddr
 		  :unless (typep key 'option-key)
-		  :do (error "Unknown options key ~S in ~S"key parameters)))
+		  :do (error "Unknown options key ~S in ~S~&Allowed are ~S "
+			     key parameters
+			     (millet:type-expand 'option-key))))
 	  (MAKE-BODY()
 	    (SET-AROUND (let((after(getf parameters :after)))
 			  (if after
@@ -59,10 +58,19 @@
 					     ,after)
 			    (MAKE-PRIMARY)))))
 	  (MAKE-PRIMARY()
-	    (let((before(getf parameters :before)))
+	    (let((before(getf parameters :before))
+		 (ignore-output-p(null(getf parameters :stream '#:not-specified))))
 	      (if before
-		`(PROGN ,before ,test-form)
-		test-form)))
+		(if ignore-output-p
+		  `(LET((*STANDARD-OUTPUT*(MAKE-BROADCAST-STREAM)))
+		     (WITH-INTEGRATED-OUTPUT-STREAM(*STANDARD-OUTPUT*)
+		       ,before ,test-form))
+		  `(PROGN ,before ,test-form))
+		(if ignore-output-p
+		  `(LET((*STANDARD-OUTPUT*(MAKE-BROADCAST-STREAM)))
+		     (WITH-INTEGRATED-OUTPUT-STREAM(*STANDARD-OUTPUT*)
+		       ,test-form))
+		  test-form))))
 	  (SET-AROUND(body)
 	    (let((around(getf parameters :around)))
 	      (if around
@@ -118,5 +126,10 @@
 		     (equal sexp1 sexp2))))))
       (rec sexp1 sexp2))))
 
-(defun slots<=obj(obj)
-  (mapcar #'closer-mop:slot-definition-name (closer-mop:class-slots(class-of obj))))
+(defmacro with-integrated-output-stream((var)&body body)
+  `(let((*standard-output* ,var)
+	(*error-output* ,var)
+	(*trace-output* ,var)
+	(*query-io* ,var)
+	(*terminal-io* ,var))
+     ,@body))

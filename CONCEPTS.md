@@ -1,5 +1,3 @@
-# jingoh - DSL to notate specification, rather than test framework.
-
 ## Abstract concepts
 Jingoh provides the features to notate specification, rather than test framework.
 Once you writes your library's specifications of requirements with jingoh, such file works as test.
@@ -10,38 +8,24 @@ Package JINGOH responds to be as interface.
 JINGOH's external symbols are main features for light users.
 JINGOH's internal symbols are inherited from other modules.
 
-System (same as package) JINGOH.ORG JINGOH.TESTER JINGOH.REPORTER JINGOH.READER are modules.
+System (same as package) JINGOH.ORG, JINGOH.TESTER, JINGOH.EXAMINER, JINGOH.READER are modules.
 
-## Symbol inherited from
-* jingoh.org - Background database system.
-DEFORG IN-ORG REQUIREMENTS-ABOUT
+## Extensions
+Jingoh provides some extensions.
 
-* jingoh.reporter - Reporting issues features.
-DETAIL REPORT
+### Jingoh.generator
+Provides the features to generate test template.
 
-* jingoh.tester - Requirement's tester.
-& ? => DEFSPEC IMPLEMENTATION-DEPENDENT UNSPECIFIED
+### Jingoh.documentizer
+Provides the features to convert test file to html.
 
-* jingoh.reader - Special dispatch macros.
-ENABLE SYNTAX
+## NOTE
+Jingoh compiles test form at run time.
+Its advantage is recallability.
+When test code is not modified but system source code,
+you does not reload test file (i.e. does not need to evaluate ASDF:TEST-SYSTEM).
+Just reload system then evaluate JINGOH:EXAMINE.
+JINGOH:EXAMINE can control which test should be evaluated. (the default is all)
 
-## Background
-Compiles requirement form, then restores it.
-When REPORT is called, specified requirements are checked and reported.
+Disadvantage is higher running cost.
 
-## Dictionary
-
-* &
-* ?
-* =>
-* DEFORG
-* DEFSPEC
-* DETAIL
-* ENABLE
-* IMPLEMENTATION-DEPENDENT
-* IN-ORG
-* REPORT
-* REQUIREMENTS-ABOUT
-* SETUP
-* SYNTAX - as readtable name
-* UNSPECIFIED

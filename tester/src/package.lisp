@@ -1,6 +1,5 @@
 (in-package :cl-user)
 (defpackage :jingoh.tester(:use :cl :jingoh.org)
-  (:import-from :documentation-embedder #:Doc)
   (:export
     ;;;; main api
     ;; notations
@@ -8,8 +7,9 @@
     #:=>
     #:unspecified
     #:implementation-dependent
-    #:&
     #:call-body
+    #:&
+    #:sexp=
     ;; evaluator
     #:?
     #:check
@@ -21,6 +21,7 @@
     #:reserved-keywords
     #:encallable
     #:canonicalize
+    #:with-integrated-output-stream
 
     ;;;; Structure
     ;; main
@@ -53,4 +54,4 @@
 
 (in-package :jingoh.tester)
 
-(defvar *substituter* #'identity)
+(defvar *substituter*)

@@ -152,7 +152,8 @@
 
 (defun function-template(symbol roll)
   (let((lambda-list(millet:lambda-list symbol))
-       (setf-expander(setf-expander symbol)))
+       (setf-expander(setf-expander symbol))
+       (notation(ensure-symbol-notation symbol)))
     (format t "(requirements-about ~A)~2%~
     ;;;; Description:~%~
     ~A~%~
