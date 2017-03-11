@@ -151,6 +151,7 @@
 ; TODO
 ;; To test condition, use :signals.
 #?(? (error "error") :signals ERROR) => NIL
+#?(? (signal 'warning) :signals warning) => NIL
 ;; To test debugger is invoked or not, use :invokes-debugger
 #?(? (invoke-debugger(make-condition 'error)) :invokes-debugger ERROR)
 => NIL
@@ -172,6 +173,9 @@
 	    t)
      => T :ignore-signals warning)
 => NIL
+#?(? (signal 'warning) => NIL :ignore-signals warning)
+=> NIL
+,:ignore-signals warning
 ;; To test compile time error is occur, use :lazy.
 #?(? (defun "invalid"()(princ :hoge))
      :signals ERROR :lazy T)
