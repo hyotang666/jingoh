@@ -44,7 +44,8 @@
 (defun examine(&key (org *org*)subject ((:verbose *verbose*)*verbose*))
   (setf *issues* NIL)
   (prog*((*org*(find-org org))
-	 (*package*(Org-package *org*)))
+	 (*package*(Org-package *org*))
+	 (*print-circle* T))
     ;; in order to be able to see tag, we need SETF in PROG*'s body.
     (setf *issues* (print-progress subject(lambda()(go :end))))
     (print-summary *issues*)
