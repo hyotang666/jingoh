@@ -52,7 +52,8 @@
     :end
     (when(or (<= 1 *verbose*)
 	     *stop-on-fails*)
-      (mapc #'print *issues*))))
+      (mapc #'print *issues*)))
+  (fresh-line))
 
 (defstruct(diff(:constructor markup (object)))
   object)
