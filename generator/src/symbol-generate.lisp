@@ -184,7 +184,7 @@
     )))
 
 (defun ensure-symbol-notation(symbol)
-  (if(some #'lower-case-p (symbol-name symbol))
+  (if(uiop:string-suffix-p(prin1-to-string symbol)"|")
     (format nil "|~A|"symbol)
     (symbol-name symbol)))
 
