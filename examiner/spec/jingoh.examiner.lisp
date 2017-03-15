@@ -29,20 +29,18 @@
        *issues*)
     (eval '(defspec(+) => 0))
     (examine :verbose 0))
-:outputs #.(concatenate 'string (cl-ansi-text:green "Pass")
-			" NIL")
+:outputs #.(format nil "~A NIL~%"(cl-ansi-text:green "Pass"))
 ;; when specified 1, issues are printed when fails.
 #?(let((*org*(make-org))
        *issues*)
     (eval '(defspec (+) => 0))
     (examine :verbose 1))
-:outputs #.(concatenate 'string (cl-ansi-text:green "Pass")
-			" NIL")
+:outputs #.(format nil "~A NIL~%"(cl-ansi-text:green "Pass"))
 #?(let((*org*(make-org))
        *issues*)
     (eval '(defspec (+) => 1))
     (examine :verbose 1))
-:outputs #.(format nil "~A in NIL~%~S "
+:outputs #.(format nil "~A in NIL~%~S ~%"
 		   (cl-ansi-text:red "Fail 1 test")
 		   (make-instance 'test-issue :form '(+)
 				  :expected 1
@@ -53,7 +51,7 @@
        *issues*)
     (eval '(defspec (+) => 0))
     (examine))
-:outputs #.(format nil "NIL~A~%~A NIL"
+:outputs #.(format nil "NIL~A~%~A NIL~%"
 		   (cl-ansi-text:green ".")
 		   (cl-ansi-text:green "Pass"))
 
@@ -110,7 +108,7 @@
     (eval'(defspec(+) => 1))
     (eval'(defspec(+) => 0))
     (examine))
-:outputs #.(format NIL "Stop to examine cause *STOP-ON-FAILS*~&@NIL~%~A "
+:outputs #.(format NIL "Stop to examine cause *STOP-ON-FAILS*~&@NIL~%~A ~%"
 		   (make-instance 'test-issue :form '(+)
 				  :expected 1
 				  :actual 0
@@ -170,33 +168,3 @@
 #| Affected By: EXAMINE |#
 
 #| Notes: Debug use. |#
-
-(requirements-about MISMATCH-SEXP)
-
-;;;; [Function] MISMATCH-SEXP
-
-#| Description: When sexp is not sintactically equal, markup such diffs. |#
-#?(prin1 (mismatch-sexp :foo :bar))
-:outputs #.(cl-ansi-text:red ":BAR")
-
-#+syntax
-(MISMATCH-SEXP expected-sexp actual-sexp) ; => result
-
-;;; Arguments and Values:
-
-#| expected-sexp := form |#
-
-#| actual-sexp := form |#
-
-#| result := form which may be markuped. |#
-
-#| Affected By: none |#
-
-#| Side-Effects: none |#
-
-#| Notes: For debug use. |#
-;; Like JINGOH.TESTER:SEXP=, this handle uninterned symbol in expected-sexp as variable. 
-#?(mismatch-sexp '#:var 'hoge) => HOGE
-
-#| Exceptional-Situations: |#
-

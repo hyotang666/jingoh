@@ -9,8 +9,5 @@
     #:*stop-on-fails*
     #:*break-on-fails*
     #:*issues*
-
-    ;;;; internal api
-    #:mismatch-sexp
     ))
 
