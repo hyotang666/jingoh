@@ -46,6 +46,8 @@
 
     ;;;; printer control
     #:*print-vivid*
+    ;; printer helper
+    #:mismatch-sexp
 
     ;;;; condition
     #:syntax-error

@@ -954,6 +954,41 @@ issue
 
 #| Notes: refered by print-object specialized by issue, jingoh.tester::diff, and jingoh.tester::diff-string. |#
 
+(requirements-about MISMATCH-SEXP)
+
+;;;; [Function] MISMATCH-SEXP
+
+#| Description: When sexp is not sintactically equal, markup such diffs. |#
+#?(prin1 (mismatch-sexp :foo :bar))
+:outputs #.(cl-ansi-text:red ":FOO")
+
+#+syntax
+(MISMATCH-SEXP actual expected) ; => result
+
+;;; Arguments and Values:
+
+#| actual := form |#
+
+#| expected := form |#
+
+#| result := form which may be markuped. |#
+
+#| Affected By: none |#
+
+#| Side-Effects: none |#
+
+#| Notes: For debug use. |#
+;; Like SEXP=, this handle uninterned symbol in expected as variable. 
+#?(mismatch-sexp '#:var 'hoge) => #:var
+,:test #`(& (symbolp $actual)
+	    (symbolp $result)
+	    (null (symbol-package $actual))
+	    (null (symbol-package $result))
+	    (string= (prin1-to-string $actual)
+		     (prin1-to-string $result)))
+
+#| Exceptional-Situations: |#
+
 (requirements-about SYNTAX-ERROR)
 
 #|[Condition] SYNTAX-ERROR signaled when macro expansion time. |#
