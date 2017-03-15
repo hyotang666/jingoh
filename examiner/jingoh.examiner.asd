@@ -6,9 +6,7 @@
                         (uiop:subpathname "CONCEPTS.md" *load-pathname*))
   :depends-on (:jingoh.org :jingoh.tester :resignal-bind :cl-ansi-text)
   :pathname "src/"
-  :serial t
-  :components ((:file "package")
-	       (:file "examine")))
+  :components ((:file "examine")))
 
 (defmethod perform ((o test-op) (c (eql (find-system "jingoh.examiner"))))
   (test-system :jingoh.examiner.test))
