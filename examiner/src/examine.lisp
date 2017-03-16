@@ -18,15 +18,17 @@
 (defparameter *issues* NIL "Previous issues. Debug use.")
 
 (defun print-progress(subject &optional (goto #'identity))
-  (let((current-subject '#:dummy))
+  (let((current-subject '#:dummy)
+       (issues))
     (Do-requirements((requirement sub)subject)
       (let((result(Check requirement)))
-	(setf *issues* (nconc *issues* result))
+	(push result issues)
 	(when result
 	  (if *break-on-fails*
 	    (error "~&; @~S ~{~S~&~}"subject result)
 	    (when *stop-on-fails*
 	      (format t "~&Stop to examine cause *STOP-ON-FAILS*~&@~A"sub)
+	      (setf *issues* (apply #'nconc (nreverse issues)))
 	      (funcall goto))))
 	(when(<= 2 *verbose*)
 	  (unless(eq sub current-subject)
@@ -38,7 +40,7 @@
 	    (cl-ansi-text:with-color(:green)
 	      (write-char #\.)))
 	  (force-output))))
-    *issues*))
+    (apply #'nconc (nreverse issues))))
 
 (defun print-summary(issues)
   (if(zerop(Org-requirements-count *org*))
@@ -64,5 +66,5 @@
     (when(or (<= 1 *verbose*)
 	     *stop-on-fails*)
       (mapc #'print *issues*)))
-  (fresh-line))
+  (terpri))
 
