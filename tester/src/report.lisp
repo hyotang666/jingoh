@@ -192,7 +192,8 @@
 			     :for slot2 :in (slots<=obj actual)
 			     :do (setf (slot-value object slot2)
 				       (rec (slot-value actual slot2)
-					    (slot-value expected slot1)))))))))
+					    (slot-value expected slot1)))
+			     :finally (return object)))))))
 	    )
       (rec actual expected))))
 
