@@ -33,7 +33,7 @@
 	(when(<= 2 *verbose*)
 	  (unless(eq sub current-subject)
 	    (setf current-subject sub)
-	    (format t "~&~A"current-subject))
+	    (format t "~&~S"current-subject))
 	  (if result
 	    (cl-ansi-text:with-color(:red)
 	      (write-char #\!))
