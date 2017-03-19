@@ -44,10 +44,10 @@
 		     (setf rest (nthcdr (+ 2 (* 2 ops))rest))))
 	      ((uiop:string-prefix-p "#+syntax" elt)
 	       (write-string "### ")
-	       (write-line elt *standard-output* :start 2))
+	       (write-line (escape-* elt) *standard-output* :start 2))
 	      ((uiop:string-prefix-p "#+setf" elt)
 	       (write-string "### ")
-	       (write-line elt *standard-output* :start 2))
+	       (write-line (escape-* elt) *standard-output* :start 2))
 	      ((uiop:string-prefix-p "#| " elt)
 	       (write-string "# ")
 	       (write-line elt *standard-output* 
