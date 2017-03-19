@@ -1,4 +1,4 @@
-(defpackage :jingoh.examiner(:use :cl :jingoh.org :resignal-bind :jingoh.tester)
+(defpackage :jingoh.examiner(:use :cl :jingoh.org :jingoh.tester)
   (:export
     ;;;; main api
     #:examine
