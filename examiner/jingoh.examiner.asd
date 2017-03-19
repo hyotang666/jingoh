@@ -4,7 +4,7 @@
   :description "Jingoh's printing issues feature."
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname "CONCEPTS.md" *load-pathname*))
-  :depends-on (:jingoh.org :jingoh.tester :resignal-bind :cl-ansi-text)
+  :depends-on (:jingoh.org :jingoh.tester :cl-ansi-text)
   :pathname "src/"
   :components ((:file "examine")))
 
