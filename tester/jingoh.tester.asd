@@ -2,8 +2,8 @@
 (in-package :asdf)
 (defsystem :jingoh.tester
   :description "Jingoh's requirement's tester."
-  :long-description #.(uiop:read-file-string (merge-pathnames "CONCEPTS.md"
-                                                              *load-pathname*))
+  :long-description #.(uiop:read-file-string (merge-pathnames *load-pathname*
+                                                              "CONCEPTS.md"))
   :depends-on (:jingoh.org :millet :closer-mop :alexandria :cl-ansi-text :cl-ppcre :structure-ext)
   :pathname "src/"
   :components ((:file "package")
