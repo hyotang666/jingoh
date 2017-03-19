@@ -35,9 +35,13 @@
 	    (setf current-subject sub)
 	    (format t "~&~S"current-subject))
 	  (if result
-	    (cl-ansi-text:with-color(:red)
+	    (if *print-vivid*
+	      (cl-ansi-text:with-color(:red)
+		(write-char #\!))
 	      (write-char #\!))
-	    (cl-ansi-text:with-color(:green)
+	    (if *print-vivid*
+	      (cl-ansi-text:with-color(:green)
+		(write-char #\.))
 	      (write-char #\.)))
 	  (force-output))))
     (apply #'nconc (nreverse issues))))
@@ -48,13 +52,18 @@
     (let((count(length issues)))
       (if (zerop count)
 	(format t "~&~A ~S"
-		(cl-ansi-text:green "Pass")
+		(if *print-vivid*
+		  (cl-ansi-text:green "Pass")
+		  "Pass")
 		(Org-name *org*))
 	(format t "~&~A in ~S"
-		(cl-ansi-text:red (format nil "Fail ~D test~:*~P"count))
+		(if *print-vivid*
+		  (cl-ansi-text:red #0=(format nil "Fail ~D test~:*~P"count))
+		  #0#)
 		(Org-name *org*))))))
 
-(defun examine(&key (org *org*)subject ((:verbose *verbose*)*verbose*))
+(defun examine(&key (org *org*)subject ((:verbose *verbose*)*verbose*)
+		    ((:vivid *print-vivid*)*print-vivid*))
   (setf *issues* NIL)
   (prog*((*org*(find-org org))
 	 (*package*(Org-package *org*))
