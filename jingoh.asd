@@ -3,7 +3,7 @@
 (defsystem :jingoh
   :description "DSL to notate specification, rather than test framework."
   :long-description #.(uiop:read-file-string
-                        (uiop:subpathname "CONCEPTS.md" *load-pathname*))
+                        (uiop:subpathname *load-pathname* "CONCEPTS.md"))
   :depends-on (:jingoh.org :jingoh.tester :jingoh.examiner :jingoh.reader
                            :named-readtables)
   :in-order-to ((test-op (test-op :jingoh-test)))
