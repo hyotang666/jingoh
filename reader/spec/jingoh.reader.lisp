@@ -5,9 +5,8 @@
 
 (requirements-about ENABLE)
 
-;;;; [Macro] ENABLE
-
-#| Description: Set dispatch macro wich specified character to *readtable*. |#
+;;;; Description:
+; Set dispatch macro wich specified character to `*readtable*`.
 #?(let((*readtable*(copy-readtable nil)))
     (values (get-dispatch-macro-character #\# #\?)
 	    (enable)
@@ -20,25 +19,27 @@
 #+syntax
 (ENABLE &optional (char #\?)) ; => result
 
-;;; Arguments and Values:
+;;;; Arguments and Values:
 
-#| char := form generates character. |#
-;; When CHAR does not generate character, an error is signaled.
+; char := form generates character.
+; When CHAR does not generate character, an error is signaled.
 #?(enable 0) :signals error
 ,:ignore-signals warning
 
-#| result := implementation dependent. |#
+; result := implementation dependent.
 
-#| Affected By: *readtable* |#
+;;;; Affected By:
+; `*readtable*`
 
-#| Side-Effects: May modify *readtable* state. |#
+;;;; Side-Effects:
+; May modify `*readtable*` state.
 
-#| Notes: |#
+;;;; Notes:
 
-#| Exceptional-Situations: |#
-;; When specified dispatch macro character is already used,
-;; an error of type MACRO-CHAR-CONFLICTION is signaled with
-;; restart named REPLACE.
+;;;; Exceptional-Situations:
+; When specified dispatch macro character is already used,
+; an error of type MACRO-CHAR-CONFLICTION is signaled with
+; restart named REPLACE.
 #?(let((*readtable*(copy-readtable nil)))
     (enable #\*))
 :signals MACRO-CHAR-CONFLICTION
@@ -46,33 +47,33 @@
 
 (requirements-about REPLACE-MACRO-CHARACTER)
 
-;;;; [Function] REPLACE-MACRO-CHARACTER
-
-#| Description: Short hand for CL:SET-DISPATCH-MACRO-CHARACTER. |#
+;;;; Description:
+; Short hand for CL:SET-DISPATCH-MACRO-CHARACTER.
 
 #+syntax
 (REPLACE-MACRO-CHARACTER char) ; => result
 
-;;; Arguments and Values:
+;;;; Arguments and Values:
 
-#| char := character, otherwise error. |#
+; char := character, otherwise error.
 #?(replace-macro-character 0) :signals TYPE-ERROR
 
-#| result := implementation-dependent |#
+; result := implementation-dependent
 
-#| Affected By: none |#
+;;;; Affected By:
+; none
 
-#| Side-Effects: Modify *readtable* state. |#
+;;;; Side-Effects:
+; Modify `*readtable*` state.
 
-#| Notes: |#
+;;;; Notes:
 
-#| Exceptional-Situations: |#
+;;;; Exceptional-Situations:
 
 (requirements-about |#?reader|)
 
-;;;; [Function] |#?reader|
-
-#| Description: Dismatch macro function for making DEFSPEC form. |#
+;;;; Description:
+; Dismatch macro function for making DEFSPEC form.
 #?(let((*readtable* (copy-readtable nil)))
     (enable)
     (with-input-from-string(in "#?(+) => 0")
@@ -84,27 +85,30 @@
 #+syntax
 (|#?reader| stream character number) ; => result
 
-;;; Arguments and Values:
+;;;; Arguments and Values:
 
-#| stream := input stream |#
+; stream := input stream
 
-#| character := dispatch macro character. |#
+; character := dispatch macro character.
 
-#| number := (or null integer) |#
+; number := (or null integer)
 
-#| result := DEFSPEC form. |#
+; result := DEFSPEC form.
 
-#| Affected By: *read-base* *read-default-float-format* *read-eval* *read-suppress* *readtable* *read-verbose* *read-print* |#
+;;;; Affected By:
+; `*read-base*` `*read-default-float-format*` `*read-eval*` `*read-suppress*` `*readtable*` `*read-verbose*` `*read-print*`
 
-#| Side-Effects: consume stream contents. |#
+;;;; Side-Effects:
+; consume stream contents.
 
-#| Notes: |#
+;;;; Notes:
 
-#| Exceptional-Situations: |#
+;;;; Exceptional-Situations:
 
 (requirements-about *READ-VERBOSE*)
 
-#| [Variable] *READ-VERBOSE* Controls verbosity of |\#?reader| |#
+;;;; Description:
+; Controls verbosity of |\#?reader|
 #?(let((*readtable*(copy-readtable nil))
        (*read-verbose* T))
     (enable)
@@ -119,18 +123,19 @@
 	       (defspec (+) => 0 :position 2))))
 ,:stream *trace-output*
 
-;; Value type is NULL
+; Value type is NULL
 #? *READ-VERBOSE* :be-the boolean
 
-;; Initial value is NIL
+; Initial value is NIL
 
-#| Affected By: none |#
+;;;; Affected By:
+; none
 
-#| Notes: |#
+;;;; Notes:
 
 (requirements-about *READ-PRINT*)
 
-#| [Variable] *READ-PRINT* Control verbosity of |\#reader|. |#
+;;;; Control verbosity of |\#reader|.
 #?(let((*readtable*(copy-readtable nil))
        (*read-print* T))
     (enable)
@@ -153,29 +158,31 @@
        (null (read in nil nil))))
 ,:stream *trace-output*
 
-;; Value type is NULL
+; Value type is NULL
 #? *READ-PRINT* :be-the boolean
 
-;; Initial value is NIL
+; Initial value is NIL
 
-#| Affected By: none |#
+;;;; Affected By:
+; none
 
-#| Notes: |#
+;;;; Notes:
 
 (requirements-about MACRO-CHAR-CONFLICTION)
 
-#|[Condition] MACRO-CHAR-CONFLICTION Signaled when dispatch macro character is conflicted. |#
+;;;; Description:
+; Signaled when dispatch macro character is conflicted.
 
-;; Class Precedence List: (case in SBCL)
-;; macro-char-confliction simple-error simple-condition error serious-condition condition slot-object t
+;;; Class Precedence List: (case in SBCL)
+; macro-char-confliction simple-error simple-condition error serious-condition condition slot-object t
 
-;; Effective Slots:
+;;; Effective Slots:
 
-;; FORMAT-CONTROL [Type] T
-;; [READER] simple-condition-format-control
+; FORMAT-CONTROL [Type] T
+; [READER] simple-condition-format-control
 
-;; FORMAT-ARGUMENTS [Type] T
-;; [READER] simple-condition-format-arguments
+; FORMAT-ARGUMENTS [Type] T
+; [READER] simple-condition-format-arguments
 
-#| Notes: |#
+;;;; Notes:
 
