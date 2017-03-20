@@ -26,6 +26,6 @@
 	  (dolist(m meta-datas)
 	    (About-package m)
 	    (About-symbols m))
-	  (Table meta-datas)
+	  (Table meta-datas #'Table-callback)
 	  *default-pathname-defaults*)))))
 
