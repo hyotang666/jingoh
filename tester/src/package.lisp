@@ -40,7 +40,14 @@
     #:test-issue-test
     #:condition-issue-message
     #:unsatisfied-clause-args
-    #|NOTE! - Slot names are not exported.|#
+
+    ;;;; slot names for pretty printings, especially for ECL.
+    #:form
+    #:expected
+    #:actual
+    #:test
+    #:message
+    #:args
 
     #|NOTE! - Constructor is not exported. Use MAKE-INSTANCE|#
 
