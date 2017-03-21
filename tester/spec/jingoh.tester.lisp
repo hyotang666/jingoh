@@ -1012,9 +1012,18 @@
 ; expected := form
 
 ; result := form which may be markuped.
+; *NOTE!* - markuped object is diff object. Do not confused.
+#?(mismatch-sexp :foo :bar) :be-the jingoh.tester::diff
 
 ;;;; Affected By:
-; none
+; `*print-vivid*` `jingoh.tester::*color-hook*`
+; when `*print-vivid*` is nil, printed notation is not colored.
+#?(let((*print-vivid* nil))
+    (prin1 (mismatch-sexp :foo :bar)))
+:outputs ":FOO"
+#?(let((*print-vivid* nil))
+    (princ (mismatch-sexp "foo" "foobar")))
+:outputs "\"foo\""
 
 ;;;; Side-Effects:
 ; none
