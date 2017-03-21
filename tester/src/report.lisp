@@ -43,24 +43,26 @@
 		  'structure-class))))
 
 (defun regex-replace(issue string)
-  (labels((REC(slots acc)
+  (labels((REC(post slots acc)
 	    (if(endp slots)
-	      (DO-RETURN acc)
-	      (BODY (symbol-name(c2mop:slot-definition-name(car slots)))
+	      (DO-RETURN post acc)
+	      (BODY post
+		    (symbol-name(c2mop:slot-definition-name(car slots)))
 		    (cdr slots)
-		    :yellow
+		    #'cl-ansi-text:yellow
 		    acc)))
-	  (BODY(name rest color &optional acc)
+	  (BODY(string name rest color &optional acc)
 	    (destructuring-bind(pre post)(ppcre:split name string :limit 2)
-	      (setf string post)
-	      (REC rest (list* (uiop:symbol-call :cl-ansi-text color name)
-			       pre acc))))
-	  (DO-RETURN(acc)
+	      (REC post rest (list* (let((*print-circle* NIL))
+				      (funcall color name))
+				      pre acc))))
+	  (DO-RETURN(string acc)
 	    (apply #'concatenate 'string (nreverse(push string acc))))
 	    )
-    (BODY (symbol-name(type-of issue))
+    (BODY string
+	  (symbol-name(type-of issue))
 	  (c2mop:class-slots(class-of issue))
-	  :red)))
+	  #'cl-ansi-text:red)))
 
 (defstruct(diff(:constructor markup (object)))
   object)
