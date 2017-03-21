@@ -91,7 +91,9 @@
 	  ;; simply different. e.g. "foobar" "foohoge"
 	  #0=(progn (princ #\")
 		    (write-string (string-diff-object object) nil :end pos)
-		    (write-string (funcall *color-hook*(subseq (string-diff-object object)pos)))
+		    (write-string (funcall (lambda(string)
+					     (funcall *color-hook* string :style :background))
+					   (subseq (string-diff-object object)pos)))
 		    (princ #\"))
 	  ;; too much short. e.g. "foobar" "foo"
 	  (progn (princ #\")
