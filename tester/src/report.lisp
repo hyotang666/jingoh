@@ -75,34 +75,27 @@
 (defvar *color-hook* #'cl-ansi-text:red)
 
 (defmethod print-object((object string-diff)*standard-output*)
-  (let*((pre-start 0)
-	(pre-end(or (mismatch (string-diff-origin object)
-			      (string-diff-object object))
-		    0))
-	(pre-string (subseq (string-diff-object object)pre-start pre-end))
-	(rev-origin(reverse(string-diff-origin object)))
-	(rev-object(reverse(string-diff-object object)))
-	(rev-end(mismatch rev-origin rev-object))
-	(post-start(- (length(string-diff-object object))
-		      rev-end))
-	(post-string(nreverse(subseq rev-object 0 rev-end))))
-    (prin1 (concatenate 'string
-			pre-string
-			(if(<= pre-end post-start)
-			  (funcall *color-hook* (subseq (string-diff-object object)
-							pre-end post-start))
-			  "")
-			(cond
-			  ;; too much short
-			  ((= pre-end (length (string-diff-object object)))
-			   (funcall *color-hook* ":NULL"))
-			  ;; too much long.
-			  ((= pre-end (length (string-diff-origin object)))
-			   (funcall *color-hook* post-string))
-			  ((= pre-end post-start) ; lack of middle.
-			   (concatenate 'string (funcall *color-hook* ":NULL")
-					post-string))
-			  (t post-string))))))
+  (let*((pos(mismatch (string-diff-origin object)
+		      (string-diff-object object)))
+	(expected-in-bounds-p(array-in-bounds-p(string-diff-origin object)pos))
+	(actual-in-bounds-p(array-in-bounds-p(string-diff-object object)pos)))
+    (if expected-in-bounds-p
+      (if actual-in-bounds-p
+	;; simply different. e.g. "foobar" "foohoge"
+	#0=(progn (princ #\")
+		  (write-string (string-diff-object object) nil :end pos)
+		  (write-string (funcall *color-hook*(subseq (string-diff-object object)pos)))
+		  (princ #\"))
+	;; too much short. e.g. "foobar" "foo"
+	(progn (princ #\")
+	       (write-string (string-diff-object object))
+	       (write-string (funcall *color-hook* ":NULL"))
+	       (princ #\")))
+      (if actual-in-bounds-p
+	;; too much long. e.g. "foo" "foobar"
+	#0#
+	;; simply different e.g. "foo" "bar"
+	(prin1(funcall *color-hook* (string-diff-object object)))))))
 
 (defun mismatch-sexp(actual expected)
   (let(env)
