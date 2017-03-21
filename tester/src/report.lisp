@@ -67,35 +67,40 @@
 (defstruct(string-diff(:include diff)
 	    (:constructor markup-string (object origin)))
   origin)
-(defmethod print-object((object diff)*standard-output*)
-  (let((*print-vivid* NIL))
-    (cl-ansi-text:with-color(:red)
-      (prin1(diff-object object)))))
 
 (defvar *color-hook* #'cl-ansi-text:red)
 
+(defmethod print-object((object diff)*standard-output*)
+  (if *print-vivid*
+    (princ(funcall *color-hook*(prin1-to-string(diff-object object))))
+    (prin1(diff-object object))))
+
 (defmethod print-object((object string-diff)*standard-output*)
-  (let*((pos(mismatch (string-diff-origin object)
-		      (string-diff-object object)))
-	(expected-in-bounds-p(array-in-bounds-p(string-diff-origin object)pos))
-	(actual-in-bounds-p(array-in-bounds-p(string-diff-object object)pos)))
-    (if expected-in-bounds-p
-      (if actual-in-bounds-p
-	;; simply different. e.g. "foobar" "foohoge"
-	#0=(progn (princ #\")
-		  (write-string (string-diff-object object) nil :end pos)
-		  (write-string (funcall *color-hook*(subseq (string-diff-object object)pos)))
-		  (princ #\"))
-	;; too much short. e.g. "foobar" "foo"
-	(progn (princ #\")
-	       (write-string (string-diff-object object))
-	       (write-string (funcall *color-hook* ":NULL"))
-	       (princ #\")))
-      (if actual-in-bounds-p
-	;; too much long. e.g. "foo" "foobar"
-	#0#
-	;; simply different e.g. "foo" "bar"
-	(prin1(funcall *color-hook* (string-diff-object object)))))))
+  (if (null *print-vivid*)
+    (prin1(diff-object object))
+    (let*((pos(mismatch (string-diff-origin object)
+			(string-diff-object object)))
+	  (expected-in-bounds-p(array-in-bounds-p (string-diff-origin object)
+						  pos))
+	  (actual-in-bounds-p(array-in-bounds-p (string-diff-object object)
+						pos)))
+      (if expected-in-bounds-p
+	(if actual-in-bounds-p
+	  ;; simply different. e.g. "foobar" "foohoge"
+	  #0=(progn (princ #\")
+		    (write-string (string-diff-object object) nil :end pos)
+		    (write-string (funcall *color-hook*(subseq (string-diff-object object)pos)))
+		    (princ #\"))
+	  ;; too much short. e.g. "foobar" "foo"
+	  (progn (princ #\")
+		 (write-string (string-diff-object object))
+		 (write-string (funcall *color-hook* ":NULL"))
+		 (princ #\")))
+	(if actual-in-bounds-p
+	  ;; too much long. e.g. "foo" "foobar"
+	  #0#
+	  ;; simply different e.g. "foo" "bar"
+	  (prin1(funcall *color-hook* (string-diff-object object))))))))
 
 (defun mismatch-sexp(actual expected)
   (let(env)
