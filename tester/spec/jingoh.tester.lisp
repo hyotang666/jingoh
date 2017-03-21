@@ -1,5 +1,7 @@
 (defpackage :jingoh.tester.spec
-  (:use :cl :jingoh :jingoh.tester :jingoh.org))
+  (:use :cl :jingoh :jingoh.tester :jingoh.org)
+  (:import-from :jingoh.tester #:*color-hook*)
+  )
 (in-package :jingoh.tester.spec)
 (setup :jingoh.tester.spec)
 
@@ -1030,6 +1032,21 @@
 		     (prin1-to-string $result)))
 
 ;;;; Exceptional-Situations:
+
+;;;; string-output tests
+; When actual shorter than expected, string ":NULL" is added last.
+#?(let((*color-hook* #'identity)) ; without coloring.
+    (prin1 (mismatch-sexp "foo" "fooo")))
+:outputs "\"foo:NULL\""
+
+; when actual longer than expected, such part is printed with coloring.
+#?(let((*color-hook* (constantly " instead of coloring")))
+    (prin1 (mismatch-sexp "foobar" "foo")))
+:outputs "\"foo instead of coloring\""
+
+#?(let((*color-hook* (constantly "instead of coloring")))
+    (prin1 (mismatch-sexp "foo" "bar")))
+:outputs "\"instead of coloring\""
 
 (requirements-about SYNTAX-ERROR)
 
