@@ -1,11 +1,11 @@
 (in-package :jingoh.generator)
 
 (defun symbol-generate(symbol package)
-  (let((symbol(find-symbol (string symbol)package)))
-    (if(null symbol)
+  (let((s(find-symbol (string symbol)package)))
+    (if(null s)
       (error "Symbol ~S is not found in ~S"symbol package)
-      (dolist(roll (rolls-of symbol))
-	(funcall roll symbol)))))
+      (dolist(roll (rolls-of s))
+	(funcall roll s)))))
 
 (defun rolls-of(symbol)
   `(,@(and (millet:global-symbol-p symbol) `(,#'|variable|))
