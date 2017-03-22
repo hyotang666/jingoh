@@ -206,7 +206,7 @@
 #?(symbol-generate 'symbol-generate 0) :signals error
 
 ; result := NIL
-#?(symbol-generate 'hoge :jingoh.generator) => NIL
+#?(symbol-generate 'jingoh.generator::hoge :jingoh.generator) => NIL
 ,:stream NIL
 
 ;;;; Affected By:
@@ -221,3 +221,6 @@
 ;;;; Exceptional-Situations:
 ; When specified package is not found, an error is signaled.
 #?(symbol-generate 'hoge :no-such-package) :signals error
+
+; when specified symbol is not found, an error is signaled.
+#?(symbol-generate 'fuga :jingoh.generator) :signals error
