@@ -4,7 +4,8 @@
   (let((new(string-downcase(string arg))))
     (loop :for c :across new
 	  :for n :upfrom 0
-	  :when(find c "*?/+#")
+	  :when (and (not(alphanumericp c))
+		     (not(char= #\. c)))
 	  :do (setf(char new n)(char(char-name c)0))
 	  :finally(return new))))
 
