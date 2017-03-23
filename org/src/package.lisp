@@ -48,10 +48,5 @@
     #:api
     #:datum
 
-    )
-  (:documentation #.(uiop:read-file-string
-		      (uiop:subpathname (asdf:system-source-directory
-					  (asdf:find-system :jingoh.org))
-					"CONCEPTS.md")))
-  )
+    ))
 

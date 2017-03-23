@@ -2,6 +2,8 @@
 (in-package :asdf)
 (defsystem :jingoh.org
   :description "Jingoh's background database system"
+  :long-description #.(uiop:read-file-string
+                        (uiop:subpathname *load-pathname* "CONCEPTS.md"))
   :pathname "src/"
   :depends-on (:resignal-bind :alexandria)
   :components((:file "package")
