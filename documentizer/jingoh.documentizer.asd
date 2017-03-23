@@ -17,3 +17,6 @@
 
               (:file "documentize" :depends-on ("top" "packages" "about-package" "symbol-index" "about-symbols" "table"))
               ))
+;; Perform method below is added by JINGOH.GENERATOR.
+(defmethod perform ((o test-op) (c (eql (find-system "jingoh.documentizer"))))
+  (test-system :jingoh.documentizer.test))

@@ -7,7 +7,7 @@
 (defun %symbol-index (meta-datas system)
   (labels((LINKS(chars &optional(code #.(char-code #\A)) have-non-alph-p acc)
 	    (if(not(<= code #.(char-code #\Z)))
-	      (nreconc acc have-non-alph-p)
+	      (nreconc acc (or have-non-alph-p '("Non-Alphabetic")))
 	      (let((char(car chars)))
 		(if(null char)
 		  (LINKS chars (1+ code) have-non-alph-p

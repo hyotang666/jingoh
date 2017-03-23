@@ -6,7 +6,7 @@
     (%about-package meta-data)))
 
 (defun %about-package (meta-data)
-  (format t "# ~A~%~@[## ~:*~A Concepts~%~A~]## ~A Dictionary~2%~{* ~A~&~}"
+  (format t "# ~A~%~@[## ~:*~A Concepts~%~A~%~]## ~A Dictionary~2%~{* ~A~&~}"
 	  (meta-data-name meta-data)
 	  (meta-data-doc meta-data)
 	  (meta-data-name meta-data)
@@ -32,5 +32,5 @@
 					      (meta-data-commons meta-data))))
 			  (if sec
 			    (REC rest (push (MARKUP symbol sec) acc))
-			    (REC rest (push (string symbol) acc))))))))
+			    (REC rest (push (escape-* symbol) acc))))))))
 	    (REC (meta-data-exports meta-data)))))
