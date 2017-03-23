@@ -16,9 +16,9 @@ It is jingoh.examiner or jingoh.org who responds it respectively.
 
 ## Terms
 
-* REQUIREMENT
+### REQUIREMENT
 REQUIREMENT is internal datatype which represents specifications of requirement for operator's behavior.
 
-* ISSUE
-ISSUE is abstract datatype which contains information about issue of requiements.
+### ISSUE
+ISSUE is abstract datatype which contains information about issue of implementation of requiements.
 
