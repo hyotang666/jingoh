@@ -49,8 +49,8 @@
 	       (write-string "### ")
 	       (write-line (escape-* elt) *standard-output* :start 2))
 	      ((uiop:string-prefix-p "#+signature" elt)
-	       (format t  "### ")
-	       (write-line (escape-* elt) *standard-output* :start 11))
+	       (write-string "### ")
+	       (write-line (escape-* elt) *standard-output* :start 12))
 	      ((uiop:string-prefix-p "#| " elt)
 	       (write-string "# ")
 	       (write-line elt *standard-output* 
