@@ -115,8 +115,9 @@
 	       (SETF ,output (WITH-OUTPUT-TO-STRING(*STANDARD-OUTPUT*)
 			       (with-integrated-output-stream(*standard-output*)
 				 (LET((*ERROR-OUTPUT*(MAKE-BROADCAST-STREAM)))
-				   (SETF ,actual (FUNCALL (COERCE '(LAMBDA(),form)
-								  'FUNCTION)))))))
+				   (SETF ,actual (with-compilation-unit(:override t)
+						   (FUNCALL (COERCE '(LAMBDA(),form)
+								    'FUNCTION))))))))
 	       ,(the-push-instance-form result 'UNEXPECTED-SUCCESS `',test-form expected actual(getf parameters :position)))
 	     ,end
 	     (WHEN(AND ,output (NOT(STRING= "" ,output)))
