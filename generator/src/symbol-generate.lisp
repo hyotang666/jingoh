@@ -1,7 +1,7 @@
 (in-package :jingoh.generator)
 
 (defun symbol-generate(symbol package)
-  (let((s(find-symbol (string symbol)package)))
+  (let((s(nth-value 1(find-symbol (string symbol)package))))
     (if(null s)
       (error "Symbol ~S is not found in ~S"symbol package)
       (dolist(roll (rolls-of s))
