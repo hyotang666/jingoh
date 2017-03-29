@@ -8,10 +8,11 @@
 	(funcall roll s)))))
 
 (defun rolls-of(symbol)
-  `(,@(and (millet:global-symbol-p symbol) `(,#'|variable|))
-     ,@(and (symbol-macrop symbol) `(,#'|symbol-macro|))
-     ,@(and (millet:type-specifier-p symbol)`(,#'|type|))
-     ,@(and (fboundp symbol)`(,(function-type symbol)))))
+  (unless(special-operator-p symbol)
+    `(,@(and (millet:global-symbol-p symbol) `(,#'|variable|))
+       ,@(and (symbol-macrop symbol) `(,#'|symbol-macro|))
+       ,@(and (millet:type-specifier-p symbol)`(,#'|type|))
+       ,@(and (fboundp symbol)`(,(function-type symbol))))))
 
 (defun function-type(symbol)
   (if(macro-function symbol)
