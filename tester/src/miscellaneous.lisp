@@ -81,7 +81,9 @@
     (case(getf parameters :lazy :does-not-exist)
       (:does-not-exist (MAKE-BODY))
       ((NIL)(let((body(MAKE-BODY)))
-	      (eval body)
+	      (uiop:call-with-muffled-conditions
+		(lambda()(eval body))
+		uiop:*usual-uninteresting-conditions*)
 	      body))
       (otherwise `(EVAL ',(make-body))))))
 
