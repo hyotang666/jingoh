@@ -5,14 +5,10 @@
 				     :DIRECTION :OUTPUT
 				     :IF-DOES-NOT-EXIST :CREATE
 				     :IF-EXISTS :SUPERSEDE)
-     (cl-who:with-html-output(*standard-output* nil :prologue t)
-       (:style #.colorize:*coloring-css*)
-       (:html
-	 (:body
-	   (LET((3BMD-CODE-BLOCKS:*CODE-BLOCKS* T))
-	     (PARSE-STRING-AND-PRINT-TO-STREAM (WITH-OUTPUT-TO-STRING(*STANDARD-OUTPUT*)
-						 ,@body)
-					       *STANDARD-OUTPUT*)))))))
+     (LET((3BMD-CODE-BLOCKS:*CODE-BLOCKS* T))
+       (PARSE-STRING-AND-PRINT-TO-STREAM (WITH-OUTPUT-TO-STRING(*STANDARD-OUTPUT*)
+					   ,@body)
+					 *STANDARD-OUTPUT*))))
 
 (defstruct(meta-data (:constructor %make-meta-data)
 		     (:copier nil)
