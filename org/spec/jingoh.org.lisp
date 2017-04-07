@@ -16,7 +16,8 @@
 ;;;; Arguments and Values:
 
 ; name := symbol, otherwise ERROR.
-#?(deforg "ERROR") :signals ERROR
+#?(deforg "ERROR") :signals TYPE-ERROR
+,:lazy T
 
 ; result := org
 
@@ -53,7 +54,8 @@
 ;;;; Arguments and Values:
 
 ; name := org-designator, otherwise error.
-#?(in-org 0) :signals ERROR
+#?(in-org 0) :signals TYPE-ERROR
+,:lazy T
 
 ; result := org
 #?(progn (deforg :demo)
@@ -87,7 +89,8 @@
 
 ; subject := subject-designator. ; see subject-designator below.
 ; Otherwise error.
-#?(requirements-about 0) :signals ERROR
+#?(requirements-about 0) :signals TYPE-ERROR
+,:lazy T
 
 ; option := keyword value pair.
 ; Supportted keys are unspecified.
@@ -133,13 +136,15 @@
 ; subject := subject-designator. Described later. 
 ; Otherwise error.
 #?(common-requirements-about (0 "hoO") :as op) :signals ERROR
+,:lazy T
 
 ; option := key value pair.
 ; Supported key value pair is unspecified,
 ; but :AS is required. See below.
 
 ; as := symbol. Otherwise error.
-#?(common-requirements-about(first car) :as 0) :signals ERROR
+#?(common-requirements-about(first car) :as 0) :signals TYPE-ERROR
+,:lazy T
 ; specify alias for common subjects.
 
 ; result := List which includes specified subjects.
