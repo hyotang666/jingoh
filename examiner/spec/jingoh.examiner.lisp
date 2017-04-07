@@ -15,13 +15,13 @@
 ;;;; Arguments and Values:
 
 ; org := org-designator, otherwise error
-#?(examine :org 0) :signals error
+#?(examine :org 0) :signals missing-org
 
 ; subject := subject-designator, otherwise error
 #?(let((*org* (make-org))
        *issues*)
     (examine :subject 0))
-:signals error
+:signals missing-subject
 
 ; *verbose* := (mod 3) specify verbosity of print.
 ; when specified 0, only summary printed.
@@ -38,7 +38,8 @@
     (examine :verbose 1))
 :outputs #.(format nil "~A NIL~%"(cl-ansi-text:green "Pass"))
 #?(let((*org*(make-org))
-       *issues*)
+       *issues*
+       *break-on-fails*)
     (eval '(defspec (+) => 1))
     (examine :verbose 1))
 :outputs #.(format nil "~A in NIL~%~S ~%"
@@ -112,11 +113,12 @@
 ; Stop rest verifying when fails.
 #?(let((*org*(make-org))
        (*stop-on-fails* T)
+       *break-on-fails*
        *issues*)
     (eval'(defspec(+) => 1))
     (eval'(defspec(+) => 0))
     (examine))
-:outputs #.(format NIL "Stop to examine cause *STOP-ON-FAILS*~&@NIL~%~A ~%"
+:outputs #.(format NIL "~2%; Stop to examine cause *STOP-ON-FAILS* at NIL~2%~A ~%"
 		   (make-instance 'test-issue :form '(+)
 				  :expected 1
 				  :actual 0
@@ -134,7 +136,10 @@
 
 ;;;; Notes:
 
-(requirements-about *BREAK-ON-FAILS*)
+(requirements-about *BREAK-ON-FAILS*
+		    :around
+		    (let(*break-on-fails*)
+		      (call-body)))
 
 ;;;; Description:
 ; Breaks when fails
@@ -143,7 +148,7 @@
        *issues*)
     (eval '(defspec (+) => 1))
     (examine))
-:invokes-debugger error
+:invokes-debugger jingoh.examiner::break-on-fails
 ,:stream NIL
 
 ; Value type is NULL
@@ -163,6 +168,7 @@
 ;;;; Description:
 ; Previous issues.
 #?(let((*org*(make-org))
+       *break-on-fails*
        *issues*)
     (eval '(defspec (+) => 1))
     (examine)
