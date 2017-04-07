@@ -515,7 +515,7 @@
 => (let((a 0))(+))
 ,:test equal
 #?(canonicalize '(+) '(:lazy t))
-=> (eval '(+))
+=> (eval (macroexpand '(+)))
 ,:test equal
 
 ; result := form.
