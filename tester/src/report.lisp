@@ -112,7 +112,11 @@
   (let(env)
     (labels((rec(actual expected)
 	      (typecase expected
-		(cons (if (atom actual)
+		((CONS (EQL QUOTE)T)
+		 (if (typep actual '(CONS (EQL QUOTE) T))
+		   (cons 'quote (rec (cdr actual)(cdr expected)))
+		   (markup actual)))
+		(cons (if(typep actual '(OR ATOM (CONS (EQL QUOTE)T)))
 			(markup actual)
 			(cons (rec (car actual)(car expected))
 			      (rec (cdr actual)(cdr expected)))))
