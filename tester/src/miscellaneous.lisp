@@ -51,13 +51,13 @@
 		  :do (error "Unknown options key ~S in ~S~&Allowed are ~S "
 			     key parameters
 			     (millet:type-expand 'option-key))))
-	  (MAKE-BODY()
+	  (MAKE-BODY(test-form)
 	    (SET-AROUND (let((after(getf parameters :after)))
 			  (if after
-			    `(UNWIND-PROTECT ,(MAKE-PRIMARY)
+			    `(UNWIND-PROTECT ,(MAKE-PRIMARY test-form)
 					     ,after)
-			    (MAKE-PRIMARY)))))
-	  (MAKE-PRIMARY()
+			    (MAKE-PRIMARY test-form)))))
+	  (MAKE-PRIMARY(test-form)
 	    (let((before(getf parameters :before))
 		 (ignore-output-p(null(getf parameters :stream '#:not-specified))))
 	      (if before
@@ -79,11 +79,13 @@
 	  )
     (CHECK)
     (case(getf parameters :lazy :does-not-exist)
-      (:does-not-exist (MAKE-BODY))
-      ((NIL)(let((body(MAKE-BODY)))
-	      (eval body)
+      (:does-not-exist (MAKE-BODY test-form))
+      ((NIL)(let((body(MAKE-BODY test-form)))
+	      (uiop:call-with-muffled-conditions
+		(lambda()(eval body))
+		uiop:*usual-uninteresting-conditions*)
 	      body))
-      (otherwise `(EVAL ',(make-body))))))
+      (otherwise (make-body `(EVAL(MACROEXPAND ',test-form)))))))
 
 (defun sexp=(sexp1 sexp2)
   (let(env)

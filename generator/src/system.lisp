@@ -17,7 +17,9 @@
       (let((*default-pathname-defaults*(spec-directory system)))
 	(add-perform system)
 	(generate-asd system forms)
-	(map nil #'generate forms)))))
+	(map nil #'generate forms))))
+  #+quicklisp
+  (ql:register-local-projects))
 
 (defun add-perform (system)
   (let((directory(asdf:system-source-file system)))

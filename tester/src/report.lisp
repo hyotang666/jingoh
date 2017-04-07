@@ -53,7 +53,7 @@
 		    acc)))
 	  (BODY(string name rest color &optional acc)
 	    (destructuring-bind(pre post)(ppcre:split name string :limit 2)
-	      (REC post rest (list* (let((*print-circle* NIL))
+	      (REC post rest (list* (let((*print-circle* NIL)) ; <--- sbcl needs.
 				      (funcall color name))
 				      pre acc))))
 	  (DO-RETURN(string acc)
@@ -74,7 +74,9 @@
 
 (defmethod print-object((object diff)*standard-output*)
   (if *print-vivid*
-    (princ(funcall *color-hook*(prin1-to-string(diff-object object))))
+    (princ (let((string(prin1-to-string(diff-object object)))
+		(*print-circle* nil)) ; <--- sbcl needs.
+	     (funcall *color-hook* string)))
     (prin1(diff-object object))))
 
 (defmethod print-object((object string-diff)*standard-output*)
@@ -110,7 +112,11 @@
   (let(env)
     (labels((rec(actual expected)
 	      (typecase expected
-		(cons (if (atom actual)
+		((CONS (EQL QUOTE)T)
+		 (if (typep actual '(CONS (EQL QUOTE) T))
+		   (cons 'quote (rec (cdr actual)(cdr expected)))
+		   (markup actual)))
+		(cons (if(typep actual '(OR ATOM (CONS (EQL QUOTE)T)))
 			(markup actual)
 			(cons (rec (car actual)(car expected))
 			      (rec (cdr actual)(cdr expected)))))

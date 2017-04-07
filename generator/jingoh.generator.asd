@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.generator
-  :depends-on (:millet :closer-mop :lambda-list)
+  :depends-on (:millet :closer-mop :lambda-list :asdf :uiop)
   :pathname "src"
   :components ((:file "package")
                (:file "asd" :depends-on ("package"))

@@ -46,11 +46,3 @@ Additionaly, it will be enough to be used as tutolials for end users.
 * License - MIT
 * Developed with - CLISP
 * Tested with - CCL, SBCL, ECL
-
-## Known issues.
-### sbcl
-SBCL can not handling compiler error outputs.
-```lisp
-#? a :signals error ; undefined variable.
-```
-Test form above outputs style-warning message.

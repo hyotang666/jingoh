@@ -5,7 +5,7 @@
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "CONCEPTS.md"))
   :pathname "src/"
-  :depends-on (:resignal-bind :alexandria)
+  :depends-on (:resignal-bind :alexandria :uiop)
   :components((:file "package")
               ; bottom
               (:file "conditions" :depends-on ("package"))

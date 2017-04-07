@@ -1,4 +1,4 @@
-(defpackage :jingoh.examiner(:use :cl :jingoh.org :jingoh.tester)
+(defpackage :jingoh.examiner(:use :cl :jingoh.org :jingoh.tester :resignal-bind)
   (:export
     ;;;; main api
     #:examine
@@ -17,6 +17,12 @@
 (defparameter *break-on-fails* NIL "Breaks when fails")
 (defparameter *issues* NIL "Previous issues. Debug use.")
 
+(define-condition break-on-fails(simple-condition)())
+(defun break-on-fails(result)
+  (invoke-debugger(make-condition 'break-on-fails
+				  :format-control"~&~{~S~&~}"
+				  :format-arguments `(,result))))
+
 (defun print-progress(subject &optional (goto #'identity))
   (let((current-subject '#:dummy)
        (issues))
@@ -25,9 +31,9 @@
 	(push result issues)
 	(when result
 	  (if *break-on-fails*
-	    (error "~&; @~S ~{~S~&~}"subject result)
+	    (break-on-fails result)
 	    (when *stop-on-fails*
-	      (format t "~&Stop to examine cause *STOP-ON-FAILS*~&@~A"sub)
+	      (format t "~2%; Stop to examine cause *STOP-ON-FAILS* at ~A~%"sub)
 	      (setf *issues* (apply #'nconc (nreverse issues)))
 	      (funcall goto))))
 	(when(<= 2 *verbose*)
@@ -65,11 +71,14 @@
 (defun examine(&key (org *org*)subject ((:verbose *verbose*)*verbose*)
 		    ((:vivid *print-vivid*)*print-vivid*))
   (setf *issues* NIL)
-  (prog*((*org*(find-org org))
+  (prog*((*org*(resignal-bind((missing-org()'missing-org :api 'examine))
+		 (find-org org)))
 	 (*package*(Org-package *org*))
 	 (*print-circle* T))
     ;; in order to be able to see tag, we need SETF in PROG*'s body.
-    (setf *issues* (print-progress subject(lambda()(go :end))))
+    (setf *issues* (resignal-bind((missing-subject()
+				    'missing-subject :api 'examine))
+		     (print-progress subject(lambda()(go :end)))))
     (print-summary *issues*)
     :end
     (when(or (<= 1 *verbose*)
