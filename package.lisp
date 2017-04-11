@@ -24,10 +24,10 @@
     #:&
     #:call-body
 
-    ;;;; Issues for pretty printings.
+    ;; Issue names for pretty printings.
     #:issue #:condition-issue #:test-issue #:error-was-signaled #:warning-was-signaled #:unexpected-success #:issue-of-multiple-values #:wrong-format #:debugger-was-invoked #:missing-restarts #:unexpected-output #:unmatch-condition #:unsatisfied-clause
 
-    ;;;; slot names for pretty printings, especially for ECL.
+    ;; slot names for pretty printings, especially for ECL.
     #:form
     #:expected
     #:actual
@@ -35,8 +35,18 @@
     #:message
     #:args
 
+    ;; config
+    #:*print-vivid*
+
     ;;;; from examiner
     #:examine
+
+    ;; config
+    #:*break-on-fails*
+    #:*break-on-finish*
+    #:*stop-on-fails*
+    #:*verbose*
+
     ))
 (in-package :jingoh)
 
