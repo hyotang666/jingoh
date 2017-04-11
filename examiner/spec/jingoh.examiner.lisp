@@ -3,7 +3,10 @@
 (in-package :jingoh.examiner.spec)
 (setup :jingoh.examiner.spec)
 
-(requirements-about EXAMINE)
+(requirements-about EXAMINE
+		    :around
+		    (let(*break-on-finish*)
+		      (call-body)))
 
 ;;;; Description:
 ; Examine requirements then print result.
@@ -107,7 +110,10 @@
 
 ;;;; Notes:
 
-(requirements-about *STOP-ON-FAILS*)
+(requirements-about *STOP-ON-FAILS*
+		    :around
+		    (let(*break-on-finish*)
+		      (call-body)))
 
 ;;;; Description:
 ; Stop rest verifying when fails.
@@ -163,7 +169,10 @@
 ; This is useful when test size is short,
 ; because ASDF make RESTART named CLEAR-CONFIGURATION-AND-RETRY.
 
-(requirements-about *ISSUES*)
+(requirements-about *ISSUES*
+		    :around
+		    (let(*break-on-finish*)
+		      (call-body)))
 
 ;;;; Description:
 ; Previous issues.

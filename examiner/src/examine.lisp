@@ -7,6 +7,7 @@
     #:*verbose*
     #:*stop-on-fails*
     #:*break-on-fails*
+    #:*break-on-finish*
     #:*issues*
     ))
 (in-package :jingoh.examiner)
@@ -15,6 +16,7 @@
 (defparameter *verbose* 2 "Controls VERIFY's verbosity.")
 (defparameter *stop-on-fails* NIL "Stop rest verifying when fails.")
 (defparameter *break-on-fails* NIL "Breaks when fails")
+(defparameter *break-on-finish* NIL "Breaks when finish examine.")
 (defparameter *issues* NIL "Previous issues. Debug use.")
 
 (define-condition break-on-fails(simple-condition)())
@@ -22,6 +24,22 @@
   (invoke-debugger(make-condition 'break-on-fails
 				  :format-control"~&~{~S~&~}"
 				  :format-arguments `(,result))))
+
+(define-condition break-on-finish(error)
+  ((issues :initarg :issues :reader issues))
+  (:report(lambda(condition stream)
+	      (declare(ignore condition))
+	      (format stream "Break cause *BREAK-ON-FINISH*."))))
+(defun break-on-finish(&optional issues)
+  (invoke-debugger(make-condition 'break-on-finish :issues issues)))
+(defmethod print-object((c break-on-finish)stream)
+  (if *print-escape*
+    (print-unreadable-object(c stream)
+      (princ (string-trim `(#\newline)
+			  (with-output-to-string(out)
+			    (print-summary (issues c)out)))
+	     stream))
+    (call-next-method)))
 
 (defun print-progress(subject &optional (goto #'identity))
   (let((current-subject '#:dummy)
@@ -52,7 +70,7 @@
 	  (force-output))))
     (apply #'nconc (nreverse issues))))
 
-(defun print-summary(issues)
+(defun print-summary(issues &optional (*standard-output* *standard-output*))
   (if(zerop(Org-requirements-count *org*))
     (warn "No requirements in ~S"(Org-name *org*))
     (let((count(length issues)))
@@ -84,5 +102,8 @@
     (when(or (<= 1 *verbose*)
 	     *stop-on-fails*)
       (mapc #'print *issues*)))
-  (terpri))
+  (terpri)
+  (when *break-on-finish*
+    (break-on-finish *issues*))
+  )
 
