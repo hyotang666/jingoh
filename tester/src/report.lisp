@@ -15,12 +15,12 @@
 
 (defstruct(unexpected-success (:include issue)))
 (defstruct(unexpected-output (:include issue)))
-(defstruct(issue-of-multiple-values (:include issue)))
 (defstruct(missing-restarts(:include issue)))
 (defstruct(unsatisfied-clause (:include issue))
   args)
 
 (defstruct(wrong-format (:include test-issue)))
+(defstruct(issue-of-multiple-values (:include test-issue)))
 
 (defparameter *print-vivid* T)
 
