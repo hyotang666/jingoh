@@ -191,8 +191,9 @@
 ; To ignore condition especially warning, use :ignore-signals.
 #?(? (progn (warn "warning")
 	    t)
-     => T :ignore-signals warning)
+     => T :ignore-signals warning :stream nil)
 => NIL
+,:ignore-signals warning
 #?(? (signal 'warning) => NIL :ignore-signals warning)
 => NIL
 ,:ignore-signals warning
