@@ -18,6 +18,7 @@
 (defparameter *break-on-fails* NIL "Breaks when fails")
 (defparameter *break-on-finish* NIL "Breaks when finish examine.")
 (defparameter *issues* NIL "Previous issues. Debug use.")
+(defparameter *requirement-form* nil "Previous test form. Debug use.")
 
 (define-condition break-on-fails(simple-condition)())
 (defun break-on-fails(result)
@@ -48,11 +49,12 @@
       (let((result(Check requirement)))
 	(push result issues)
 	(when result
+	  (setf *issues* (apply #'nconc (nreverse issues))
+		*requirement-form* (Requirement-form requirement))
 	  (if *break-on-fails*
 	    (break-on-fails result)
 	    (when *stop-on-fails*
 	      (format t "~2%; Stop to examine cause *STOP-ON-FAILS* at ~A~%"sub)
-	      (setf *issues* (apply #'nconc (nreverse issues)))
 	      (funcall goto))))
 	(when(<= 2 *verbose*)
 	  (unless(eq sub current-subject)

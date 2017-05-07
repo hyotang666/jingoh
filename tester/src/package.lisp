@@ -15,6 +15,7 @@
     #:check
 
     ;;;; for internal dsl
+    #:requirement-form
     #:make-requirement
     #:the-standard-handling-form
     #:the-push-instance-form

@@ -1,8 +1,11 @@
 (in-package :jingoh.tester)
 
+(defun requirement-form(requirement)
+  (apply #'make-requirement requirement))
+
 (defun check(requirement)
-  (funcall (coerce (apply #'make-requirement requirement)
-		    'function)))
+  (funcall (coerce (requirement-form requirement)
+		   'function)))
 
 (defmacro defspec(&body body)
   `(PROGN
