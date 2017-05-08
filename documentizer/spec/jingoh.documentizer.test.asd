@@ -6,4 +6,4 @@
   :components
   ((:file "jingoh.documentizer"))
   :perform
-  (test-op (o c) (symbol-call :jingoh :examine)))
+  (test-op (o c) (symbol-call :jingoh :examine :jingoh.documentizer)))

@@ -1,6 +1,6 @@
 (defpackage :jingoh.org.spec (:use :cl :jingoh :jingoh.org))
 (in-package :jingoh.org.spec)
-(setup :jingoh.org.spec)
+(setup :jingoh.org)
 
 #| main apis for light users. |#
 

@@ -6,7 +6,7 @@
 		#:symbol-generate)
   )
 (in-package :jingoh.generator.spec)
-(setup :jingoh.generator.spec)
+(setup :jingoh.generator)
 
 (requirements-about GENERATE)
 
@@ -65,7 +65,7 @@
 			  :depends-on (:jingoh "demo")
 			  :components ((:file "hoge"))
 			  :perform (test-op(o c)
-				     (symbol-call :jingoh :examine))))))
+				     (symbol-call :jingoh :examine :hoge))))))
 
 #+syntax
 (%GENERATE-ASD system forms) ; => result
@@ -137,7 +137,7 @@
 #`(with-input-from-string(*standard-input* $string)
     (& (equal (read) '(defpackage :hoge.spec (:use :cl :jingoh :hoge)))
        (equal (read) '(in-package :hoge.spec))
-       (equal (read) '(setup :hoge.spec))
+       (equal (read) '(setup :hoge))
        (eq :eof (read *standard-input* nil :eof))))
 
 #+syntax

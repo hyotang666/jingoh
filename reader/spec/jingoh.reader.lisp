@@ -1,7 +1,7 @@
 (defpackage :jingoh.reader.spec
   (:use :cl :jingoh :jingoh.reader :jingoh.tester))
 (in-package :jingoh.reader.spec)
-(setup :jingoh.reader.spec)
+(setup :jingoh.reader)
 
 (requirements-about ENABLE)
 

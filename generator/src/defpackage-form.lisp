@@ -29,8 +29,9 @@
 			 :keyword)))
     (format t "~(~S~)~%~
 	    (in-package ~(~S~))~%~
-	    (setup ~(~:*~S~))~2%"
+	    (setup ~(~S~))~2%"
 	    `(defpackage ,spec-name (:use :cl :jingoh ,package-name))
 	    spec-name
+	    (intern (string package-name):keyword)
 	    )))
 

@@ -11,8 +11,13 @@
     (%generate-asd system forms)))
 
 (defun %generate-asd(system forms)
-  (labels((component(form)
-	    `(:file ,(string-downcase(second form)))))
+  (labels((COMPONENT(form)
+	    `(:file ,(string-downcase(second form))))
+	  (EXAMINE-FORM(form)
+	    `(uiop:symbol-call :jingoh :examine ,(PACKAGE-KEY (second form))))
+	  (PACKAGE-KEY(package-name)
+	    (intern (string package-name) :keyword))
+	  )
     (let((*package* (find-package :asdf)))
       (format t "; vim: ft=lisp et~%~
 	      (in-package :asdf)~%~
@@ -20,8 +25,8 @@
 	      `(asdf:defsystem ,(intern (format nil "~:@(~A~).TEST"
 						(asdf:coerce-name system))
 					:keyword)
-			  :depends-on (:jingoh ,(asdf:coerce-name system))
-			  :components ,(mapcar #'component forms)
-			  :perform (asdf:test-op(asdf::o asdf::c)
-				     (uiop:symbol-call :jingoh :examine)))))))
+			       :depends-on (:jingoh ,(asdf:coerce-name system))
+			       :components ,(mapcar #'COMPONENT forms)
+			       :perform (asdf:test-op(asdf::o asdf::c)
+					  ,@(mapcar #'EXAMINE-FORM forms)))))))
 

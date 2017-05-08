@@ -1,7 +1,7 @@
 (defpackage :jingoh.examiner.spec
   (:use :cl :jingoh :jingoh.examiner :jingoh.org :jingoh.tester))
 (in-package :jingoh.examiner.spec)
-(setup :jingoh.examiner.spec)
+(setup :jingoh.examiner)
 
 (requirements-about EXAMINE
 		    :around
@@ -12,18 +12,18 @@
 ; Examine requirements then print result.
 
 #+syntax
-(EXAMINE &key (org *org*) subject ((:verbose *verbose*) *verbose*)
+(EXAMINE org &key subject ((:verbose *verbose*) *verbose*)
 	 ((:vivid *print-vivid*)*print-vivid*)) ; => result
 
 ;;;; Arguments and Values:
 
 ; org := org-designator, otherwise error
-#?(examine :org 0) :signals missing-org
+#?(examine 0) :signals missing-org
 
 ; subject := subject-designator, otherwise error
 #?(let((*org* (make-org))
        *issues*)
-    (examine :subject 0))
+    (examine *org* :subject 0))
 :signals missing-subject
 
 ; *verbose* := (mod 3) specify verbosity of print.
@@ -31,20 +31,20 @@
 #?(let((*org*(make-org))
        *issues*)
     (eval '(defspec(+) => 0))
-    (examine :verbose 0))
+    (examine *org* :verbose 0))
 :outputs #.(format nil "~A NIL~%"(cl-ansi-text:green "Pass"))
 
 ; when specified 1, issues are printed when fails.
 #?(let((*org*(make-org))
        *issues*)
     (eval '(defspec (+) => 0))
-    (examine :verbose 1))
+    (examine *org* :verbose 1))
 :outputs #.(format nil "~A NIL~%"(cl-ansi-text:green "Pass"))
 #?(let((*org*(make-org))
        *issues*
        *break-on-fails*)
     (eval '(defspec (+) => 1))
-    (examine :verbose 1))
+    (examine *org* :verbose 1))
 :outputs #.(format nil "~A in NIL~%~S ~%"
 		   (cl-ansi-text:red "Fail 1 test")
 		   (make-instance 'test-issue :form '(+)
@@ -56,7 +56,7 @@
 #?(let((*org*(make-org))
        *issues*)
     (eval '(defspec (+) => 0))
-    (examine))
+    (examine *org*))
 :outputs #.(format nil "NIL~A~%~A NIL~%"
 		   (cl-ansi-text:green ".")
 		   (cl-ansi-text:green "Pass"))
@@ -67,7 +67,7 @@
 #?(let((*org* (make-org))
        *issues*)
     (eval '(defspec (+) => 0))
-    (examine))
+    (examine *org*))
 => NIL
 ,:stream NIL
 
@@ -85,13 +85,13 @@
 ; When org is not found, an error of type missing-org is signaled.
 #?(let((*org*(make-org))
        *issues*)
-    (examine :org :no-such-org))
+    (examine :no-such-org))
 :signals missing-org
 
 ; When subject is not found, an error of type missing-subject is signaled.
 #?(let((*org*(make-org))
        *issues*)
-    (examine :subject 'no-such-subject))
+    (examine *org* :subject 'no-such-subject))
 :signals missing-subject
 
 (requirements-about *VERBOSE*)
@@ -123,7 +123,7 @@
        *issues*)
     (eval'(defspec(+) => 1))
     (eval'(defspec(+) => 0))
-    (examine))
+    (examine *org*))
 :outputs #.(format NIL "~2%; Stop to examine cause *STOP-ON-FAILS* at NIL~2%~A ~%"
 		   (make-instance 'test-issue :form '(+)
 				  :expected 1
@@ -153,7 +153,7 @@
        (*break-on-fails* T)
        *issues*)
     (eval '(defspec (+) => 1))
-    (examine))
+    (examine *org*))
 :invokes-debugger jingoh.examiner::break-on-fails
 ,:stream NIL
 
@@ -180,7 +180,7 @@
        *break-on-fails*
        *issues*)
     (eval '(defspec (+) => 1))
-    (examine)
+    (examine *org*)
     *issues*)
 :satisfies #`(& (listp $result)
 		(= 1 (length $result))

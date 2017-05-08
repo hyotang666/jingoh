@@ -3,7 +3,7 @@
   (:import-from :jingoh.tester #:*color-hook*)
   )
 (in-package :jingoh.tester.spec)
-(setup :jingoh.tester.spec)
+(setup :jingoh.tester)
 
 (requirements-about DEFSPEC :around (let((*org* (make-org)))
 				      (call-body)))

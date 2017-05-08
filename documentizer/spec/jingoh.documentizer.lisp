@@ -12,7 +12,7 @@
 		#:meta-datas<=system)
   (:use :cl :jingoh :jingoh.documentizer))
 (in-package :jingoh.documentizer.spec)
-(setup :jingoh.documentizer.spec)
+(setup :jingoh.documentizer)
 
 (requirements-about DOCUMENTIZE)
 
