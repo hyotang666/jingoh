@@ -49,11 +49,13 @@
       (let((result(Check requirement)))
 	(push result issues)
 	(when result
-	  (setf *issues* (apply #'nconc (nreverse issues))
-		*requirement-form* (Requirement-form requirement))
-	  (if *break-on-fails*
-	    (break-on-fails result)
-	    (when *stop-on-fails*
+	  (setf *requirement-form* (Requirement-form requirement))
+	  (cond
+	    (*break-on-fails*
+	      (setf *issues* (apply #'nconc (nreverse issues)))
+	      (break-on-fails result))
+	    (*stop-on-fails*
+	      (setf *issues* (apply #'nconc (nreverse issues)))
 	      (format t "~2%; Stop to examine cause *STOP-ON-FAILS* at ~A~%"sub)
 	      (funcall goto))))
 	(when(<= 2 *verbose*)
