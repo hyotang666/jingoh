@@ -88,6 +88,7 @@
 ; in such case, return value is nil.
 #?(meta-datas<=system (asdf:find-system :jingoh)) => NIL
 ,:ignore-signals warning
+,:stream nil
 
 (requirements-about WITH-DOC-DIRECTORY)
 
