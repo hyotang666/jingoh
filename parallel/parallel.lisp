@@ -1,7 +1,7 @@
 (defpackage #:jingoh.parallel
   (:use #:common-lisp #:resignal-bind #:jingoh.org #:jingoh.examiner)
   (:import-from :lparallel #:pmap #:psome #:make-kernel #:*kernel*)
-  (:import-from :jingoh.tester #:check)
+  (:import-from :jingoh.tester #:check #:*print-vivid*)
   (:import-from :jingoh.org #:Spec-requirements #:Spec-subject)
   (:import-from :jingoh.examiner #:print-dot #:Print-summary #:Break-on-finish)
   (:export
