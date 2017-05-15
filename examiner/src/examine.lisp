@@ -62,17 +62,20 @@
 	  (unless(eq sub current-subject)
 	    (setf current-subject sub)
 	    (format t "~&~S"current-subject))
-	  (if result
-	    (if *print-vivid*
-	      (cl-ansi-text:with-color(:red)
-		(write-char #\!))
-	      (write-char #\!))
-	    (if *print-vivid*
-	      (cl-ansi-text:with-color(:green)
-		(write-char #\.))
-	      (write-char #\.)))
-	  (force-output))))
+	  (print-dot result))))
     (apply #'nconc (nreverse issues))))
+
+(defun print-dot(result)
+  (if result
+    (if *print-vivid*
+      (cl-ansi-text:with-color(:red)
+	(write-char #\!))
+      (write-char #\!))
+    (if *print-vivid*
+      (cl-ansi-text:with-color(:green)
+	(write-char #\.))
+      (write-char #\.)))
+  (force-output))
 
 (defun print-summary(issues &optional (*standard-output* *standard-output*))
   (if(zerop(Org-requirements-count *org*))
