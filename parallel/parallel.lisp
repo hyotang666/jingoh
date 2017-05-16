@@ -1,6 +1,7 @@
 (defpackage #:jingoh.parallel
   (:use #:common-lisp #:resignal-bind #:jingoh.org #:jingoh.examiner)
-  (:import-from :lparallel #:pmap #:psome #:make-kernel #:*kernel*)
+  (:import-from :lparallel #:pmap #:psome #:Pmapcan #:Premove
+		#:make-kernel #:*kernel*)
   (:import-from :jingoh.tester #:check #:*print-vivid*)
   (:import-from :jingoh.org #:Spec-requirements #:Spec-subject)
   (:import-from :jingoh.examiner #:print-dot #:Print-summary #:Break-on-finish)
@@ -34,20 +35,6 @@
     (Break-on-finish *Issues*))
   )
 
-(defun print-progress(subject &optional ignored)
-  (declare(ignore ignored))
-  (let((result(parallel-check subject))
-       (current '#:dummy))
-    (when(<= 2 *verbose*)
-      (map nil (lambda(cons)
-		 (unless(eq (car cons)current)
-		   (setf current (car cons))
-		   (format t "~&~S"current))
-		 (mapc #'print-dot(cdr cons)))
-	   result))
-    (loop :for (nil . issues) :in result
-	  :nconc (apply #'nconc issues))))
-
 (macrolet((?!(form)
 	    `(OR ,form
 		 (ERROR'MISSING-SUBJECT :API 'PARALLEL-CHECK
@@ -60,15 +47,17 @@
 		  :collect (find sub specs :key #'Spec-subject)))
 	(otherwise (list(?!(find subject specs :key #'Spec-subject))))))))
 
-(defun parallel-check(subject)
-  (pmap 'list
-	(lambda(spec)
-	  (cons (spec-subject spec)
-		(pmap 'list
-		      (lambda(requirement)
-			(check requirement))
-		      (spec-requirements spec))))
-	(appropriate-specs subject)))
+(defun print-progress(subject)
+  (Pmapcan (lambda(spec)
+	     (let*((result(Pmap 'list #'Check (Spec-requirements spec)))
+		   (subject(Spec-subject spec))
+		   (lock(bt:make-lock(symbol-name subject))))
+	       (when(<= 2 *verbose*)
+		 (bt:with-lock-held(lock)
+		   (format t "~&~S"subject)
+		   (mapc #'Print-dot result)))
+	       (Premove nil result)))
+	   (appropriate-specs subject)))
 
 (defun xxx-on-fails(subject)
   (psome (lambda(spec)
