@@ -60,8 +60,8 @@
 	   (appropriate-specs subject)))
 
 (defun xxx-on-fails(subject)
-  (psome (lambda(spec)
-	   (psome #'Check (Spec-requirements spec)))
+  (Psome (lambda(spec)
+	   (Psome #'Check (Spec-requirements spec)))
 	 (appropriate-specs subject)))
 
 (defun cpu-cores(&optional (default 2))
