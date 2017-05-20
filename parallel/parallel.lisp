@@ -5,6 +5,7 @@
   (:import-from :jingoh.tester #:check #:*print-vivid*)
   (:import-from :jingoh.org #:Spec-requirements #:Spec-subject)
   (:import-from :jingoh.examiner #:print-dot #:Print-summary #:Break-on-finish)
+  (:import-from :with-fields #:For-each-line)
   (:export
     ;;;; main api
     #:pexamine
@@ -65,8 +66,10 @@
 	 (appropriate-specs subject)))
 
 (defun cpu-cores(&optional (default 2))
-  (let((lscpu(uiop:run-program "which lscpu" :output :string)))
-    (if(string= "" lscpu)
-      default
-      (let((info (uiop:run-program "lscpu | grep '^CPU(s)'" :output :string)))
-	(parse-integer info :start (1+(position #\: info :test #'char=)))))))
+  (let((pathname(probe-file "/proc/cpuinfo")))
+    (if pathname
+      (For-each-line((tag 0))pathname
+	(declare(:separator #\:))
+	:when (uiop:string-prefix-p "processor" tag)
+	:count :it)
+      default)))

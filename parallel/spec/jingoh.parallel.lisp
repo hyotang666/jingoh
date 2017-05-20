@@ -37,7 +37,7 @@
 ;;;; Notes:
 ; Behavior is not completely same with jingoh.examiner:EXAMINE.
 ; Differences are...
-; * Progress is not printed sequently.
+; * Progress is printed subject by subject.
 ; * Progress is not printed when `jingoh.examiner:*break-on-fails*` or `jingoh.examiner:*stop-on-fails*` specified T.
 
 ;;;; Exceptional-Situations:
