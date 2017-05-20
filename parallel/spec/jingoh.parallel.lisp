@@ -21,7 +21,7 @@
 
 ; *verbose* := (mod 3). See jingoh.examiner spec.
 
-; *print-vivid* := boolean. See jingoh.examiner spec.
+; *print-vivid* := boolean. See jingoh.tester spec.
 
 ; cores := (and integer (satisfies plusp)), otherwise error.
 
@@ -29,7 +29,7 @@
 
 ;;;; Affected By:
 ; `jingoh.examiner:*break-on-fails*` `jingoh.examiner:*stop-on-fails*`
-; `jingoh.examiner:*break-on-finish*`
+; `jingoh.examiner:*break-on-finish*` `jingoh.tester:*print-vivid*`
 
 ;;;; Side-Effects:
 ; Print `*standard-output*`
