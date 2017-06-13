@@ -1,7 +1,7 @@
 (in-package :jingoh.documentizer)
 
 (defun top(system)
-  (with-doc-directory((merge-pathnames "top.html"))
+  (With-doc-directory((merge-pathnames "top.html"))
     (%top system)))
 
 (defun %top(system)
@@ -13,5 +13,5 @@
 		:for title :in '(packages symbols)
 		:collect i
 		:collect (symbol-name title)
-		:collect (html (string-downcase(symbol-name title))))))
+		:collect (Target-path (string-downcase(symbol-name title))))))
 

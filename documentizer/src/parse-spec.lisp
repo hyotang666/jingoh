@@ -1,11 +1,26 @@
-(in-package :jingoh.documentizer)
+(defpackage :jingoh.documentizer.parse-spec(:use :cl :read-as-string)
+  (:import-from :jingoh.documentizer.utility
+		#:Target-path
+		#:Replace-invalid-chars)
+  (:export
+    ; main api
+    #:parse-spec
+    ; slot readers
+    #:section-body
+    #:section-path
+    #:section-names
+    ; subtype predicates
+    #:single-p
+    #:common-p
+    ))
+(in-package :jingoh.documentizer.parse-spec)
 
 (defun parse-spec(pathname)
   (engroup(sectionize(enlist pathname))))
 
-(defstruct section body html names)
+(defstruct section body path names)
 (defstruct(single (:include section)
-		  (:constructor make-single (&key body html name
+		  (:constructor make-single (&key body path name
 						  &aux(names (list name))))))
 (defstruct(common (:include section))
   alias)
@@ -41,7 +56,7 @@
 	      (BODY (car list)(cdr list)temp acc)))
 	  (BODY(exp-string rest temp acc)
 	    (case (char exp-string 0)
-	      (#\( (let*((*package* (find-package :jingoh.documentizer))
+	      (#\( (let*((*package* (find-package :jingoh.documentizer.parse-spec))
 			 (sexp(read-from-string exp-string)))
 		     (case (car sexp)
 		       ((defpackage in-package setup)
@@ -74,11 +89,11 @@
 			     :collect (make-common :body (cddr c)
 						   :names (car c)
 						   :alias (cadr c)
-						   :html (html(symbol-name(gensym "C_")))))
+						   :path (Target-path(symbol-name(gensym "C_")))))
 		       (loop :for s :in acc
 			     :collect (make-single :body (cddr s)
 						   :name (car s)
-						   :html (html(format nil "S_~A"(replace-invalid-chars (car s))))))))
+						   :path (Target-path(format nil "S_~A"(Replace-invalid-chars (car s))))))))
 	      (BODY(sec rest acc)
 		(let((pos (position-if (lambda(com)
 					 (find (car sec)(car com)

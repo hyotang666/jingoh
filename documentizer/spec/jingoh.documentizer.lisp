@@ -1,14 +1,17 @@
 (defpackage :jingoh.documentizer.spec
+  (:import-from :jingoh.documentizer.dsl
+		#:with-doc-directory
+		#:meta-data
+		#:%make-meta-data)
+  (:import-from :jingoh.documentizer.parse-spec
+		#:make-single
+		#:make-common)
   (:import-from :jingoh.documentizer
 		#:about-symbol
-		#:with-doc-directory
 		#:%about-package
 		#:%symbol-index
 		#:%packages
-		#:%make-meta-data
 		#:%top
-		#:make-single
-		#:make-common
 		#:meta-datas<=system)
   (:use :cl :jingoh :jingoh.documentizer))
 (in-package :jingoh.documentizer.spec)
@@ -48,7 +51,7 @@
 :satisfies
 #`(& (listp $result)
      (every (lambda(x)
-	      (typep x 'jingoh.documentizer::meta-data))
+	      (typep x 'meta-data))
 	    $result))
 ,:ignore-signals warning
 ,:stream NIL
@@ -231,9 +234,9 @@ A | B | C | D | E | F | G | [H](X_Alph_H.html) | I | J | K | L | M | N | O | P |
 				  :doc "package documentation"
 				  :exports '(symbols which extracted from |defpackage's| export option)
 				  :singles (list (make-single :name 'symbols
-							      :html #P"path/to/file.html"))
+							      :path #P"path/to/file.html"))
 				  :commons (list (make-common :names '(which extracted)
-							      :html #P"path/to/common/file.html"))))
+							      :path #P"path/to/common/file.html"))))
 :outputs
 "# PACKAGE-NAME
 ## PACKAGE-NAME Concepts
@@ -262,9 +265,9 @@ package documentation
 				  :doc "package documentation"
 				  :exports '(symbols which extracted from |defpackage's| export option)
 				  :singles (list (make-single :name 'symbols
-							      :html #P"path/to/file.html"))
+							      :path #P"path/to/file.html"))
 				  :commons (list (make-common :names '(which extracted)
-							      :html #P"path/to/common/file.html"))))
+							      :path #P"path/to/common/file.html"))))
 => NIL
 ,:stream nil
 

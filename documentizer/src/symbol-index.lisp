@@ -1,7 +1,7 @@
 (in-package :jingoh.documentizer)
 
 (defun symbol-index(meta-datas system)
-  (with-doc-directory((merge-pathnames(html "symbols")))
+  (With-doc-directory((merge-pathnames(Target-path "symbols")))
     (%symbol-index meta-datas system)))
 
 (defun %symbol-index (meta-datas system)
@@ -14,19 +14,19 @@
 			 (push (princ-to-string (code-char code))acc))
 		  (if(not(alpha-char-p char))
 		    (LINKS (cdr chars) code
-			   (pushnew #.(format nil "[Non-Alphabetic](~A)" +x-non-alph-namestring+)
+			   (pushnew (format nil "[Non-Alphabetic](~A)" *x-non-alph-namestring*)
 				    have-non-alph-p :test #'string=)
 			   acc)
 		    (if(= code (char-code char))
 		      (LINKS (cdr chars) (1+ code) have-non-alph-p
 			     (push (format nil "[~A](~A)"
 					   char
-					   (x-alph-pathname char))
+					   (X-alph-pathname char))
 				   acc))
 		      (LINKS chars (1+ code) have-non-alph-p
 			     (push (princ-to-string (code-char code))acc)))))))))
-    (let*((symbols(apply #'append (mapcar #'meta-data-specifieds meta-datas)))
-	  (index-chars(index-chars symbols)))
+    (let*((symbols(apply #'append (mapcar #'Meta-data-specifieds meta-datas)))
+	  (index-chars(Index-chars symbols)))
       (format t "# Alphabetical Symbol Index~2%There ~:[is~;are~] ~D symbol~:*~P by ~A.~2%~{~A~^ | ~}"
 	      (not(= 1(length symbols)))
 	      (length symbols)

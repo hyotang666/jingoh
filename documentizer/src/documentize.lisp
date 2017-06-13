@@ -32,4 +32,4 @@
 				 (funcall expander form env))))
 	(asdf:load-system system :force t))
       (let((*default-pathname-defaults* spec-dir))
-	(mapcar #'make-meta-data meta-datas)))))
+	(mapcar #'Make-meta-data meta-datas)))))

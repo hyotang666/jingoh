@@ -1,4 +1,15 @@
-(in-package :jingoh.documentizer)
+(defpackage :jingoh.documentizer.utility(:use :cl)
+  (:export
+    #:replace-invalid-chars
+    #:escape-*
+    #:first-char
+    #:x-alph-pathname
+    #:*x-non-alph-namestring*
+    #:*target-type*
+    #:target-path
+    #:index-chars
+    ))
+(in-package :jingoh.documentizer.utility)
 
 (defun replace-invalid-chars(arg)
   (let((new(string-downcase(string arg))))
@@ -25,12 +36,13 @@
   (char-upcase(char(symbol-name symbol)0)))
 
 (defun x-alph-pathname(char)
-  (html (format nil "X_Alph_~A"char)))
+  (target-path (format nil "X_Alph_~A"char)))
 
-(defconstant +x-non-alph-namestring+ "X_NonAlpha.html")
+(defvar *x-non-alph-namestring* "X_NonAlpha.html")
 
-(defun html(name)
-  (make-pathname :name name :type "html"))
+(defvar *target-type* "html")
+(defun target-path(name)
+  (make-pathname :name name :type *target-type*))
 
 (defun index-chars(symbols)
   (sort (delete-duplicates(mapcar #'first-char symbols))
