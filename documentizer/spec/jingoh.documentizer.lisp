@@ -1,6 +1,5 @@
 (defpackage :jingoh.documentizer.spec
   (:import-from :jingoh.documentizer.dsl
-		#:with-doc-directory
 		#:meta-data
 		#:%make-meta-data)
   (:import-from :jingoh.documentizer.parse-spec
@@ -92,33 +91,6 @@
 #?(meta-datas<=system (asdf:find-system :jingoh)) => NIL
 ,:ignore-signals warning
 ,:stream nil
-
-(requirements-about WITH-DOC-DIRECTORY)
-
-;;;; Description:
-; make environment to output html.
-
-#+syntax
-(WITH-DOC-DIRECTORY (pathname) &body body) ; => result
-
-;;;; Arguments and Values:
-
-; pathname := form generates pathname, otherwise error.
-#?(with-doc-directory(0):body) :signals type-error
-,:ignore-signals warning
-
-; body := lisp form which print markdown contents.
-
-; result := unspecified.
-
-;;;; Affected By:
-
-;;;; Side-Effects:
-; make file on file system.
-
-;;;; Notes:
-
-;;;; Exceptional-Situations:
 
 (requirements-about %TOP)
 
