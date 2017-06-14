@@ -1,6 +1,6 @@
 (in-package :jingoh.generator)
 
-(defmethod generate ((system asdf:system) &key)
+(defmethod generate ((system asdf:system) &key append)
   (let(forms)
     (labels((LOAD-DEPENDENCIES(system)
 	      (mapc #'asdf:load-system(asdf:system-depends-on system)))
@@ -14,22 +14,30 @@
       (LOAD-DEPENDENCIES system)
       (let((*macroexpand-hook* #'HOOK))
 	(asdf:load-system system :force t))
-      (let((*default-pathname-defaults*(spec-directory system)))
-	(add-perform system)
-	(generate-asd system forms)
-	(map nil #'generate forms))))
+      (let*((*default-pathname-defaults*(spec-directory system))
+	    (test-asd-path(test-asd-path system)))
+	(add-perform system test-asd-path)
+	(generate-asd system forms test-asd-path)
+	(dolist(form forms)
+	  (generate form :append append)))))
   #+quicklisp
   (ql:register-local-projects))
 
-(defun add-perform (system)
-  (let((directory(asdf:system-source-file system)))
-    (with-open-file(*standard-output* directory :direction :output
-		      :if-exists :append)
-      (%add-perform (asdf:coerce-name system)))))
+(defun test-asd-path(system)
+  (make-pathname :name (concatenate 'string (asdf:coerce-name system) ".test")
+		 :type "asd"
+		 :defaults *default-pathname-defaults*))
+
+(defun add-perform (system test-asd-path)
+  (unless(probe-file test-asd-path)
+    (let((directory(asdf:system-source-file system)))
+      (with-open-file(*standard-output* directory :direction :output
+					:if-exists :append)
+	(%add-perform (asdf:coerce-name system))))))
 
 (defun %add-perform(name)
   (let((*package*(find-package :asdf)))
-    (format t "~&;; Perform method below is added by JINGOH.GENERATOR.~%~(~S~)"
+    (format t "~%;; Perform method below is added by JINGOH.GENERATOR.~%~(~S~)"
 	    `(defmethod asdf:perform((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name))))
 	       (asdf:test-system ,(intern(format nil "~:@(~A~).TEST"name)
 			       :keyword))))))

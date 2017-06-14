@@ -9,11 +9,10 @@
 	  (*default-pathname-defaults*(spec-directory system))
 	  (forms `((defpackage ,package-name
 		     (:export ,symbol))))
-	  (path(format nil "~A.test.asd"
-		       *default-pathname-defaults*)))
+	  (path(test-asd-path system)))
       (macrolet((expand(existsp)
 		  `(PROGN ,@(unless existsp
-			      `((GENERATE-ASD SYSTEM FORMS)))
+			      `((GENERATE-ASD SYSTEM FORMS PATH)))
 			  (MAP NIL #'GENERATE FORMS))))
 	(if(probe-file path)
 	  (expand T)

@@ -8,7 +8,7 @@
                (:file "symbol-generate" :depends-on ("package"))
 
                (:file "system" :depends-on ("asd"))
-               (:file "symbol" :depends-on ("asd"))
+               (:file "symbol" :depends-on ("system"))
                (:file "defpackage-form" :depends-on ("symbol-generate"))
                ))
 (defmethod perform ((o test-op) (c (eql (find-system "jingoh.generator"))))

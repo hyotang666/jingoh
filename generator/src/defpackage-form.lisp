@@ -1,6 +1,6 @@
 (in-package :jingoh.generator)
 
-(defmethod generate((form list) &key)
+(defmethod generate((form list) &key append)
   (assert(typep form '(CONS (EQL DEFPACKAGE) T)))
   (macrolet((expand(existp)
 	      `(WITH-OPEN-FILE(*STANDARD-OUTPUT* PATH
@@ -21,7 +21,8 @@
 			(second form)))
 	   (*package*(find-package(second form))))
 	(if (probe-file path)
-	  (expand t)
+	  (when append
+	    (expand t))
 	  (expand nil))))))
 
 (defun generate-header(package-name)
@@ -34,4 +35,3 @@
 	    spec-name
 	    (intern (string package-name):keyword)
 	    )))
-

@@ -100,11 +100,11 @@
 ; print perform method.
 #?(%add-perform :hoge)
 :output-satisfies
-#`(&(uiop:string-prefix-p ";; Perform method below is added by JINGOH.GENERATOR."
+#`(&(uiop:string-prefix-p (format nil "~%;; Perform method below is added by JINGOH.GENERATOR.")
 			  $string)
     (equal (read-from-string $string)
-	 '(defmethod perform ((o test-op)(c (eql (find-system :hoge))))
-	    (test-system :hoge.test))))
+	   '(defmethod perform ((o test-op)(c (eql (find-system :hoge))))
+	      (test-system :hoge.test))))
 
 #+syntax
 (%ADD-PERFORM name) ; => result
