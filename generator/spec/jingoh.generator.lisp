@@ -20,19 +20,29 @@
 ; arg
 
 ;;;; Method signature:
-#+signature(GENERATE (FORM LIST) &KEY)
-; form must (DEFPACKAGE ...) form.
-; generate each exported symbol's template.
+#+signature(GENERATE (FORM LIST) &KEY APPEND)
+; Form must (DEFPACKAGE ...) form, otherwise signals an error.
+; Generate each exported symbol's template.
+; If spec file already exists, and APPEND is T, file is appended.
+; If spec file already exists, and APPEND is NIL, nothing to do.
+; If spec file does not exist, file is made.
 
-#+signature(GENERATE (SYMBOL SYMBOL) &KEY SYSTEM)
-; if symbol is keyword, recursively call generate with (asdf:find-system symbol).
-; otherwise generate symbol's template.
-; When system name and package is different, you need to specify system.
+#+signature(GENERATE (SYMBOL SYMBOL) &KEY SYSTEM INIT)
+; If SYMBOL is keyword, and INTI is NIL, recursively call GENERATE with `(asdf:find-system SYMBOL)`.
+; If SYMBOL is keyword, and INIT is T, recursively call GENERATE with `'init`.
+; Otherwise generate symbol's template.
+; When system name and package name is different, you need to specify SYSTEM.
 ; If spec file already exists, file contents is appended.
 ; Otherwise new file is made.
 
-#+signature(GENERATE (SYSTEM ASDF/SYSTEM:SYSTEM) &KEY)
-; generate new spec directory and all spec template.
+#+signature(GENERATE (DISPATCHER (EQL INIT)) &KEY SYSTEM)
+; Generate system source (i.e. asd file), and its components (i.e. lisp file).
+; Then recursively call GENERATE with `(asdf:find-system SYSTEM)`.
+; Internal use.
+
+#+signature(GENERATE (SYSTEM ASDF/SYSTEM:SYSTEM) &KEY APPEND)
+; Generate new spec directory and all spec template.
+; About append see above.
 
 ;;;; Arguments and Values:
 
@@ -224,3 +234,4 @@
 
 ; when specified symbol is not found, an error is signaled.
 #?(symbol-generate 'fuga :jingoh.generator) :signals error
+

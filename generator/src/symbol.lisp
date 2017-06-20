@@ -1,8 +1,10 @@
 (in-package :jingoh.generator)
 
-(defmethod generate ((symbol symbol) &key system)
+(defmethod generate ((symbol symbol) &key system init)
   (if(keywordp symbol)
-    (generate(asdf:find-system symbol))
+    (if init
+      (generate 'init :system symbol)
+      (generate(asdf:find-system symbol)))
     (let*((*package* (symbol-package symbol))
 	  (package-name(package-name *package*))
 	  (system(asdf:find-system (or system (string-downcase package-name))))
@@ -13,7 +15,8 @@
       (macrolet((expand(existsp)
 		  `(PROGN ,@(unless existsp
 			      `((GENERATE-ASD SYSTEM FORMS PATH)))
-			  (MAP NIL #'GENERATE FORMS))))
+			  (DOLIST(FORM FORMS)
+			    (GENERATE FORM :APPEND T)))))
 	(if(probe-file path)
 	  (expand T)
 	  (expand nil))))))
