@@ -3,11 +3,9 @@
 (defmethod generate((form list) &key append)
   (assert(typep form '(CONS (EQL DEFPACKAGE) T)))
   (macrolet((expand(existp)
-	      `(WITH-OPEN-FILE(*STANDARD-OUTPUT* PATH
-				:DIRECTION :OUTPUT
-				,@(if existp
-				    `(:IF-EXISTS :APPEND)
-				    `(:IF-DOES-NOT-EXIST :CREATE)))
+	      `(UIOP:WITH-OUTPUT-FILE(*STANDARD-OUTPUT* PATH
+							,@(when existp
+							    `(:IF-EXISTS :APPEND)))
 		 ,@(unless existp
 		     `((GENERATE-HEADER(SECOND FORM))))
 		 (DOLIST(SYMBOL (EXPORTS FORM))

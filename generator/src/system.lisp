@@ -31,8 +31,7 @@
 (defun add-perform (system test-asd-path)
   (unless(probe-file test-asd-path)
     (let((directory(asdf:system-source-file system)))
-      (with-open-file(*standard-output* directory :direction :output
-					:if-exists :append)
+      (uiop:with-output-file(*standard-output* directory :if-exists :append)
 	(%add-perform (asdf:coerce-name system))))))
 
 (defun %add-perform(name)

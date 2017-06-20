@@ -2,10 +2,7 @@
 
 (defun generate-asd(system forms test-asd-path)
   (ensure-directories-exist *default-pathname-defaults*)
-  (with-open-file(*standard-output* test-asd-path 
-				    :direction :output
-				    :if-exists :supersede
-				    :if-does-not-exist :create)
+  (uiop:with-output-file(*standard-output* test-asd-path :if-exists :supersede)
     (%generate-asd system forms)))
 
 (defun %generate-asd(system forms)
