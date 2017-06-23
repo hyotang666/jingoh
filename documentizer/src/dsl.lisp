@@ -1,5 +1,5 @@
 (defpackage :jingoh.documentizer.dsl
-  (:use :cl :3bmd :jingoh.documentizer.parse-spec)
+  (:use :cl :3bmd :jingoh.documentizer.sections :jingoh.documentizer.parse-spec)
   (:export
     ; context abstractions
     #:with-doc-directory

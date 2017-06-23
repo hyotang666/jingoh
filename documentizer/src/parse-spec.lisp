@@ -2,46 +2,19 @@
   (:import-from :jingoh.documentizer.utility
 		#:Target-path
 		#:Replace-invalid-chars)
+  (:import-from :jingoh.documentizer.sections
+		#:Make-common
+		#:Make-single
+		#:Single-p
+		)
   (:export
     ; main api
     #:parse-spec
-    ; slot readers
-    #:section-body
-    #:section-path
-    #:section-names
-    ; subtype predicates
-    #:single-p
-    #:common-p
     ))
 (in-package :jingoh.documentizer.parse-spec)
 
 (defun parse-spec(pathname)
   (engroup(sectionize(enlist pathname))))
-
-(defstruct section body path names)
-(defstruct(single (:include section)
-		  (:constructor make-single (&key body path name
-						  &aux(names (list name))))))
-(defstruct(common (:include section))
-  alias)
-
-(defmethod print-object ((obj single)*standard-output*)
-  (if *print-escape*
-    (print-unreadable-object(obj *standard-output* :type nil :identity nil)
-      (prin1 (car(section-names obj))))
-    (call-next-method)))
-
-(defmethod print-object((obj common)*standard-output*)
-  (if *print-escape*
-    (print-unreadable-object(obj *standard-output* :type nil :identity nil)
-      (prin1 (common-alias obj)))
-    (progn (format t "# ~{~A^, ~}~%"(common-names obj))
-	   (call-next-method))))
-
-(defmethod print-object((obj section)*standard-output*)
-  (unless *print-escape*
-    (dolist(string (section-body obj))
-      (write-line string))))
 
 (defun enlist(pathname)
   (with-open-file(s pathname)
@@ -86,21 +59,30 @@
 		  (BODY (car list)(cdr list) acc)))
 	      (DO-RETURN(commons acc)
 		(nconc (loop :for c :in commons
-			     :collect (make-common :body (cddr c)
+			     :collect (Make-common :body (cddr c)
 						   :names (car c)
 						   :alias (cadr c)
 						   :path (Target-path(symbol-name(gensym "C_")))))
 		       (loop :for s :in acc
-			     :collect (make-single :body (cddr s)
+			     :collect (Make-single :body (cddr s)
 						   :name (car s)
 						   :path (Target-path(format nil "S_~A"(Replace-invalid-chars (car s))))))))
 	      (BODY(sec rest acc)
-		(let((pos (position-if (lambda(com)
-					 (find (car sec)(car com)
-					       :test #'string=))
-				       commons)))
+		(let((pos (SINGLE-IN-COMMON-P sec)))
 		  (if pos
-		    (setf (nth pos commons)
-			  (nconc (nth pos commons) sec))
-		    (REC rest (push sec acc))))))
+		    (progn (INCLUDE-SEC-INTO-COMMONS pos sec)
+			   (REC rest acc))
+		    (REC rest (push sec acc)))))
+	      (INCLUDE-SEC-INTO-COMMONS(pos sec)
+		(setf (nth pos commons)
+		      (nconc (nth pos commons)
+			     (rplaca sec (ENCHAPTER(car sec))))))
+	      (SINGLE-IN-COMMON-P(sec)
+		(position-if (lambda(com)
+			       (find (car sec)(car com)
+				     :test #'string=))
+			     commons))
+	      (ENCHAPTER(title)
+		(format nil "#| ~A |#"title))
+	      )
 	(REC singles)))))

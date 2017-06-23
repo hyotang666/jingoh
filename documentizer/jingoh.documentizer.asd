@@ -5,9 +5,11 @@
   :pathname "src/"
   :components(;; bottom utils.
               (:file "utility")
-              (:file "parse-spec" :depends-on ("utility"))
-              (:file "dsl" :depends-on ("parse-spec"))
-              ;; middle helpers.
+              (:file "section" :depends-on ("utility"))
+              ;; middle helpers depth 1.
+              (:file "parse-spec" :depends-on ("section"))
+              (:file "dsl" :depends-on ("section" "parse-spec"))
+              ;; middle helpers depth 2.
               (:file "package" :depends-on ("dsl"))
               (:file "top" :depends-on ("package"))
               (:file "packages" :depends-on ("package"))
