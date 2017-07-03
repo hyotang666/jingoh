@@ -1,22 +1,20 @@
 (defpackage #:jingoh.parallel
   (:use #:common-lisp #:resignal-bind #:jingoh.org #:jingoh.examiner)
+  (:import-from :cl-cpus #:get-number-of-processors)
   (:import-from :lparallel #:pmap #:psome #:Pmapcan #:Premove
 		#:make-kernel #:*kernel*)
   (:import-from :jingoh.tester #:check #:*print-vivid*)
   (:import-from :jingoh.org #:Spec-requirements #:Spec-subject)
   (:import-from :jingoh.examiner #:print-dot #:Print-summary #:Break-on-finish)
-  (:import-from :with-fields #:For-each-line)
   (:export
     ;;;; main api
     #:pexamine
-    ;;;; miscellaneous helper
-    #:cpu-cores
     ))
 (in-package #:jingoh.parallel)
 
 (defun pexamine(org &key subject ((:verbose *Verbose*)*Verbose*)
 		    ((:vivid *Print-vivid*)*Print-vivid*)
-		    (cores (cpu-cores)))
+		    (cores (Get-number-of-processors)))
   (prog*((*Org*(Resignal-bind((Missing-org()'Missing-org :api 'examine))
 		 (Find-org org)))
 	 (*package*(Org-package *org*))
@@ -64,12 +62,3 @@
   (Psome (lambda(spec)
 	   (Psome #'Check (Spec-requirements spec)))
 	 (appropriate-specs subject)))
-
-(defun cpu-cores(&optional (default 2))
-  (let((pathname(probe-file "/proc/cpuinfo")))
-    (if pathname
-      (For-each-line((tag 0))pathname
-	(declare(:separator #\:))
-	:when (uiop:string-prefix-p "processor" tag)
-	:count :it)
-      default)))

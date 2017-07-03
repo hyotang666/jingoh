@@ -11,7 +11,7 @@
 #+syntax
 (PEXAMINE org &key subject ((:verbose *verbose*) *verbose*)
 	  ((:vivid *print-vivid*) *print-vivid*)
-	  (cores (cpu-cores))) ; => result
+	  (cores (get-number-of-processors))) ; => result
 
 ;;;; Arguments and Values:
 

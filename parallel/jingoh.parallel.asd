@@ -2,7 +2,7 @@
 (in-package :asdf)
 (defsystem "jingoh.parallel"
   :depends-on
-  ("lparallel" "resignal-bind" "jingoh" "with-fields" "uiop" "bordeaux-threads")
+  ("lparallel" "resignal-bind" "jingoh" "bordeaux-threads" "cl-cpus")
   :components
   ((:file "parallel")))
 ;; Perform method below is added by JINGOH.GENERATOR.
