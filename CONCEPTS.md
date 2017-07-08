@@ -1,6 +1,6 @@
 ## Abstract concepts
 Jingoh provides the features to notate specification, rather than test framework.
-Once you writes your library's specifications of requirements with jingoh, such file works as test.
+Once you writes your library's specifications with jingoh, such file works as test.
 Additionaly, it will be enough to be used as tutolials for end users.
 
 ## Packages
@@ -17,7 +17,10 @@ Jingoh provides some extensions.
 Provides the features to generate test template.
 
 ### Jingoh.documentizer
-Provides the features to convert test file to html.
+Provides the features to convert test file to html, or markdown for github wiki.
+
+### Jingoh.parallel
+Provides the feature to run test in parallel.
 
 ## NOTE
 Jingoh compiles test form at run time.
