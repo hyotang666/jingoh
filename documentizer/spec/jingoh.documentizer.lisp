@@ -6,7 +6,6 @@
 		#:make-single
 		#:make-common)
   (:import-from :jingoh.documentizer
-		#:about-symbol
 		#:%about-package
 		#:%symbol-index
 		#:%packages
@@ -241,66 +240,6 @@ package documentation
 				  :commons (list (make-common :names '(which extracted)
 							      :path #P"path/to/common/file.html"))))
 => NIL
-,:stream nil
-
-;;;; Affected By:
-; none
-
-;;;; Side-Effects:
-; print to `*standard-output*`
-
-;;;; Notes:
-
-;;;; Exceptional-Situations:
-
-(requirements-about ABOUT-SYMBOL)
-
-;;;; Description:
-; accepts list which include spec lines, print intermediate markdown for each symbol html
-#?(about-symbol '("#| This becomes h1 |#"
-		  ";;;; This becomes h2"
-		  ";;; This becomes h3"
-		  ";; This becomes h4"
-		  "; This becomes paragraph."
-		  "#?(+)"
-		  "=>"
-		  "0"
-		  "#+syntax
-(This becomes paragraph) ; this remains"
-                  "#+setf
-(This becomes paragraph) ; this remains"
-                  "#+signature
-(This becomes h3)"
-                  "This is discarded."
-))
-:outputs
-"# This becomes h1 
-## This becomes h2
-### This becomes h3
-#### This becomes h4
-This becomes paragraph.
-```lisp
-#?(+)
-=> 0
-```
-
-### syntax
-(This becomes paragraph) ; this remains
-### setf
-(This becomes paragraph) ; this remains
-### (This becomes h3)
-"
-#+syntax
-(ABOUT-SYMBOL body) ; => result
-
-;;;; Arguments and Values:
-
-; body := list which includes lines, otherwise error.
-#?(about-symbol :not-list) :signals type-error
-#?(about-symbol '(0)) :signals type-error
-
-; result := nil
-#?(about-symbol '("; hoge")) => NIL
 ,:stream nil
 
 ;;;; Affected By:
