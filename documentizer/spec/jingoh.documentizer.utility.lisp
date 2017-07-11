@@ -13,13 +13,13 @@
 (REPLACE-INVALID-CHARS arg) ; => result
 
 #?(replace-invalid-chars '*hoge*)
-=> "AhogeA"
+=> "42hoge42"
 ;;;; Arguments and Values:
 
 ; arg := string-designator, otherwise error.
 #?(replace-invalid-chars 0) :signals type-error
-#?(replace-invalid-chars "+hoge+") => "PhogeP"
-#?(replace-invalid-chars #\-) => "H"
+#?(replace-invalid-chars "+hoge+") => "43hoge43"
+#?(replace-invalid-chars #\-) => "45"
 #?(replace-invalid-chars #\.) => "."
 
 ; result := string
@@ -32,7 +32,7 @@
 
 ;;;; Notes:
 ; Valid alphabet character is convert to downcase.
-#?(replace-invalid-chars "&HoGe") => "Ahoge"
+#?(replace-invalid-chars "&HoGe") => "38hoge"
 
 ;;;; Exceptional-Situations:
 

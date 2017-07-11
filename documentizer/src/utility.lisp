@@ -12,13 +12,13 @@
 (in-package :jingoh.documentizer.utility)
 
 (defun replace-invalid-chars(arg)
-  (let((new(string-downcase(string arg))))
-    (loop :for c :across new
-	  :for n :upfrom 0
-	  :when (and (not(alphanumericp c))
-		     (not(char= #\. c)))
-	  :do (setf(char new n)(char(char-name c)0))
-	  :finally(return new))))
+  (loop :for c :across (string-downcase(string arg))
+	:for n :upfrom 0
+	:when (and (not(alphanumericp c))
+		   (not(char= #\. c)))
+	:collect (princ-to-string(char-code c)) :into result
+	:else :collect c :into result
+	:finally(return (uiop:reduce/strcat result))))
 
 (defun escape-*(arg)
   (flet((ensure-symbol-notation(arg)
