@@ -168,7 +168,7 @@
 ;;;; Arguments and Values:
 
 ; name := string, otherwise error.
-#?(target-path :example) :signals type-error
+#?(target-path :example) :signals error
 
 ; result := pathname
 
