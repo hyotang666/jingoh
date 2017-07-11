@@ -102,7 +102,9 @@
 #+syntax
 (X-ALPH-PATHNAME char) ; => result
 
-#?(x-alph-pathname #\a) => #P"X_Alph_a.html"
+#?(x-alph-pathname #\a)
+=> ;; In ecl, literal pathname (i.e. #P"") have :version :newest.
+#.(make-pathname :name "X_Alph_a" :type "html")
 ;;;; Arguments and Values:
 
 ; char := character which alphabet.
@@ -118,7 +120,8 @@
 ; `*target-type*`
 #?(let((*target-type* "lisp"))
     (x-alph-pathname #\b))
-=> #P"X_Alph_b.lisp"
+=> #.(make-pathname :name "X_Alph_b"
+		    :type "lisp")
 
 ;;;; Side-Effects:
 ; none
@@ -164,7 +167,8 @@
 #+syntax
 (TARGET-PATH name) ; => result
 
-#?(target-path "example") => #P"example.html"
+#?(target-path "example") => #.(make-pathname :name "example"
+					      :type "html")
 ;;;; Arguments and Values:
 
 ; name := string, otherwise error.
@@ -176,7 +180,8 @@
 ; `*target-type*`
 #?(let((*target-type* "asd"))
     (target-path "example"))
-=> #P"example.asd"
+=> #.(make-pathname :name "example"
+		    :type "asd")
 
 ;;;; Side-Effects:
 ; none
