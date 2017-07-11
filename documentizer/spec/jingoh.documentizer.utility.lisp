@@ -62,7 +62,7 @@
 ;;;; Notes:
 ; When ARG is symbol, and its PRINTed notation is |xxx|,
 ; return string has vertical bars.
-#?(escape-* '\#hoge) => "|#HOGE|"
+#?(escape-* '|#hoge|) => "|#hoge|"
 
 ;;;; Exceptional-Situations:
 
