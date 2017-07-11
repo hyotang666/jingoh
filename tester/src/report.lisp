@@ -66,9 +66,12 @@
 
 (defstruct(diff(:constructor markup (object)))
   object)
-(defstruct(string-diff(:include diff)
-	    (:constructor markup-string (object origin)))
+(defstruct(diff-comparable(:include diff))
   origin)
+(defstruct(string-diff(:include diff-comparable)
+	    (:constructor markup-string (object origin))))
+(defstruct(pathname-diff(:include diff-comparable)
+	    (:constructor markup-pathname(object origin))))
 
 (defvar *color-hook* #'cl-ansi-text:red)
 
@@ -107,6 +110,36 @@
 	  #0#
 	  ;; simply different e.g. "foo" "bar"
 	  (prin1(funcall *color-hook* (string-diff-object object))))))))
+
+(defmethod print-object((object pathname-diff)*standard-output*)
+  (let((diff(pathname-diff-object object))
+       (origin(pathname-diff-origin object)))
+    (labels((DIFF?(a b &key (test #'eql))
+	      (if(funcall test a b)
+		a
+		(etypecase a
+		  (SYMBOL (markup a))
+		  (STRING (markup-string a b)))))
+	    (REC(a b &optional acc)
+	      (if a
+		(if b
+		  (REC(cdr a)(cdr b)(push (DIFF?(car a)(car b):test #'equal)acc))
+		  (nreconc acc (loop :for elt :in a
+				     :collect (funcall *color-hook* (string elt)))))
+		(if b
+		  (nreconc acc (funcall *color-hook* ":NULL"))
+		  (nreverse acc))))
+	    )
+      (if(null *print-vivid*)
+	(prin1 diff)
+	(format t "#P~S"
+		`(:HOST ,(DIFF? (pathname-host diff)(pathname-host origin))
+			:DEVICE ,(DIFF? (pathname-device diff)(pathname-device origin))
+			:DIRECTORY ,(REC (pathname-directory diff)
+					 (pathname-directory origin))
+			:NAME ,(DIFF? (pathname-name diff)(pathname-name origin):test #'equal)
+			:TYPE ,(DIFF? (pathname-type diff)(pathname-type origin):test #'equal)
+			:VERSION ,(DIFF? (pathname-version diff)(pathname-version origin))))))))
 
 (defun mismatch-sexp(actual expected)
   (let(env)
@@ -151,8 +184,7 @@
 			    (markup actual)
 			    (if (equal expected actual)
 			      actual
-			      (markup-string (namestring actual)
-					     (namestring expected)))))
+			      (markup-pathname actual expected))))
 		((or number character bit-vector)
 		 (if(equal expected actual)
 		   actual
