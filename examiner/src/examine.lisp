@@ -9,6 +9,9 @@
     #:*break-on-fails*
     #:*break-on-finish*
     #:*issues*
+
+    ;;;; DSL
+    #:with-examiner-context
     ))
 (in-package :jingoh.examiner)
 
@@ -20,11 +23,18 @@
 (defparameter *issues* NIL "Previous issues. Debug use.")
 (defparameter *requirement-form* nil "Previous test form. Debug use.")
 
-(define-condition break-on-fails(simple-condition)())
+(defmacro with-examiner-context(form)
+  `(LET((*PRINT-CIRCLE* T)
+	(*PRINT-LENGTH* NIL) ; for sbcl at least.
+	(*PRINT-LEVEL* NIL) ; for sbcl at least.
+	(*PRINT-PRETTY* T) ; for ccl at least.
+	)
+     ,form))
+
+(define-condition break-on-fails(error)())
 (defun break-on-fails(result)
-  (invoke-debugger(make-condition 'break-on-fails
-				  :format-control"~&~{~S~&~}"
-				  :format-arguments `(,result))))
+  (with-examiner-context(print result))
+  (invoke-debugger(make-condition 'break-on-fails)))
 
 (define-condition break-on-finish(error)
   ((issues :initarg :issues :reader issues))
@@ -98,8 +108,7 @@
   (setf *issues* NIL)
   (prog*((*org*(resignal-bind((missing-org()'missing-org :api 'examine))
 		 (find-org org)))
-	 (*package*(Org-package *org*))
-	 (*print-circle* T))
+	 (*package*(Org-package *org*)))
     ;; in order to be able to see tag, we need SETF in PROG*'s body.
     (setf *issues* (resignal-bind((missing-subject()
 				    'missing-subject :api 'examine))
@@ -108,7 +117,8 @@
     :end
     (when(or (<= 1 *verbose*)
 	     *stop-on-fails*)
-      (mapc #'print *issues*)))
+      (with-examiner-context
+	(mapc #'print *issues*))))
   (terpri)
   (when *break-on-finish*
     (break-on-finish *issues*))
