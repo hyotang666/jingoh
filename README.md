@@ -27,6 +27,7 @@ If your system is already made, evaluate below.
 *NOTE!* You must specify your system with *keyword*.
 
 ```lisp
+(asdf:load-system :jingoh.generator)
 (jingoh.generator:generate :your-system)
 ```
 In this case, jingoh will make `spec` subdirectory in your system source directory like below.
@@ -169,6 +170,7 @@ So, modify source like below.
 After writing your-system's spec file, if you want to get your system's html documentations, evaluate like below.
 
 ```lisp
+(asdf:load-system :jingoh.documentizer)
 (jingoh.documentizer:documentize :your-system)
 ```
 Jingoh will make `doc` subdirectory in your system source directory.
