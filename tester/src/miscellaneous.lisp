@@ -132,6 +132,6 @@
   `(let((*standard-output* ,var)
 	(*error-output* ,var)
 	(*trace-output* ,var)
-	(*query-io* ,var)
-	(*terminal-io* ,var))
+	(*query-io* (make-two-way-stream *query-io* ,var))
+	(*terminal-io* (make-two-way-stream *terminal-io* ,var)))
      ,@body))
