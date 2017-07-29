@@ -42,7 +42,7 @@
 :outputs #.(format nil "~A NIL~%"(cl-ansi-text:green "Pass"))
 #?(let((*org*(make-org))
        *issues*
-       *break-on-fails*)
+       *on-fails*)
     (eval '(defspec (+) => 1))
     (examine *org* :verbose 1))
 :outputs #.(format nil "~A in NIL~%~S ~%"
@@ -72,7 +72,7 @@
 ,:stream NIL
 
 ;;;; Affected By:
-; *verbose* *stop-on-fails* *break-on-fails*
+; *verbose* *on-fails*
 
 ;;;; Side-Effects:
 ; print to *standard-output*
@@ -110,65 +110,6 @@
 
 ;;;; Notes:
 
-(requirements-about *STOP-ON-FAILS*
-		    :around
-		    (let(*break-on-finish*)
-		      (call-body)))
-
-;;;; Description:
-; Stop rest verifying when fails.
-#?(let((*org*(make-org))
-       (*stop-on-fails* T)
-       *break-on-fails*
-       *issues*)
-    (eval'(defspec(+) => 1))
-    (eval'(defspec(+) => 0))
-    (examine *org*))
-:outputs #.(format NIL "~2%; Stop to examine cause *STOP-ON-FAILS* at NIL~2%~A ~%"
-		   (make-instance 'test-issue :form '(+)
-				  :expected 1
-				  :actual 0
-				  :test 'eql)
-		   (cl-ansi-text:red "1 fail"))
-		   
-
-; Value type is NULL
-#? *STOP-ON-FAILS* :be-the boolean
-
-; Initial value is NIL
-
-;;;; Affected By:
-; none
-
-;;;; Notes:
-
-(requirements-about *BREAK-ON-FAILS*
-		    :around
-		    (let(*break-on-fails*)
-		      (call-body)))
-
-;;;; Description:
-; Breaks when fails
-#?(let((*org*(make-org))
-       (*break-on-fails* T)
-       *issues*)
-    (eval '(defspec (+) => 1))
-    (examine *org*))
-:invokes-debugger jingoh.examiner::break-on-fails
-,:stream NIL
-
-; Value type is NULL
-#? *BREAK-ON-FAILS* :be-the boolean
-
-; Initial value is NIL
-
-;;;; Affected By:
-; none
-
-;;;; Notes:
-; This is useful when test size is short,
-; because ASDF make RESTART named CLEAR-CONFIGURATION-AND-RETRY.
-
 (requirements-about *ISSUES*
 		    :around
 		    (let(*break-on-finish*)
@@ -177,7 +118,7 @@
 ;;;; Description:
 ; Previous issues.
 #?(let((*org*(make-org))
-       *break-on-fails*
+       *on-fails*
        *issues*)
     (eval '(defspec (+) => 1))
     (examine *org*)
@@ -197,3 +138,42 @@
 
 ;;;; Notes:
 ; Debug use.
+
+(requirements-about *ON-FAILS*)
+
+;;;; Description:
+; Specify EXAMINE's behavior.
+
+;;;; Value type is (member :error :stop nil)
+#? *ON-FAILS* :be-the (member :error :stop nil)
+
+; If :ERROR, debugger is immediately invoked when one test is failed.
+#?(let(*break-on-finish*
+       (*org*(make-org))
+       (*on-fails* :error))
+    (eval '(defspec (+) => 1))
+    (eval '(defspec (+) => 0))
+    (examine *org*))
+:invokes-debugger jingoh.examiner::break-on-fails
+
+; If :STOP, EXAMINE is immediately stop successfully when one test is failed.
+#?(let(*break-on-finish*
+       (*org*(make-org))
+       (*on-fails* :stop))
+    (eval '(defspec (+) => 1))
+    (eval '(defspec (+) => 0))
+    (examine *org*))
+:outputs #.(format NIL "~2%; Stop to examine cause *ON-FAILS* at NIL~2%~A ~%"
+		   (make-instance 'test-issue :form '(+)
+				  :expected 1
+				  :actual 0
+				  :test 'eql)
+		   (cl-ansi-text:red "1 fail"))
+
+; Initial value is NIL
+
+;;;; Affected By:
+; none
+
+;;;; Notes:
+

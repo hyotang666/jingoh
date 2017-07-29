@@ -5,8 +5,7 @@
 
     ;;;; variables
     #:*verbose*
-    #:*stop-on-fails*
-    #:*break-on-fails*
+    #:*on-fails*
     #:*break-on-finish*
     #:*issues*
 
@@ -17,8 +16,8 @@
 
 ; subject, detail, summary
 (defparameter *verbose* 2 "Controls VERIFY's verbosity.")
-(defparameter *stop-on-fails* NIL "Stop rest verifying when fails.")
-(defparameter *break-on-fails* NIL "Breaks when fails")
+(defparameter *on-fails* NIL)
+(declaim(type (member :error :stop nil)*on-fails*))
 (defparameter *break-on-finish* NIL "Breaks when finish examine.")
 (defparameter *issues* NIL "Previous issues. Debug use.")
 (defparameter *requirement-form* nil "Previous test form. Debug use.")
@@ -60,14 +59,14 @@
 	(push result issues)
 	(when result
 	  (setf *requirement-form* (Requirement-form requirement))
-	  (cond
-	    (*break-on-fails*
-	      (setf *issues* (apply #'nconc (nreverse issues)))
-	      (break-on-fails result))
-	    (*stop-on-fails*
-	      (setf *issues* (apply #'nconc (nreverse issues)))
-	      (format t "~2%; Stop to examine cause *STOP-ON-FAILS* at ~A~%"sub)
-	      (funcall goto))))
+	  (case *on-fails*
+	    ((:error)
+	     (setf *issues* (apply #'nconc (nreverse issues)))
+	     (break-on-fails result))
+	    ((:stop)
+	     (setf *issues* (apply #'nconc (nreverse issues)))
+	     (format t "~2%; Stop to examine cause *ON-FAILS* at ~A~%"sub)
+	     (funcall goto))))
 	(when(<= 2 *verbose*)
 	  (unless(eq sub current-subject)
 	    (setf current-subject sub)
@@ -112,11 +111,11 @@
     ;; in order to be able to see tag, we need SETF in PROG*'s body.
     (setf *issues* (resignal-bind((missing-subject()
 				    'missing-subject :api 'examine))
-		     (print-progress subject(lambda()(go :end)))))
+		     (print-progress subject(lambda()(go #0=#:end)))))
     (print-summary *issues*)
-    :end
+    #0#
     (when(or (<= 1 *verbose*)
-	     *stop-on-fails*)
+	     (eq :stop *on-fails*))
       (with-examiner-context
 	(mapc #'print *issues*))))
   (terpri)
