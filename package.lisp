@@ -42,8 +42,7 @@
     #:examine
 
     ;; config
-    #:*break-on-fails*
-    #:*break-on-finish*
+    #:*on-fails*
     #:*stop-on-fails*
     #:*verbose*
 
