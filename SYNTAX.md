@@ -180,6 +180,7 @@ The default of `=>` and `:EQUIVALENTS`'s test is `EQL`.
 The default of `:OUTPUTS`'s test is `STRING=`.
 The default of `:VALUES`'s test is `EQUAL`.
 The default of `:EXPANDED-TO`'s test is `SEXP=`.
+The default of `:INVOKES-DEBUGGER`'s test is `NIL`.
 
 ```lisp
 #? "foo" => "foo"
@@ -195,6 +196,15 @@ In such case, you need to trick like below.
 ,:test string=
 ```
 
+*NOTE!* This option's meanings is different when it is used with `:INVOKES-DEBUGGER`.
+In such case, the function must zero arguments function, and testing environment (e.g. special symbols.) when debugger is invoked.
+
+```lisp
+#? (let((*package*(find-package :cl-user)))
+     (error "hoge"))
+:invokes-debugger error
+,:test (lambda()(eq *package* (find-package :cl-user)))
+```
 #### :STREAM
 The default is `*STANDARD-OUTPUT*`.
 
@@ -250,8 +260,8 @@ Like `EVAL-WHEN` option.
 | :multiple-value-satisfies | :ignore-signals :lazy :stream |
 | :output-satisfies         | :ignore-signals :lazy :stream |
 | :signals		    | :ignore-signals :lazy :with-restarts |
-| :invokes-debugger	    | :ignore-signals :lazy :with-restarts |
 | :expanded-to		    | :ignore-signals :stream |
+| :invokes-debugger	    | :ignore-signals :lazy :with-restarts :test |
 
 ## expert
 ### IMPLEMENTATION-DEPENDENT

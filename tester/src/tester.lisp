@@ -162,13 +162,17 @@
 				      expected &rest parameters)
   (declare(ignore key))
   (alexandria:with-unique-names(actual result output end)
-    (let((form(canonicalize test-form parameters)))
+    (let((form(canonicalize test-form parameters))
+	 (test(getf parameters :test)))
       `(LAMBDA()
 	 (PROG(*DEBUGGER-HOOK* ,actual ,result (,output ""))
 	   ;; In order to make tag visible from hook,
 	   ;; we need to set hook in body.
 	   (FLET((HOOK(CONDITION FUNCTION)
 		   (DECLARE(IGNORE FUNCTION))
+		   ,@(when test
+		       `((UNLESS (,(encallable test))
+			   ,(the-push-instance-form result 'TEST-ISSUE `',test-form T NIL (getf parameters :position) :test `',test))))
 		   (IF(TYPEP CONDITION ',expected)
 		     ,(let((restarts(getf parameters :with-restarts)))
 			(when restarts
