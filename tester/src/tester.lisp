@@ -96,12 +96,12 @@
 			       (ERROR `(go ,end))))))))
 	      (restart-checker()
 		`(LAMBDA(CONDITION)
-		   (DECLARE(IGNORE CONDITION))
+		   (DECLARE(IGNORABLE CONDITION))
 		   ,@(let((restarts(getf parameters :with-restarts)))
 		       (when restarts
 			 `((LET((,actual(MAPCAR #'FIND-RESTART ',(uiop:ensure-list restarts))))
 			     (WHEN(SOME #'NULL ,actual)
-			       ,(the-push-instance-form result 'MISSING-RESTARTS `',test-form restarts `(REMOVE NIL ,actual) (getf parameters :position)))))))
+			       ,(the-push-instance-form result 'MISSING-RESTARTS `',test-form restarts `(COMPUTE-RESTARTS CONDITION) (getf parameters :position)))))))
 		   (GO ,end)))
 	      )
 	`(LAMBDA()
@@ -174,7 +174,7 @@
 			(when restarts
 			  `(LET((,actual(MAPCAR #'FIND-RESTART ',(uiop:ensure-list restarts))))
 			     (WHEN(SOME #'NULL ,actual)
-			       ,(the-push-instance-form result 'MISSING-RESTARTS `',test-form restarts `(REMOVE NIL ,actual) (getf parameters :position))))))
+			       ,(the-push-instance-form result 'MISSING-RESTARTS `',test-form restarts `(COMPUTE-RESTARTS CONDITION) (getf parameters :position))))))
 		     ,(the-push-instance-form result 'UNMATCH-CONDITION `',test-form expected 'CONDITION (getf parameters :position) :MESSAGE `(PRINC-TO-STRING CONDITION)))
 		   (GO ,end))
 		 (HANDLER(CONDITION)
