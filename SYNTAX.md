@@ -260,8 +260,8 @@ Like `EVAL-WHEN` option.
 | :multiple-value-satisfies | :ignore-signals :lazy :stream |
 | :output-satisfies         | :ignore-signals :lazy :stream |
 | :signals		    | :ignore-signals :lazy :with-restarts |
-| :expanded-to		    | :ignore-signals :stream |
 | :invokes-debugger	    | :ignore-signals :lazy :with-restarts :test |
+| :expanded-to		    | :ignore-signals :stream :test |
 
 ## expert
 ### IMPLEMENTATION-DEPENDENT
@@ -360,7 +360,7 @@ Otherwise you can not get enough information especially about ARGS.
 ```lisp
 #? "hog" :satisfies (lambda(string)
                       (& (stringp string)
-		         (let((length(length string)))
+		         (LET((length(length string))) ; <--- Special operator.
 			   (= 4 length))))
 =>
 #S(UNSATISFIED-CLAUSE
