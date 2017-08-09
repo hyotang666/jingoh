@@ -80,11 +80,9 @@
     (CHECK)
     (case(getf parameters :lazy :does-not-exist)
       (:does-not-exist (MAKE-BODY test-form))
-      ((NIL)(let((body(MAKE-BODY test-form)))
-	      (uiop:call-with-muffled-conditions
-		(lambda()(eval body))
-		uiop:*usual-uninteresting-conditions*)
-	      body))
+      ((NIL)`(UIOP:CALL-WITH-MUFFLED-CONDITIONS
+	       (LAMBDA(),(make-body test-form))
+	       UIOP:*USUAL-UNINTERESTING-CONDITIONS*))
       (otherwise (make-body `(EVAL(MACROEXPAND ',test-form)))))))
 
 (defun sexp=(sexp1 sexp2)
