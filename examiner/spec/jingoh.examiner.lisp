@@ -46,7 +46,7 @@
     (eval '(defspec (+) => 1))
     (examine *org* :verbose 1))
 :outputs #.(format nil "~A in NIL~%~S ~%"
-		   (cl-ansi-text:red "Fail 1 test")
+		   (cl-ansi-text:red "1 fail")
 		   (make-instance 'test-issue :form '(+)
 				  :expected 1
 				  :actual 0

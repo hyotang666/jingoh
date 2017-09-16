@@ -98,7 +98,7 @@
 		(Org-name *org*))
 	(format t "~&~A in ~S"
 		(if *print-vivid*
-		  (cl-ansi-text:red #0=(format nil "Fail ~D test~:*~P"count))
+		  (cl-ansi-text:red #0=(format nil "~D fail~:*~P"count))
 		  #0#)
 		(Org-name *org*))))))
 
