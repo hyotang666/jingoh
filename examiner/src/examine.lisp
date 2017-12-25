@@ -71,8 +71,23 @@
 	  (unless(eq sub current-subject)
 	    (setf current-subject sub)
 	    (format t "~&~S"current-subject))
-	  (print-dot result))))
+	  (if(<= 3 *verbose*)
+	    (print-requirement result requirement)
+	    (print-dot result)))))
     (apply #'nconc (nreverse issues))))
+
+(defun print-requirement (result requirement)
+  (if result
+    (format t "~&~A ~S"
+	    (if *print-vivid*
+	      (cl-ansi-text:red "Fails")
+	      "Fails")
+	    requirement)
+    (format t "~&~A ~S"
+	    (if *print-vivid*
+	      (cl-ansi-text:green "Pass")
+	      "Pass")
+	    requirement)))
 
 (defun print-dot(result)
   (if result
