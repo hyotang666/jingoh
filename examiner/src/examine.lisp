@@ -117,7 +117,8 @@
 		  #0#)
 		(Org-name *org*))))))
 
-(defun examine(org &key subject ((:verbose *verbose*)*verbose*)
+(defun examine(org &key subject on-fails
+		   ((:verbose *verbose*)*verbose*)
 		   ((:vivid *print-vivid*)*print-vivid*))
   (setf *issues* NIL)
   (prog*((*org*(resignal-bind((missing-org()'missing-org :api 'examine))

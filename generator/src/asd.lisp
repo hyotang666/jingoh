@@ -9,7 +9,8 @@
   (labels((COMPONENT(form)
 	    `(:file ,(string-downcase(second form))))
 	  (EXAMINE-FORM(form)
-	    `(uiop:symbol-call :jingoh :examine ,(PACKAGE-KEY (second form))))
+	    `(apply #'uiop:symbol-call :jingoh :examine ,(PACKAGE-KEY (second form))
+		    asdf::args))
 	  (PACKAGE-KEY(package-name)
 	    (intern (string package-name) :keyword))
 	  )
@@ -23,5 +24,6 @@
 			       :depends-on (:jingoh ,(asdf:coerce-name system))
 			       :components ,(mapcar #'COMPONENT forms)
 			       :perform (asdf:test-op(asdf::o asdf::c)
+					  (declare(special asdf::args))
 					  ,@(mapcar #'EXAMINE-FORM forms)))))))
 

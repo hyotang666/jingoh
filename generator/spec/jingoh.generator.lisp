@@ -75,7 +75,8 @@
 			  :depends-on (:jingoh "demo")
 			  :components ((:file "hoge"))
 			  :perform (test-op(o c)
-				     (symbol-call :jingoh :examine :hoge))))))
+				     (declare(special args))
+				     (apply #'symbol-call :jingoh :examine :hoge args))))))
 
 #+syntax
 (%GENERATE-ASD system forms) ; => result
@@ -110,11 +111,23 @@
 ; print perform method.
 #?(%add-perform :hoge)
 :output-satisfies
-#`(&(uiop:string-prefix-p (format nil "~%;; Perform method below is added by JINGOH.GENERATOR.")
+#`(&(uiop:string-prefix-p (format nil "~%;; These two methods below are added by JINGOH.GENERATOR.")
 			  $string)
     (equal (read-from-string $string)
 	   '(defmethod perform ((o test-op)(c (eql (find-system :hoge))))
-	      (test-system :hoge.test))))
+	      (test-system :hoge.test)))
+    (equal (read-from-string $string t t :start (nth-value 1 (read-from-string $string)))
+	   '(defmethod operate :around ((o test-op)(c (eql (find-system :hoge)))
+					&rest keys)
+	      (flet((jingoh.args(keys)
+		      (loop :for (key value) :on keys :by #'cddr
+			    :when (find key '(:on-fails :subject :vivid) :test #'eq)
+			    :collect key :and :collect value
+			    :else :when (eq :jingoh.verbose key)
+			    :collect :verbose :and :collect value)))
+		(let((args(jingoh.args keys)))
+		  (declare(special args))
+		  (call-next-method))))))
 
 #+syntax
 (%ADD-PERFORM name) ; => result
