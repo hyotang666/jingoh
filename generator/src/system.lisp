@@ -36,10 +36,20 @@
 
 (defun %add-perform(name)
   (let((*package*(find-package :asdf)))
-    (format t "~%;; Perform method below is added by JINGOH.GENERATOR.~%~(~S~)"
+    (format t "~%;; These two methods below are added by JINGOH.GENERATOR.~%~(~S~)~%~(~S~)"
 	    `(defmethod asdf:perform((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name))))
 	       (asdf:test-system ,(intern(format nil "~:@(~A~).TEST"name)
-			       :keyword))))))
+			       :keyword)))
+	    `(defmethod asdf:operate :around ((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name)))
+					      &rest asdf::keys)
+	       (destructuring-bind(&key asdf::subject
+					((:jingoh.verbose asdf::verbose))
+					asdf::on-fails
+					asdf::vivid
+					&allow-other-keys)
+		   asdf::keys
+		 (declare(special asdf::subject asdf::verbose asdf::on-fails asdf::vivid))
+		 (call-next-method))))))
 
 (defun spec-directory(system)
   (uiop:subpathname (asdf:system-source-directory (asdf:find-system system))

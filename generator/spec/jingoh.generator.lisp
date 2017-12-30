@@ -75,7 +75,12 @@
 			  :depends-on (:jingoh "demo")
 			  :components ((:file "hoge"))
 			  :perform (test-op(o c)
-				     (symbol-call :jingoh :examine :hoge))))))
+				     (declare(special subject verbose on-fails vivid))
+				     (symbol-call :jingoh :examine :hoge
+						  :subject subject
+						  :verbose verbose
+						  :on-fails on-fails
+						  :vivid vivid))))))
 
 #+syntax
 (%GENERATE-ASD system forms) ; => result
@@ -110,11 +115,19 @@
 ; print perform method.
 #?(%add-perform :hoge)
 :output-satisfies
-#`(&(uiop:string-prefix-p (format nil "~%;; Perform method below is added by JINGOH.GENERATOR.")
+#`(&(uiop:string-prefix-p (format nil "~%;; These two methods below are added by JINGOH.GENERATOR.")
 			  $string)
     (equal (read-from-string $string)
 	   '(defmethod perform ((o test-op)(c (eql (find-system :hoge))))
-	      (test-system :hoge.test))))
+	      (test-system :hoge.test)))
+    (equal (read-from-string $string t t :start (nth-value 1 (read-from-string $string)))
+	   '(defmethod operate :around ((o test-op)(c (eql (find-system :hoge)))
+					&rest keys)
+	      (destructuring-bind(&key subject ((:jingoh.verbose verbose))
+				       on-fails vivid &allow-other-keys)
+		keys
+		(declare(special subject verbose on-fails vivid))
+		(call-next-method)))))
 
 #+syntax
 (%ADD-PERFORM name) ; => result
