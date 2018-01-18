@@ -614,8 +614,8 @@
 
 ;;;; Arguments and Values:
 
-; var := symbol which is bound by each requirement.
-; Or, list which first element is symbol which is bound by each requirment,
+; var := When symbol, it is bound by each requirement.
+; When list, its first element is symbol which is bound by each requirment,
 ; and, second element is symbol which is bound by such requirement's sbuject.
 #?(do-requirements((req sub))
     (format t "~&~S ~S"req sub))
