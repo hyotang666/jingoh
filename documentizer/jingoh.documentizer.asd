@@ -22,6 +22,5 @@
               ;; extension.
               (:file "github-wiki" :depends-on ("documentize"))
               ))
-;; Perform method below is added by JINGOH.GENERATOR.
-(defmethod perform ((o test-op) (c (eql (find-system "jingoh.documentizer"))))
-  (test-system :jingoh.documentizer.test))
+(defmethod component-depends-on((o test-op)(c(eql(find-system "jingoh.documentizer"))))
+  (append (call-next-method)'((test-op "jingoh.documentizer.test"))))

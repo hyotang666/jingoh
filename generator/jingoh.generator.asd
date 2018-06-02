@@ -1,6 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.generator
+  :in-order-to((test-op(test-op "jingoh.generator.test")))
   :depends-on (:millet :closer-mop :lambda-list :asdf :uiop named-readtables :with-package :prompt-for)
   :pathname "src"
   :components ((:file "package")
@@ -13,5 +14,3 @@
                (:file "symbol" :depends-on ("system"))
                (:file "defpackage-form" :depends-on ("symbol-generate"))
                ))
-(defmethod perform ((o test-op) (c (eql (find-system "jingoh.generator"))))
- (test-system :jingoh.generator.test))
