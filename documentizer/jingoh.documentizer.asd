@@ -1,7 +1,12 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.documentizer
-  :depends-on (:3bmd :3bmd-ext-code-blocks :read-as-string :uiop)
+  :depends-on (
+               "3bmd" ; markdown.
+               "3bmd-ext-code-blocks"
+               "read-as-string" ; s-expression string reader.
+               "uiop" ; utilities.
+               )
   :pathname "src/"
   :components(;; bottom utils.
               (:file "utility")

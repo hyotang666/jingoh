@@ -5,7 +5,16 @@
   :long-description #.(uiop:read-file-string (merge-pathnames *load-pathname*
                                                               "CONCEPTS.md"))
   :in-order-to((test-op(test-op "jingoh.tester.test")))
-  :depends-on (:jingoh.org :millet :closer-mop :alexandria :cl-ansi-text :cl-ppcre :structure-ext :uiop)
+  :depends-on (
+               "jingoh.org" ; database.
+               "millet" ; Wrapper for implementation dependent utilities.
+               "closer-mop" ; wrapper for meta object protocol.
+               "alexandria" ; public domain utilities.
+               "cl-ansi-text" ; text colorizing.
+               "cl-ppcre" ; regular expression.
+               "structure-ext" ; to enable constructing structure with MAKE-INSTANCE.
+               "uiop" ; utilities.
+               )
   :pathname "src/"
   :components ((:file "package")
                ; bottom

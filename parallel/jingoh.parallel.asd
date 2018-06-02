@@ -2,7 +2,13 @@
 (in-package :asdf)
 (defsystem "jingoh.parallel"
   :depends-on
-  ("lparallel" "resignal-bind" "jingoh" "bordeaux-threads" "cl-cpus")
+  (
+   "lparallel"
+   "resignal-bind" ; condition handling.
+   "jingoh"
+   "bordeaux-threads" ; wrapper for multi threading.
+   "cl-cpus" ; getting CPU information.
+   )
   :components
   ((:file "parallel")))
 

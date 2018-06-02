@@ -6,7 +6,11 @@
                         (uiop:subpathname *load-pathname* "CONCEPTS.md"))
   :in-order-to((test-op(test-op "jingoh.org.test")))
   :pathname "src/"
-  :depends-on (:resignal-bind :alexandria :uiop)
+  :depends-on (
+               "resignal-bind" ; to condition handling.
+               "alexandria" ; public domain utilities.
+               "uiop" ; utilities.
+               )
   :components((:file "package")
               ; bottom
               (:file "conditions" :depends-on ("package"))
