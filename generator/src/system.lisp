@@ -37,9 +37,8 @@
 (defun %add-perform(name)
   (let((*package*(find-package :asdf)))
     (format t "~%;; These two methods below are added by JINGOH.GENERATOR.~%~(~S~)~%~(~S~)"
-	    `(defmethod asdf:perform((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name))))
-	       (asdf:test-system ,(intern(format nil "~:@(~A~).TEST"name)
-			       :keyword)))
+	    `(defmethod asdf:component-depends-on((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name))))
+	       (append (call-next-method) '((asdf:test-op ,name))))
 	    `(defmethod asdf:operate :around ((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name)))
 					      &rest asdf::keys)
 	       (flet((asdf::jingoh.args(asdf::keys)
