@@ -1,7 +1,7 @@
 (defpackage :jingoh.generator.spec (:use :cl :jingoh :jingoh.generator)
   (:import-from :jingoh.generator
 		#:%generate-asd
-		#:%add-perform
+		#:%add-method-extension
 		#:generate-header
 		#:symbol-generate)
   )
@@ -105,11 +105,11 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about %ADD-PERFORM)
+(requirements-about %ADD-METHOD-EXTENSION)
 
 ;;;; Description:
 ; print perform method.
-#?(%add-perform :hoge)
+#?(%add-method-extension :hoge)
 :output-satisfies
 #`(&(uiop:string-prefix-p (format nil "~%;; These two methods below are added by JINGOH.GENERATOR.")
 			  $string)
@@ -130,15 +130,15 @@
 		  (call-next-method))))))
 
 #+syntax
-(%ADD-PERFORM name) ; => result
+(%ADD-METHOD-EXTENSION name) ; => result
 
 ;;;; Arguments and Values:
 
 ; name := system name (i.e. string or symbol), otherwise unspecified.
-#?(%add-perform 0) => unspecified
+#?(%add-method-extension 0) => unspecified
 
 ; result := NIL
-#?(%add-perform :hoge) => NIL
+#?(%add-method-extension :hoge) => NIL
 ,:stream NIL
 
 ;;;; Affected By:

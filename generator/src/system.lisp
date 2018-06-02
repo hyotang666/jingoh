@@ -16,7 +16,7 @@
 	(asdf:load-system system :force t))
       (let*((*default-pathname-defaults*(spec-directory system))
 	    (test-asd-path(test-asd-path system)))
-	(add-perform system test-asd-path)
+	(add-method-extension system test-asd-path)
 	(generate-asd system forms test-asd-path)
 	(dolist(form forms)
 	  (generate form :append append)))))
@@ -28,13 +28,13 @@
 		 :type "asd"
 		 :defaults *default-pathname-defaults*))
 
-(defun add-perform (system test-asd-path)
+(defun add-method-extension (system test-asd-path)
   (unless(probe-file test-asd-path)
     (let((directory(asdf:system-source-file system)))
       (uiop:with-output-file(*standard-output* directory :if-exists :append)
-	(%add-perform (asdf:coerce-name system))))))
+	(%add-method-extension (asdf:coerce-name system))))))
 
-(defun %add-perform(name)
+(defun %add-method-extension(name)
   (let((*package*(find-package :asdf)))
     (format t "~%;; These two methods below are added by JINGOH.GENERATOR.~%~(~S~)~%~(~S~)"
 	    `(defmethod asdf:component-depends-on((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name))))
