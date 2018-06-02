@@ -26,7 +26,7 @@
 ;;;; Arguments and Values:
 
 ; system := asdf system designator, otherwise error.
-#?(documentize 0) :signals ASDF/FIND-SYSTEM:FORMATTED-SYSTEM-DEFINITION-ERROR
+#?(documentize 0) :signals ASDF::FORMATTED-SYSTEM-DEFINITION-ERROR
 
 ; result := NIL
 
@@ -39,7 +39,7 @@
 
 ;;;; Exceptional-Situations:
 ; when system is not found, error is signaled.
-#?(documentize :no-such-system) :signals ASDF/FIND-SYSTEM:MISSING-COMPONENT
+#?(documentize :no-such-system) :signals ASDF:MISSING-COMPONENT
 
 (requirements-about META-DATAS<=SYSTEM)
 
@@ -56,7 +56,7 @@
 
 #+syntax
 (META-DATAS<=SYSTEM system &optional (sys-dir
-                                      (asdf/system:system-source-directory
+                                      (asdf:system-source-directory
                                        system))) ; => result
 
 ;;;; Arguments and Values:
@@ -180,7 +180,7 @@ A | B | C | D | E | F | G | [H](X_Alph_H.html) | I | J | K | L | M | N | O | P |
 
 ; system := asdf system designator, otherwise error.
 #?(%symbol-index (list (%make-meta-data)) 0)
-:signals ASDF/FIND-SYSTEM:FORMATTED-SYSTEM-DEFINITION-ERROR
+:signals ASDF::FORMATTED-SYSTEM-DEFINITION-ERROR
 
 ; result := nil
 #?(%symbol-index (list (%make-meta-data :specifieds '(hoge))) "system")
