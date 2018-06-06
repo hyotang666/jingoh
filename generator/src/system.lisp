@@ -24,9 +24,12 @@
   (ql:register-local-projects))
 
 (defun test-asd-path(system)
-  (make-pathname :name (concatenate 'string (asdf:coerce-name system) ".test")
+  (make-pathname :name (test-name (asdf:coerce-name system))
 		 :type "asd"
 		 :defaults *default-pathname-defaults*))
+
+(defun test-name(name)
+  (concatenate 'string name ".test"))
 
 (defun add-method-extension (system test-asd-path)
   (unless(probe-file test-asd-path)
@@ -38,7 +41,7 @@
   (let((*package*(find-package :asdf)))
     (format t "~%;; These two methods below are added by JINGOH.GENERATOR.~%~(~S~)~%~(~S~)"
 	    `(defmethod asdf:component-depends-on((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name))))
-	       (append (call-next-method) '((asdf:test-op ,name))))
+	       (append (call-next-method) '((asdf:test-op ,(test-name name)))))
 	    `(defmethod asdf:operate :around ((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name)))
 					      &rest asdf::keys)
 	       (flet((asdf::jingoh.args(asdf::keys)

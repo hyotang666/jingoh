@@ -108,16 +108,16 @@
 (requirements-about %ADD-METHOD-EXTENSION)
 
 ;;;; Description:
-; print perform method.
-#?(%add-method-extension :hoge)
+; print method extension.
+#?(%add-method-extension "hoge")
 :output-satisfies
 #`(&(uiop:string-prefix-p (format nil "~%;; These two methods below are added by JINGOH.GENERATOR.")
 			  $string)
     (equal (read-from-string $string)
-	   '(defmethod component-depends-on ((o test-op)(c (eql (find-system :hoge))))
-	      (append (call-next-method)'((test-op :hoge)))))
+	   '(defmethod component-depends-on ((o test-op)(c (eql (find-system "hoge"))))
+	      (append (call-next-method)'((test-op "hoge.test")))))
     (equal (read-from-string $string t t :start (nth-value 1 (read-from-string $string)))
-	   '(defmethod operate :around ((o test-op)(c (eql (find-system :hoge)))
+	   '(defmethod operate :around ((o test-op)(c (eql (find-system "hoge")))
 					&rest keys)
 	      (flet((jingoh.args(keys)
 		      (loop :for (key value) :on keys :by #'cddr
@@ -138,7 +138,7 @@
 #?(%add-method-extension 0) => unspecified
 
 ; result := NIL
-#?(%add-method-extension :hoge) => NIL
+#?(%add-method-extension "hoge") => NIL
 ,:stream NIL
 
 ;;;; Affected By:
