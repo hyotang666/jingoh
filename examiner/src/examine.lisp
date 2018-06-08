@@ -117,7 +117,8 @@
 		  #0#)
 		(Org-name *org*))))))
 
-(defun examine(org &key subject on-fails
+(defun examine(org &key subject
+		   ((:on-fails *on-fails*)*on-fails*)
 		   ((:verbose *verbose*)*verbose*)
 		   ((:vivid *print-vivid*)*print-vivid*))
   (setf *issues* NIL)
