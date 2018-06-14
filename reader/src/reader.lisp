@@ -61,12 +61,11 @@
 		(#\, (read-char stream t t t))
 		(#\; (read-line stream t t t)(have-option?))))
 	    )
-      (let((form `(EVAL-WHEN(:COMPILE-TOPLEVEL :LOAD-TOPLEVEL)
-		    (DEFSPEC ,(read-form '#:test-form)
-			     ,(read-form '#:keyword)
-			     ,(read-form '#:expected)
-			     :POSITION ,position
-			     ,@(options)))))
+      (let((form `(DEFSPEC ,(read-form '#:test-form)
+			   ,(read-form '#:keyword)
+			   ,(read-form '#:expected)
+			   :POSITION ,position
+			   ,@(options))))
 	(when (or *read-verbose* *read-print*)
 	  (format *trace-output* "~%READ: ~S"form))
 	form))))

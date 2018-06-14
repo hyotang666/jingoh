@@ -8,7 +8,7 @@
 		   'function)))
 
 (defmacro defspec(&body body)
-  `(PROGN
+  `(EVAL-WHEN(:LOAD-TOPLEVEL :EXECUTE)
      ,@(unless(getf(cdddr body):lazy '#:does-not-exist)
 	 `(,(canonicalize (car body)(cdddr body))))
      ,@(mapcar (lambda(subject)
