@@ -78,8 +78,7 @@
     (enable)
     (with-input-from-string(in "#?(+) => 0")
       (read in)))
-=> (EVAL-WHEN(:COMPILE-TOPLEVEL :LOAD-TOPLEVEL)
-     (DEFSPEC (+) => 0 :POSITION 2))
+=> (DEFSPEC (+) => 0 :POSITION 2)
 ,:test equal
 
 #+syntax
@@ -119,8 +118,7 @@
 	      (subseq $string 0 7))
      (equal (with-input-from-string(in $string :start 7)
 	      (read in))
-	    `(eval-when (:compile-toplevel :load-toplevel)
-	       (defspec (+) => 0 :position 2))))
+	    `(defspec (+) => 0 :position 2)))
 ,:stream *trace-output*
 
 ; Value type is NULL
@@ -152,8 +150,7 @@
        (char= #\A (read-char in))
        (char= #\D (read-char in))
        (char= #\: (read-char in))
-       (equal `(eval-when(:compile-toplevel :load-toplevel)
-		 (defspec(+) => 0 :position 2))
+       (equal `(defspec(+) => 0 :position 2)
 	      (read in))
        (null (read in nil nil))))
 ,:stream *trace-output*
