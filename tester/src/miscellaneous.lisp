@@ -41,7 +41,7 @@
 	:finally (return (delete-duplicates result))))
 
 (deftype option-key()
-  '(member :test :lazy :ignore-signals :with-restarts :stream :before :after :around :position :as))
+  '(member :test :lazy :ignore-signals :with-restarts :stream :before :after :around :position :as :timeout))
 
 (defun canonicalize(test-form parameters)
   (setf test-form (copy-tree test-form))
@@ -59,18 +59,25 @@
 			    (MAKE-PRIMARY test-form)))))
 	  (MAKE-PRIMARY(test-form)
 	    (let((before(getf parameters :before))
-		 (ignore-output-p(null(getf parameters :stream '#:not-specified))))
+		 (ignore-output-p(null(getf parameters :stream '#:not-specified)))
+		 (time(getf parameters :timeout 1)))
 	      (if before
 		(if ignore-output-p
 		  `(LET((*STANDARD-OUTPUT*(MAKE-BROADCAST-STREAM)))
 		     (WITH-INTEGRATED-OUTPUT-STREAM(*STANDARD-OUTPUT*)
-		       ,before ,test-form))
-		  `(PROGN ,before ,test-form))
+		       ,before
+		       (BT:WITH-TIMEOUT(,time)
+			 ,test-form)))
+		  `(PROGN ,before
+			  (BT:WITH-TIMEOUT(,time)
+			    ,test-form)))
 		(if ignore-output-p
 		  `(LET((*STANDARD-OUTPUT*(MAKE-BROADCAST-STREAM)))
 		     (WITH-INTEGRATED-OUTPUT-STREAM(*STANDARD-OUTPUT*)
-		       ,test-form))
-		  test-form))))
+		       (BT:WITH-TIMEOUT(,time)
+			 ,test-form)))
+		  `(BT:WITH-TIMEOUT(,time)
+		     ,test-form)))))
 	  (SET-AROUND(body)
 	    (let((around(getf parameters :around)))
 	      (if around

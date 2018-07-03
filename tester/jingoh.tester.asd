@@ -14,6 +14,7 @@
                "cl-ppcre" ; regular expression.
                "structure-ext" ; to enable constructing structure with MAKE-INSTANCE.
                "uiop" ; utilities.
+               "bordeaux-threads"       ; multi threading especially for timeout.
                )
   :pathname "src/"
   :components ((:file "package")
