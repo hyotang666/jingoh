@@ -136,7 +136,7 @@
 
 ; option := key value pair.
 
-; key := (member :test :lazy :ignore-signals :with-restarts :stream :before :after :around :position :as)
+; key := (member :test :lazy :ignore-signals :with-restarts :stream :before :after :around :position :as :timeout)
 
 ;;; dispatch-keys.
 
@@ -246,6 +246,11 @@
     (map-requirements #'check))
 => (NIL NIL)
 ,:test equal
+
+; :timeout is used to set timeout.
+; The default is 1 sec.
+#?(? (sleep 0.1) => NIL :timeout 0.2)
+=> NIL
 
 ; result := list which includes issues.
 
@@ -490,7 +495,9 @@
 
 ;;;; Description:
 ; Helper for MAKE-REQUIREMENT
-#?(canonicalize '(+) ()) => (+)
+#?(canonicalize '(+) ())
+=> (bt:with-timeout(1)
+     (+))
 ,:test equal
 
 #+syntax
@@ -502,21 +509,31 @@
 
 ; parameters := key value pair.
 
-; key := (member :before :after :around :lazy)
+; key := (member :before :after :around :lazy :timeout)
 
 #?(canonicalize '(+) '(:before (print :before)))
 => (progn (print :before)
-	  (+))
+	  (bt:with-timeout(1)
+	    (+)))
 ,:test equal
 #?(canonicalize '(+) '(:after (print :after)))
-=> (unwind-protect (+)
+=> (unwind-protect (bt:with-timeout(1)
+		     (+))
      (print :after))
 ,:test equal
 #?(canonicalize '(+) '(:around (let((a 0))(call-body))))
-=> (let((a 0))(+))
+=> (let((a 0))
+     (bt:with-timeout(1)
+       (+)))
 ,:test equal
 #?(canonicalize '(+) '(:lazy t))
-=> (eval (macroexpand '(+)))
+=> (bt:with-timeout(1)
+     (eval (macroexpand '(+))))
+,:test equal
+
+#?(canonicalize '(+) '(:timeout 2))
+=> (bt:with-timeout(2)
+     (+))
 ,:test equal
 
 ; result := form.
@@ -529,9 +546,12 @@
 
 ;;;; Notes:
 ; form is copied.
-#?(let((form '(+)))
-    (eq form (canonicalize form ())))
-=> NIL
+#?(let*((form (list '+))
+	(result(canonicalize form ())))
+    (rplaca form '-)
+    result)
+=> (bt:with-timeout(1)(+))
+,:test equal
 
 ;;;; Exceptional-Situations:
 ; when unsupported key comes (See ?), an error is signaled.
