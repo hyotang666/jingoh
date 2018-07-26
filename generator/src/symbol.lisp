@@ -1,9 +1,9 @@
 (in-package :jingoh.generator)
 
-(defmethod generate ((symbol symbol) &key system init)
+(defmethod generate ((symbol symbol) &key system init pathname)
   (if(keywordp symbol)
     (if init
-      (generate 'init :system symbol)
+      (generate 'init :system symbol :pathname pathname)
       (generate(asdf:find-system symbol)))
     (let*((*package* (symbol-package symbol))
 	  (package-name(package-name *package*))

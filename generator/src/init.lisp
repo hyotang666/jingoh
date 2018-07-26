@@ -1,9 +1,11 @@
 (in-package :jingoh.generator)
 (named-readtables:in-readtable with-package:syntax)
 
-(defmethod generate((dispatcher (eql 'init))&key system)
+(defmethod generate((dispatcher (eql 'init))&key system pathname)
   (let*((system-name(asdf:coerce-name system))
-	(*default-pathname-defaults*(uiop:subpathname (local-project-directory)
+	(*default-pathname-defaults*(uiop:subpathname (or (and pathname
+							       (uiop:ensure-directory-pathname pathname))
+							  (local-project-directory))
 						      (uiop:ensure-directory-pathname system-name))))
     (flet((output-to(path thunk)
 	    (uiop:with-output-file(*standard-output*(ensure-directories-exist path)
