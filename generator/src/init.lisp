@@ -52,7 +52,8 @@
   (let((package-name(intern (string-upcase system-name)
 			    :keyword)))
     (lambda()
-      (format t "~(~S~)~%~(~S~)~2%"
+      (format t "~(~S~)~%~(~S~)~%~(~S~)~2%"
+	      '(in-package :cl-user)
 	      `(defpackage ,package-name
 		 (:use :cl)
 		 (:export))
