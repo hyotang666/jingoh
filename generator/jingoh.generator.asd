@@ -5,7 +5,7 @@
   :depends-on (
                "millet" ; wrappter for implementation dependent utilities.
                "closer-mop" ; wrapper for meta object protocols.
-               "lambda-list" ; utilities for lambda-list.
+               "lambda-fiddle" ; utilities for lambda-list.
                "asdf" ; system loading.
                "uiop" ; utilities.
                "named-readtables" ; to manage readtable.

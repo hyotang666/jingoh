@@ -178,9 +178,7 @@
     (when(eq :generic-function roll) ; Method Signature
       (specialized-lambda-lists symbol))
     ;; Arguments and Values
-    (lambda-list:vars<=lambda-list lambda-list :as (if(eq :generic-function roll)
-						     :method
-						     roll))
+    (lambda-fiddle:extract-all-lambda-vars lambda-list)
     '(|affected by| side-effects notes exceptional-situations)
     )))
 
