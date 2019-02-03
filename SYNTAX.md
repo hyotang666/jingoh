@@ -192,7 +192,7 @@ So example above may success without option.
 In such case, you need to trick like below.
 
 ```lisp
-#? (format t "foo") => "foo"
+#? (format nil "foo") => "foo"
 ,:test string=
 ```
 
