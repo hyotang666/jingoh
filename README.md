@@ -201,10 +201,9 @@ If you want to run tests in parallel, modify `spec/your-system.test.asd` like be
 ?
 ### License
 MIT
-### Developed with
-SBCL
 ### Tested with
-CCL, ECL
+CCL/1.11.5
+SBCL/1.4.15
 #### About CLISP
 Jinogh.documentizer depends on `3bmd`, and `3bmd` does not work in clisp, so jingoh.documentizer also does not work in clisp.
 
