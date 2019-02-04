@@ -5,20 +5,18 @@ Other products (if any) are strongly recommended.
 ## What is this?
 DSL to notate specification, rather than test framework.
 
-### Current lisp world
-There are many libraries.
+## Notable differences from other test suites.
+* Specification notation rather than test framework.
+* Readability oriented syntax rather than writablility.
+* Including specification template (i.e. as test template).
+* Including from-spec(i.e. test)-file-to-HTML converter.
+* Including from-spec(i.e. test)-file-to-github-wiki converter.
+* Customizable issue printer.
 
-### Issues
-Less documented.
-
-### Proposal
-Jingoh provides DSL to notate specification, rather than test framework.
-Once you writes your library's specifications with jingoh, such file works as test.
-So, what jingoh try to resolve is...
-
-* Less documented.
-* Mismatching between document and implementation.
-* Less coverage of test.
+* Support coloring printing.
+* Support S-Expression-equal. (alpha quality.)
+* Support parallel testing.
+* Including project skelton generator.
 
 ## How to use.
 ### Initialization
