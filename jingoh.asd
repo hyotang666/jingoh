@@ -2,6 +2,8 @@
 (in-package :asdf)
 (defsystem :jingoh
   :description "DSL to notate specification, rather than test framework."
+  :author "Shinichi Sato"
+  :license "MIT"
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "CONCEPTS.md"))
   :depends-on (:jingoh.org :jingoh.tester :jingoh.examiner :jingoh.reader
