@@ -9,7 +9,6 @@
                "asdf" ; system loading.
                "uiop" ; utilities.
                "named-readtables" ; to manage readtable.
-               "with-package" ; temporarily using package.
                "prompt-for" ; for type safe user input.
                )
   :pathname "src"

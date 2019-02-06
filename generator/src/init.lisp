@@ -1,5 +1,4 @@
 (in-package :jingoh.generator)
-(named-readtables:in-readtable with-package:syntax)
 
 (defmethod generate((dispatcher (eql 'init))&key system pathname)
   (let*((system-name(asdf:coerce-name system))
@@ -26,7 +25,6 @@
     (ql:register-local-projects)
     (generate(asdf:find-system system-name))))
 
-#@prompt-for
 (defun local-project-directory()
   (let((directories ql:*local-project-directories*))
     (if(null(cdr directories))
@@ -34,7 +32,7 @@
       (progn (loop :for d :in directories
 		   :for i :upfrom 0
 		   :do (format *query-io* "~%~3D: ~S"i d))
-	     (nth (Prompt-for `(mod ,(length directories)) "~%Which directory do you use?~%Please type number >> ")
+	     (nth (prompt-for:prompt-for `(mod ,(length directories)) "~%Which directory do you use?~%Please type number >> ")
 		  directories)))))
 
 (defun asd-generator(system-name)
