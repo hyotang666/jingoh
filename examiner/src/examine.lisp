@@ -77,44 +77,29 @@
     (apply #'nconc (nreverse issues))))
 
 (defun print-requirement (result requirement)
-  (if result
-    (format t "~&~A ~S"
-	    (if *print-vivid*
-	      (cl-ansi-text:red "Fails")
-	      "Fails")
-	    requirement)
-    (format t "~&~A ~S"
-	    (if *print-vivid*
-	      (cl-ansi-text:green "Pass")
-	      "Pass")
-	    requirement)))
+  (let((cl-ansi-text:*enabled* *print-vivid*))
+    (if result
+      (format t "~&~A ~S" (cl-ansi-text:red "Fails") requirement)
+      (format t "~&~A ~S" (cl-ansi-text:green "Pass") requirement))))
 
 (defun print-dot(result)
-  (if result
-    (if *print-vivid*
+  (let((cl-ansi-text:*enabled* *print-vivid*))
+    (if result
       (cl-ansi-text:with-color(:red)
 	(write-char #\!))
-      (write-char #\!))
-    (if *print-vivid*
       (cl-ansi-text:with-color(:green)
-	(write-char #\.))
-      (write-char #\.)))
+	(write-char #\.))))
   (force-output))
 
 (defun print-summary(issues &optional (*standard-output* *standard-output*))
   (if(zerop(Org-requirements-count *org*))
     (warn "No requirements in ~S"(Org-name *org*))
-    (let((count(length issues)))
+    (let((count(length issues))
+	 (cl-ansi-text:*enabled* *print-vivid*))
       (if (zerop count)
-	(format t "~&~A ~S"
-		(if *print-vivid*
-		  (cl-ansi-text:green "Pass")
-		  "Pass")
-		(Org-name *org*))
+	(format t "~&~A ~S" (cl-ansi-text:green "Pass") (Org-name *org*))
 	(format t "~&~A in ~S"
-		(if *print-vivid*
-		  (cl-ansi-text:red #0=(format nil "~D fail~:*~P"count))
-		  #0#)
+		(cl-ansi-text:red (format nil "~D fail~:*~P"count))
 		(Org-name *org*))))))
 
 (defun examine(org &key subject
