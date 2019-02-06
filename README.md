@@ -6,17 +6,49 @@ Other products (if any) are strongly recommended.
 DSL to notate specification, rather than test framework.
 
 ## Notable differences from other test suites.
-* Specification notation rather than test framework.
-* Readability oriented syntax rather than writablility.
-* Including specification template (i.e. as test template).
-* Including from-spec(i.e. test)-file-to-HTML converter.
-* Including from-spec(i.e. test)-file-to-github-wiki converter.
-* Customizable issue printer.
 
-* Support coloring printing.
-* Support S-Expression-equal. (alpha quality.)
-* Support parallel testing.
-* Including project skelton generator.
+### Specification notation rather than test framework.
+When specification is modified, test should be fixed.
+Vice vaca, when a hole found in specification via test, specification should be fixed.
+Idealy, both specification and test should be managed in one place.
+
+### Readability oriented syntax rather than writablility.
+In concept above, test is specification, so readability prior than writability.
+Author may need writability.
+Unfortunately, author is few, but the third persons.
+
+### Including specification template (i.e. as test template).
+TDD begginer may not understand what should be written as test.
+Thanks to CLHS, we know what should be written as specification.
+
+### Including from-spec(i.e. test)-file-to-HTML converter.
+Managing both test and specification at one place allows you to never write documentation, since it is already written.
+You can say "See spec/test file.", but we provide little bit prittier to html comverter.
+
+### Including from-spec(i.e. test)-file-to-github-wiki converter.
+Additionaly, we provide to github-wiki converter.
+
+### Customizable issue printer.
+What is the best issue report?
+It is issue of flavor.
+We print issue as raw data object.
+Thanks to CLOS, you can easily customize printer with `PRINT-OBJECT`.
+
+### Support coloring printing.
+For readability, we provide coloring printing.
+In many cases, you will not feel like to customize issue printer.
+
+### Support S-Expression-equal. (alpha quality.)
+It is hard to test macro generate correct S-Expression.
+Because, there is symbol which generate via `GENSYM`.
+We will provide `SEXP=`. (This is alpha quality, so it is internal.)
+
+### Support parallel testing.
+Optionaly you can choose parallel testing.
+
+### Including project skelton generator.
+Battery included.
+You can ignore some annoying knowledge about backward.
 
 ## How to use.
 ### Initialization
