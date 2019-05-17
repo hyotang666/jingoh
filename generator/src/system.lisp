@@ -39,7 +39,8 @@
 
 (defun %add-method-extension(name)
   (let((*package*(find-package :asdf)))
-    (format t "~%;; These two methods below are added by JINGOH.GENERATOR.~%~(~S~)~%~(~S~)"
+    (format t "~%;; These two methods below are added by JINGOH.GENERATOR.~%~(~S~)~%~(~S~)~%~(~S~)"
+	    `(in-package :asdf)
 	    `(defmethod asdf:component-depends-on((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name))))
 	       (append (call-next-method) '((asdf:test-op ,(test-name name)))))
 	    `(defmethod asdf:operate :around ((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name)))
