@@ -111,23 +111,25 @@
 ; print method extension.
 #?(%add-method-extension "hoge")
 :output-satisfies
-#`(&(uiop:string-prefix-p (format nil "~%;; These two methods below are added by JINGOH.GENERATOR.")
-			  $string)
-    (equal (read-from-string $string)
-	   '(defmethod component-depends-on ((o test-op)(c (eql (find-system "hoge"))))
-	      (append (call-next-method)'((test-op "hoge.test")))))
-    (equal (read-from-string $string t t :start (nth-value 1 (read-from-string $string)))
-	   '(defmethod operate :around ((o test-op)(c (eql (find-system "hoge")))
-					&rest keys)
-	      (flet((jingoh.args(keys)
-		      (loop :for (key value) :on keys :by #'cddr
-			    :when (find key '(:on-fails :subject :vivid) :test #'eq)
-			    :collect key :and :collect value
-			    :else :when (eq :jingoh.verbose key)
-			    :collect :verbose :and :collect value)))
-		(let((args(jingoh.args keys)))
-		  (declare(special args))
-		  (call-next-method))))))
+#`(with-input-from-string(*standard-input* $string)
+    (&(uiop:string-prefix-p (format nil "~%;; These two methods below are added by JINGOH.GENERATOR.")
+			    $string)
+      (equal (read) '(in-package :asdf))
+      (equal (read)
+	     '(defmethod component-depends-on ((o test-op)(c (eql (find-system "hoge"))))
+		(append (call-next-method)'((test-op "hoge.test")))))
+      (equal (read)
+	     '(defmethod operate :around ((o test-op)(c (eql (find-system "hoge")))
+					  &rest keys)
+		(flet((jingoh.args(keys)
+			(loop :for (key value) :on keys :by #'cddr
+			      :when (find key '(:on-fails :subject :vivid) :test #'eq)
+			      :collect key :and :collect value
+			      :else :when (eq :jingoh.verbose key)
+			      :collect :verbose :and :collect value)))
+		  (let((args(jingoh.args keys)))
+		    (declare(special args))
+		    (call-next-method)))))))
 
 #+syntax
 (%ADD-METHOD-EXTENSION name) ; => result
