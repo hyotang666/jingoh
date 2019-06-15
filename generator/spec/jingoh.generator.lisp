@@ -112,7 +112,7 @@
 #?(%add-method-extension "hoge")
 :output-satisfies
 #`(with-input-from-string(*standard-input* $string)
-    (&(uiop:string-prefix-p (format nil "~%;; These two methods below are added by JINGOH.GENERATOR.")
+    (&(uiop:string-prefix-p (format nil "~%;; These three methods below are added by JINGOH.GENERATOR.")
 			    $string)
       (equal (read) '(in-package :asdf))
       (equal (read)
@@ -129,7 +129,13 @@
 			      :collect :verbose :and :collect value)))
 		  (let((args(jingoh.args keys)))
 		    (declare(special args))
-		    (call-next-method)))))))
+		    (call-next-method)))))
+      (equal (read)
+	     '(defmethod operate :around(o (c (eql (find-system "hoge")))
+					   &key ((:compile-print *compile-print*))
+					   ((:compile-verbose *compile-verbose*))
+					   &allow-other-keys)
+		(call-next-method)))))
 
 #+syntax
 (%ADD-METHOD-EXTENSION name) ; => result
