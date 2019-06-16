@@ -72,6 +72,5 @@
 
 (defreadtable syntax
   (:merge :standard)
-  (:dispatch-macro-char #\# #\? #'|#?reader|)
-  (:dispatch-macro-char #\# #\` #'musam:|#`reader|))
+  (:dispatch-macro-char #\# #\? #'|#?reader|))
 

@@ -12,9 +12,10 @@
 	    (enable)
 	    (get-dispatch-macro-character #\# #\?)))
 :multiple-value-satisfies
-#`(& (null $1)
+(lambda($1 $2 $3)
+  (& (null $1)
      $2
-     $3)
+     $3))
 
 #+syntax
 (ENABLE &optional (char #\?)) ; => result
@@ -114,11 +115,12 @@
     (with-input-from-string(in "#?(+) => 0")
       (read in)))
 :output-satisfies
-#`(& (string= (format nil "~%READ: ")
+(lambda($string)
+  (& (string= (format nil "~%READ: ")
 	      (subseq $string 0 7))
      (equal (with-input-from-string(in $string :start 7)
 	      (read in))
-	    `(defspec (+) => 0 :position 2)))
+	    `(defspec (+) => 0 :position 2))))
 ,:stream *trace-output*
 
 ; Value type is NULL
@@ -140,7 +142,8 @@
     (with-input-from-string(in "#?(+) => 0")
       (read in)))
 :output-satisfies
-#`(with-input-from-string(in $string)
+(lambda($string)
+  (with-input-from-string(in $string)
     (& (string= "" (read-line in))
        (string= "#:TEST-FORM: (+)" (read-line in))
        (string= "#:KEYWORD: =>" (read-line in))
@@ -152,7 +155,7 @@
        (char= #\: (read-char in))
        (equal `(defspec(+) => 0 :position 2)
 	      (read in))
-       (null (read in nil nil))))
+       (null (read in nil nil)))))
 ,:stream *trace-output*
 
 ; Value type is NULL
