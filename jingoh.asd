@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh
-  :version "1.0.0"
+  :version "1.0.1"
   :description "DSL to notate specification, rather than test framework."
   :author "Shinichi Sato"
   :license "MIT"
@@ -14,10 +14,10 @@
 
 (defsystem :jingoh/test
   :depends-on (:jingoh :named-readtables)
-  :in-order-to ((test-op(test-op "jingoh.org" "jingoh.tester" "jingoh.examiner" "jingoh.reader")))
-  :perform (test-op :around (o s)
-             (let((*compile-verbose* nil)
-                  (*load-verbose* nil)
-                  (*load-print* nil)
-                  (*compile-print* nil))
-               (call-next-method))))
+  :in-order-to ((test-op(test-op "jingoh.org" "jingoh.tester" "jingoh.examiner" "jingoh.reader"))))
+
+(defmethod operate :around((o test-op)(c (eql (find-system "jingoh")))
+                           &key ((:compile-print *compile-print*))
+                           ((:compile-verbose *compile-verbose*))
+                           &allow-other-keys)
+  (call-next-method))
