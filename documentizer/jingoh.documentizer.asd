@@ -1,6 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.documentizer
+  :version "0.0.1"
   :depends-on (
                "3bmd" ; markdown.
                "3bmd-ext-code-blocks"
@@ -29,3 +30,8 @@
               ))
 (defmethod component-depends-on((o test-op)(c(eql(find-system "jingoh.documentizer"))))
   (append (call-next-method)'((test-op "jingoh.documentizer.test"))))
+(defmethod operate :around ((o test-op)(c (eql (find-system "jingoh.documentizer")))
+                            &key ((:compile-print *compile-print*))
+                            ((:compile-verbose *compile-verbose*))
+                            &allow-other-keys)
+  (call-next-method))
