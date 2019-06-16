@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.generator
-  :version "0.0.2"
+  :version "0.0.3"
   :in-order-to((test-op(test-op "jingoh.generator.test")))
   :depends-on (
                "millet" ; wrappter for implementation dependent utilities.
@@ -23,3 +23,9 @@
                (:file "symbol" :depends-on ("system"))
                (:file "defpackage-form" :depends-on ("symbol-generate"))
                ))
+
+(defmethod operate :around ((o test-op)(c (eql (find-system "jingoh.generator")))
+                            &key ((:compile-print *compile-print*))
+                            ((:compile-verbose *compile-verbose*))
+                            &allow-other-keys)
+  (call-next-method))
