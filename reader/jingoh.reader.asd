@@ -1,6 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.reader
+  :version "0.0.1"
   :description "Dispatch macro for jingoh"
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "CONCEPTS.md"))
@@ -13,3 +14,9 @@
                )
   :pathname "src/"
   :components((:file "reader")))
+
+(defmethod operate :around ((o test-op)(c (eql (find-system "jingoh.reader")))
+                            &key ((:compile-print *compile-print*))
+                            ((:compile-verbose *compile-verbose*))
+                            &allow-other-keys)
+  (call-next-method))
