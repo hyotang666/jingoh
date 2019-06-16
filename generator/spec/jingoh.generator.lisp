@@ -67,7 +67,8 @@
 ; print asd file contents for spec file.
 #?(%generate-asd :demo '((defpackage :hoge)))
 :output-satisfies
-#`(with-input-from-string(*standard-input* $string)
+(lambda($string)
+  (with-input-from-string(*standard-input* $string)
     (& (uiop:string-prefix-p "; vim: ft=lisp et" $string)
        (equal '(in-package :asdf)(read))
        (equal (read)
@@ -76,7 +77,7 @@
 			  :components ((:file "hoge"))
 			  :perform (test-op(o c)
 				     (declare(special args))
-				     (apply #'symbol-call :jingoh :examine :hoge args))))))
+				     (apply #'symbol-call :jingoh :examine :hoge args)))))))
 
 #+syntax
 (%GENERATE-ASD system forms) ; => result
@@ -111,7 +112,8 @@
 ; print method extension.
 #?(%add-method-extension "hoge")
 :output-satisfies
-#`(with-input-from-string(*standard-input* $string)
+(lambda($string)
+  (with-input-from-string(*standard-input* $string)
     (&(uiop:string-prefix-p (format nil "~%;; These two methods below are added by JINGOH.GENERATOR.")
 			    $string)
       (equal (read) '(in-package :asdf))
@@ -131,7 +133,7 @@
 			      :collect :verbose :and :collect value)))
 		  (let((args(jingoh.args keys)))
 		    (declare(special args))
-		    (call-next-method)))))))
+		    (call-next-method))))))))
 
 #+syntax
 (%ADD-METHOD-EXTENSION name) ; => result
@@ -161,11 +163,12 @@
 ; print spec file's header.
 #?(generate-header :hoge)
 :output-satisfies
-#`(with-input-from-string(*standard-input* $string)
+(lambda($string)
+  (with-input-from-string(*standard-input* $string)
     (& (equal (read) '(defpackage :hoge.spec (:use :cl :jingoh :hoge)))
        (equal (read) '(in-package :hoge.spec))
        (equal (read) '(setup :hoge))
-       (eq :eof (read *standard-input* nil :eof))))
+       (eq :eof (read *standard-input* nil :eof)))))
 
 #+syntax
 (GENERATE-HEADER package-name) ; => result
