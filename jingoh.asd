@@ -1,6 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh
+  :version "1.0.0"
   :description "DSL to notate specification, rather than test framework."
   :author "Shinichi Sato"
   :license "MIT"
