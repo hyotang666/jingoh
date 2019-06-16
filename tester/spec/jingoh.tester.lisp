@@ -117,9 +117,10 @@
 ;;;; Description:
 ; One shot tester.
 #?(? (+) => 0) => NIL
-#?(? (+) => 1) :satisfies #`(& (listp $result)
+#?(? (+) => 1) :satisfies (lambda($result)
+			    (& (listp $result)
 			       (= 1 (length $result))
-			       (every #'issue-p $result))
+			       (every #'issue-p $result)))
 
 #+syntax
 (? &body body) ; => result
@@ -231,10 +232,11 @@
 
 ; :position is used to store file-position internally.
 #?(? t => NIL :position 123)
-:satisfies #`(& (listp $result)
+:satisfies (lambda($result)
+	     (& (listp $result)
 		(= 1 (length $result))
 		(every #'issue-p $result)
-		(= 123 (issue-position (car $result))))
+		(= 123 (issue-position (car $result)))))
 
 ; :as is used internally to substitute.
 ; And it is specifyed via COMMON-REQUIREMENTS-ABOUT only.
@@ -432,9 +434,10 @@
 ;;;; Description:
 ; return dispatch keys.
 #?(reserved-keywords #'make-requirement)
-:satisfies #`(& (listp $result)
+:satisfies (lambda($result)
+	     (& (listp $result)
 		(null (set-difference $result
-				      '(=> :be-the :satisfies :values :outputs :multiple-value-satisfies :output-satisfies :expanded-to :equivalents :signals :invokes-debugger))))
+				      '(=> :be-the :satisfies :values :outputs :multiple-value-satisfies :output-satisfies :expanded-to :equivalents :signals :invokes-debugger)))))
 
 #+syntax
 (RESERVED-KEYWORDS gf) ; => result
@@ -622,8 +625,9 @@
 
 ; TEST [Type] T
 #?(test-issue-test (make-instance 'object :test #'eql))
-:satisfies #`(& (functionp $result)
-		(eq 'eql (millet:function-name $result)))
+:satisfies (lambda($result)
+	     (& (functionp $result)
+		(eq 'eql (millet:function-name $result))))
 ;;;; Notes:
 
 (requirements-about UNSATISFIED-CLAUSE)
@@ -1054,12 +1058,13 @@
 
 ; Like SEXP=, this handle uninterned symbol in expected as variable. 
 #?(mismatch-sexp '#:var 'hoge) => #:var
-,:test #`(& (symbolp $actual)
+,:test (lambda($actual $result)
+	 (& (symbolp $actual)
 	    (symbolp $result)
 	    (null (symbol-package $actual))
 	    (null (symbol-package $result))
 	    (string= (prin1-to-string $actual)
-		     (prin1-to-string $result)))
+		     (prin1-to-string $result))))
 
 ;;;; Exceptional-Situations:
 
