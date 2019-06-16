@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.org
-  :version "0.0.1"
+  :version "0.0.2"
   :description "Jingoh's background database system"
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "CONCEPTS.md"))
@@ -21,3 +21,9 @@
               ; top
               (:file "miscellaneous" :depends-on ("deforg" "conditions"))
               ))
+
+(defmethod operate :around ((o test-op)(c (eql (find-system "jingoh.org")))
+                            &key ((:compile-print *compile-print*))
+                            ((:compile-verbose *compile-verbose*))
+                            &allow-other-keys)
+  (call-next-method))
