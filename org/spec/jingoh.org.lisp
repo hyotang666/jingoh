@@ -32,7 +32,7 @@
 ; It is same like CL:DEFPACKAGE.
 #?(progn (deforg :demo)
 	 (org-name *org*))
-:satisfies #`(not(eq :demo $name))
+:satisfies (lambda($name)(not(eq :demo $name)))
 
 ;;;; Exceptional-Situations:
 
@@ -453,9 +453,10 @@
     (register-org :hoge (make-org))
     (push (find-org :hoge nil) acc)
     (nreverse acc))
-:satisfies #`(destructuring-bind(existp org)$result
+:satisfies (lambda($result)
+	     (destructuring-bind(existp org)$result
 	       (& (null existp)
-		  (org-p org)))
+		  (org-p org))))
 ;;;; Notes:
 
 ;;;; Exceptional-Situations:
@@ -488,8 +489,9 @@
 ;;;; Notes:
 ; if ORG-DESIGNATOR is NIL, org which name is NIL is returned.
 #?(find-org nil)
-:satisfies #`(& (org-p $result)
-		(null (org-name $result)))
+:satisfies (lambda($result)
+	     (& (org-p $result)
+		(null (org-name $result))))
 
 ;;;; Exceptional-Situations:
 
@@ -505,10 +507,11 @@
     (delete-org :hoge)
     (push (find-org :hoge nil) acc)
     (nreverse acc))
-:satisfies #`(destructuring-bind(existp1 hoge existp2)$result
+:satisfies (lambda($result)
+	     (destructuring-bind(existp1 hoge existp2)$result
 	       (& (null existp1)
 		  (org-p hoge)
-		  (null existp2)))
+		  (null existp2))))
 
 #+syntax
 (DELETE-ORG org-designator) ; => result
