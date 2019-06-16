@@ -39,12 +39,15 @@
 
 (defun %add-method-extension(name)
   (let((*package*(find-package :asdf)))
-    (format t "~%;; These three methods below are added by JINGOH.GENERATOR.~%~(~S~)~%~(~S~)~%~(~S~)~%~(~S~)"
+    (format t "~%;; These two methods below are added by JINGOH.GENERATOR.~%~(~S~)~%~(~S~)~%~(~S~)"
 	    `(in-package :asdf)
 	    `(defmethod asdf:component-depends-on((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name))))
 	       (append (call-next-method) '((asdf:test-op ,(test-name name)))))
 	    `(defmethod asdf:operate :around ((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name)))
-					      &rest asdf::keys)
+					      &rest asdf::keys
+					      &key ((:compile-print *compile-print*))
+					      ((:compile-verbose *compile-verbose*))
+					      &allow-other-keys)
 	       (flet((asdf::jingoh.args(asdf::keys)
 		       (loop :for (asdf::key asdf::value) :on asdf::keys :by #'cddr
 			     :when (find asdf::key '(:on-fails :subject :vivid) :test #'eq)
@@ -53,12 +56,7 @@
 			     :collect :verbose :and :collect asdf::value)))
 		 (let((asdf::args(asdf::jingoh.args asdf::keys)))
 		   (declare(special asdf::args))
-		   (call-next-method))))
-	    `(defmethod asdf:operate :around(asdf::o (asdf::c (eql (asdf:find-system ,name)))
-						     &key((:compile-print *compile-print*))
-						     ((:compile-verbose *compile-verbose*))
-						     &allow-other-keys)
-	       (call-next-method)))))
+		   (call-next-method)))))))
 
 (defun spec-directory(system)
   (uiop:subpathname (asdf:system-source-directory (asdf:find-system system))
