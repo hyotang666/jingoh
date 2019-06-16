@@ -2,6 +2,7 @@
 (in-package :asdf)
 (defsystem :jingoh.tester
   :description "Jingoh's requirement's tester."
+  :version "0.0.1"
   :long-description #.(uiop:read-file-string (merge-pathnames *load-pathname*
                                                               "CONCEPTS.md"))
   :in-order-to((test-op(test-op "jingoh.tester.test")))
@@ -24,3 +25,9 @@
                ; top
                (:file "tester" :depends-on ("miscellaneous" "report"))
 	       ))
+
+(defmethod operate :around ((o test-op)(c (eql (find-system "jingoh.tester")))
+                            &key ((:compile-print *compile-print*))
+                            ((:compile-verbose *compile-verbose*))
+                            &allow-other-keys)
+  (call-next-method))
