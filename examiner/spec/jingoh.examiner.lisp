@@ -123,9 +123,10 @@
     (eval '(defspec (+) => 1))
     (examine *org*)
     *issues*)
-:satisfies #`(& (listp $result)
+:satisfies (lambda($result)
+	     (& (listp $result)
 		(= 1 (length $result))
-		(every #'issue-p $result))
+		(every #'issue-p $result)))
 ,:stream NIL
 
 ; Value type is LIST
