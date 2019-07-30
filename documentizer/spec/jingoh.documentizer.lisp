@@ -47,10 +47,11 @@
 ; accepts asdf system, returns meta-data list.
 #?(meta-datas<=system (asdf:find-system :jingoh.generator))
 :satisfies
-#`(& (listp $result)
+(lambda($result)
+  (& (listp $result)
      (every (lambda(x)
 	      (typep x 'meta-data))
-	    $result))
+	    $result)))
 ,:ignore-signals warning
 ,:stream NIL
 
