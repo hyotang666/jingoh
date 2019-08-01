@@ -73,6 +73,7 @@
        (equal '(in-package :asdf)(read))
        (equal (read)
 	      '(defsystem :demo.test
+			  :version "0.0.0"
 			  :depends-on (:jingoh "demo")
 			  :components ((:file "hoge"))
 			  :perform (test-op(o c)

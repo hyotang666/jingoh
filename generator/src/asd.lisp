@@ -21,6 +21,7 @@
 	      `(asdf:defsystem ,(intern (format nil "~:@(~A~).TEST"
 						(asdf:coerce-name system))
 					:keyword)
+			       :version "0.0.0"
 			       :depends-on (:jingoh ,(asdf:coerce-name system))
 			       :components ,(mapcar #'COMPONENT forms)
 			       :perform (asdf:test-op(asdf::o asdf::c)

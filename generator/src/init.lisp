@@ -42,6 +42,7 @@
 	      (in-package :asdf)~%~
 	      ~(~S~)~%"
 	      `(asdf:defsystem ,system-name
+			       :version "0.0.0"
 			       :depends-on ()
 			       :pathname "src/"
 			       :components ((:file ,system-name)))))))
