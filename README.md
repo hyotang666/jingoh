@@ -236,12 +236,6 @@ MIT
 ### Tested with
 CCL/1.11.5
 SBCL/1.5.1
-#### About CLISP
-Jinogh.documentizer depends on `3bmd`, and `3bmd` does not work in clisp, so jingoh.documentizer also does not work in clisp.
-
-My local clisp does not have multithread option, so jingoh.parallel is not tested in clisp.
-
-Jingoh and jingoh.generator are tested and works as well in clisp.
 
 ## Installation
 TODO
