@@ -72,7 +72,11 @@
 	(when(<= 2 *verbose*)
 	  (unless(eq sub current-subject)
 	    (setf current-subject sub)
-	    (format t "~&~S"current-subject))
+	    (format t "~V%~S"
+		    (if (<= 3 *verbose*)
+		      2
+		      1)
+		    current-subject))
 	  (if(<= 3 *verbose*)
 	    (print-requirement result requirement)
 	    (print-dot result)))))
