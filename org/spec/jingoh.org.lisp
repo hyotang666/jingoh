@@ -1055,14 +1055,16 @@
 #+syntax
 (LIST-ALL-OPTION-KEYS) ; => result
 
-#?(list-all-option-keys) => (:AS)
-,:test equal
 ;;;; Arguments and Values:
 
 ; result := list
 
 ;;;; Affected By:
 ; JINGOH.ORG::*OPTION-KEYS*
+#?(let((jingoh.org::*option-keys*
+	 (make-hash-table)))
+    (list-all-option-keys))
+=> NIL
 
 ;;;; Side-Effects:
 
