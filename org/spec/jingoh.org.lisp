@@ -5,7 +5,8 @@
 #| main apis for light users. |#
 
 (requirements-about DEFORG :around (let((jingoh.org::*orgs*(make-hash-table)))
-				     (call-body)))
+				     (call-body))
+		    :doc-type function)
 ;;;; Description:
 ; Define new ORGanization object for your system.
 #?(deforg :demo) :be-the ORG
@@ -38,7 +39,8 @@
 
 (requirements-about IN-ORG :around (let((jingoh.org::*orgs*(make-hash-table))
 					(*org* (make-org)))
-				     (call-body)))
+				     (call-body))
+		    :doc-type function)
 
 
 ;;;; Description:
@@ -75,7 +77,8 @@
 #?(in-org :no-such-org) :signals MISSING-ORG
 
 (requirements-about REQUIREMENTS-ABOUT :around (let((*org*(make-org)))
-						 (call-body)))
+						 (call-body))
+		    :doc-type function)
 
 ;;;; Description:
 ; Declare current subject of current org.
@@ -120,7 +123,8 @@
 ;;;; Exceptional-Situations:
 
 (requirements-about COMMON-REQUIREMENTS-ABOUT :around (let((*org*(make-org)))
-							(call-body)))
+							(call-body))
+		    :doc-type function)
 
 ;;;; Description:
 ; Declare current subjects of current org.
@@ -172,7 +176,7 @@
 
 #| internal apis for hackers. |#
 
-(requirements-about ORG)
+(requirements-about ORG :doc-type structure)
 
 ; Represents ORGanization which specify system's requirements.
 
@@ -198,7 +202,7 @@
 
 ;;;; Notes:
 
-(requirements-about ORG-P)
+(requirements-about ORG-P :doc-type function)
 
 ;;;; Description:
 ; When arg is ORG, return T, otherwise NIL.
@@ -224,7 +228,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about MAKE-ORG)
+(requirements-about MAKE-ORG :doc-type function)
 
 ;;;; Description:
 ; Make new org object.
@@ -265,7 +269,8 @@
 ;;;; Exceptional-Situations:
 
 (requirements-about ORG-NAME :around (let((o(make-org)))
-				       (call-body)))
+				       (call-body))
+		    :doc-type function)
 
 ;;;; Description:
 ; Return org name.
@@ -294,7 +299,8 @@
 ;;;; Exceptional-Situations:
 
 (requirements-about ORG-PACKAGE :around (let((org(make-org)))
-					  (call-body)))
+					  (call-body))
+		    :doc-type function)
 
 ;;;; Description:
 ; return package which org in.
@@ -323,7 +329,8 @@
 ;;;; Exceptional-Situations:
 
 (requirements-about ORG-CURRENT-SUBJECTS :around(let((org(make-org)))
-						  (call-body)))
+						  (call-body))
+		    :doc-type function)
 
 ;;;; Description:
 ; return current subjects.
@@ -356,7 +363,8 @@
 ;;;; Exceptional-Situations:
 
 (requirements-about ORG-OPTIONS :around (let((org(make-org)))
-					  (call-body)))
+					  (call-body))
+		    :doc-type function)
 
 ;;;; Description:
 ; return current options.
@@ -388,7 +396,8 @@
 ;;;; Exceptional-Situations:
 
 (requirements-about ORG-SPECIFICATIONS :around (let((org(make-org)))
-						 (call-body)))
+						 (call-body))
+		    :doc-type function)
 
 ;;;; Description:
 ; return vector which includes specifications.
@@ -420,7 +429,8 @@
 ;;;; Exceptional-Situations:
 
 (requirements-about REGISTER-ORG :around (let((jingoh.org::*orgs*(make-hash-table)))
-					   (call-body)))
+					   (call-body))
+		    :doc-type function)
 
 ;;;; Description:
 ; register specified org into underlying org database.
@@ -461,7 +471,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about FIND-ORG)
+(requirements-about FIND-ORG :doc-type function)
 
 ;;;; Description:
 ; Find org from underlying org database.
@@ -496,7 +506,8 @@
 ;;;; Exceptional-Situations:
 
 (requirements-about DELETE-ORG :around (let((jingoh.org::*orgs*(make-hash-table)))
-					 (call-body)))
+					 (call-body))
+		    :doc-type function)
 
 ;;;; Description:
 ; delete specified org from underlying org database.
@@ -533,7 +544,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about ORG-REQUIREMENTS-COUNT)
+(requirements-about ORG-REQUIREMENTS-COUNT :doc-type function)
 
 ;;;; Description:
 ; Return number of requirements.
@@ -566,7 +577,8 @@
 (requirements-about MAP-REQUIREMENTS :around(let((*org*(make-org :current-subjects '(subject))))
 					      (add-requirement 'subject 0)
 					      (add-requirement 'subject 1)
-					      (call-body)))
+					      (call-body))
+		    :doc-type function)
 
 ;;;; Description:
 ; Apply FUNCTION and collect its return value.
@@ -604,7 +616,8 @@
 (requirements-about DO-REQUIREMENTS :around(let((*org*(make-org :current-subjects '(subject))))
 					     (add-requirement 'subject 0)
 					     (add-requirement 'subject 1)
-					     (call-body)))
+					     (call-body))
+		    :doc-type function)
 
 ;;;; Description:
 ; Iterate forms for each requirements.
@@ -683,7 +696,8 @@
 ;;;; Exceptional-Situations:
 
 (requirements-about ADD-REQUIREMENT :around(let((*org*(make-org)))
-					     (call-body)))
+					     (call-body))
+		    :doc-type function)
 
 ;;;; Description:
 ; add requirement into org.
@@ -720,7 +734,8 @@
 
 (requirements-about DELETE-SUBJECT :around (let((*org*(make-org :current-subjects '(subject)
 								:specifications (make-array 2 :fill-pointer 2 :adjustable t :element-type 'jingoh.org::spec :initial-contents (list (jingoh.org::spec 'subject 0)(jingoh.org::spec 'another 1))))))
-					     (call-body)))
+					     (call-body))
+		    :doc-type function)
 
 ;;;; Description:
 ; delete subject from org.
@@ -760,7 +775,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about org-designator)
+(requirements-about org-designator :doc-type type)
 ;;;; Description:
 ; Represents org.
 ; (or (and symbol (not boolean)) org)
@@ -781,7 +796,7 @@
 ;;;; Compound Type Specifier Description:
 ; none
 
-(requirements-about subject-designator)
+(requirements-about subject-designator :doc-type type)
 ;;;; Description:
 ; Represents subject.
 ; Symbol or boolean.
@@ -802,7 +817,7 @@
 
 #| special variables |#
 
-(requirements-about *ORG*)
+(requirements-about *ORG* :doc-type variable)
 
 ; Current org.
 
@@ -818,7 +833,7 @@
 
 #| conditions |#
 
-(requirements-about NOT-ORG)
+(requirements-about NOT-ORG :doc-type type)
 
 #|[Condition] NOT-ORG |#
 
@@ -839,7 +854,7 @@
 
 ;;;; Notes:
 
-(requirements-about MISSING)
+(requirements-about MISSING :doc-type type)
 
 #|[Condition] MISSING |#
 ; Super condition.
@@ -858,7 +873,7 @@
 
 ;;;; Notes:
 
-(requirements-about MISSING-ORG)
+(requirements-about MISSING-ORG :doc-type type)
 
 #| [Condition] MISSING-ORG |#
 
@@ -875,7 +890,7 @@
 
 ;;;; Notes:
 
-(requirements-about MISSING-SUBJECT)
+(requirements-about MISSING-SUBJECT :doc-type type)
 
 #| [Condition] MISSING-SUBJECT |#
 
@@ -892,7 +907,7 @@
 
 ;;;; Notes:
 
-(requirements-about API)
+(requirements-about API :doc-type function)
 
 #| [Generic-Function] API |#
 
@@ -925,7 +940,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about DATUM)
+(requirements-about DATUM :doc-type function)
 
 #| [Generic-Function] DATUM |#
 
@@ -958,7 +973,7 @@
 ;;;; Exceptional-Situations:
 ;|#
 
-(requirements-about ADD-NEW-OPTION-KEY)
+(requirements-about ADD-NEW-OPTION-KEY :doc-type function)
 
 ;;;; Description:
 
@@ -988,7 +1003,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about FIND-OPTION-KEY)
+(requirements-about FIND-OPTION-KEY :doc-type function)
 
 ;;;; Description:
 
@@ -1020,7 +1035,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about DELETE-OPTION-KEY)
+(requirements-about DELETE-OPTION-KEY :doc-type function)
 
 ;;;; Description:
 
@@ -1048,7 +1063,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about LIST-ALL-OPTION-KEYS)
+(requirements-about LIST-ALL-OPTION-KEYS :doc-type function)
 
 ;;;; Description:
 
@@ -1072,7 +1087,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about CLEAR-OPTION-KEYS)
+(requirements-about CLEAR-OPTION-KEYS :doc-type function)
 
 ;;;; Description:
 
