@@ -4,6 +4,7 @@
     ; context abstractions
     #:with-doc-directory
     #:with-open-markdown
+    #:with-output-to
     ; slot reader
     #:meta-data-name
     #:meta-data-exports

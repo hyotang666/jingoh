@@ -34,3 +34,29 @@
 	(asdf:load-system system :force t))
       (let((*default-pathname-defaults* spec-dir))
 	(mapcar #'Make-meta-data meta-datas)))))
+
+(defun lisp(system)
+  (let*((system
+	  (asdf:find-system system))
+	(sys-dir
+	  (asdf:system-source-directory system))
+	(meta-datas
+	  (meta-datas<=system system sys-dir))
+	(*default-pathname-defaults*
+	  sys-dir))
+    (With-output-to((merge-pathnames "doc.lisp"))
+      (dolist(meta meta-datas)
+	(print `(in-package ,(meta-data-name meta)))
+	(dolist(s(meta-data-sections meta))
+	  (print-doc s (meta-data-name meta)))))))
+
+(defun print-doc(section package)
+  (dolist(s (Section-names section))
+    (when (Section-doc-type section)
+      (print `(defmethod documentation ((s (eql (or (find-symbol ,(string s)
+								 ,package)
+						    (error "Not found ~S in ~S"
+							   ,(string s)
+							   ,package))))
+					(type (eql ',(Section-doc-type section))))
+		(princ-to-string section))))))
