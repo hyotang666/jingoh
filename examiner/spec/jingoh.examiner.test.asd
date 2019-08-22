@@ -1,6 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.examiner.test
+  :version "0.0.0"
   :depends-on
   (:jingoh "jingoh.examiner" :cl-ansi-text)
   :components

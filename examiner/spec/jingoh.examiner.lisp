@@ -57,7 +57,7 @@
        *issues*)
     (eval '(defspec (+) => 0))
     (examine *org*))
-:outputs #.(format nil "NIL~A~%~A NIL~%"
+:outputs #.(format nil "~%NIL~A~%~A NIL~%"
 		   (cl-ansi-text:green ".")
 		   (cl-ansi-text:green "Pass"))
 
