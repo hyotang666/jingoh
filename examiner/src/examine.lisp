@@ -79,10 +79,17 @@
     (apply #'nconc (nreverse issues))))
 
 (defun print-requirement (result requirement)
-  (let((cl-ansi-text:*enabled* *print-vivid*))
-    (if result
-      (format t "~&~A ~S" (cl-ansi-text:red "Fails") requirement)
-      (format t "~&~A ~S" (cl-ansi-text:green "Pass") requirement))))
+  (let((cl-ansi-text:*enabled*
+	 *print-vivid*)
+       (token))
+    (uiop:format!  t "~&~A ~A"
+		   (if result
+		     (cl-ansi-text:red (setf token "Fails"))
+		     (cl-ansi-text:green (setf token "Pass")))
+		   (string-left-trim '(#\space)
+				     (format nil "~VT ~S"
+					     (length token)
+					     requirement)))))
 
 (defun print-dot(result)
   (let((cl-ansi-text:*enabled* *print-vivid*))
