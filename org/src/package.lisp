@@ -21,6 +21,13 @@
     #:org-specifications ; reader
     #|NOTE! - Slot names are not exported.|#
 
+    ;;;; abstract layer to extend org option keys safely.
+    #:add-new-option-key
+    #:find-option-key
+    #:delete-option-key
+    #:list-all-option-keys
+    #:clear-option-keys
+
     ;;;; miscellaneous
     ;; org operators
     #:register-org

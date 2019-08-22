@@ -40,3 +40,18 @@
 
 (deftype subject-designator()
   'symbol)
+
+(defvar *option-keys*(make-hash-table :test #'eq))
+(defun list-all-option-keys()
+  (alexandria:hash-table-keys *option-keys*))
+(defun add-new-option-key(key)
+  (check-type key keyword)
+  (setf (gethash key *option-keys*)key))
+(defun find-option-key(key &optional (errorp t))
+  (or (gethash key *option-keys*)
+      (when errorp
+	(error "Not found option key ~S."key))))
+(defun delete-option-key(key)
+  (remhash key *option-keys*))
+(defun clear-option-keys()
+  (clrhash *option-keys*))
