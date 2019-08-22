@@ -63,3 +63,12 @@
 					(type (eql ',(Section-doc-type section))))
 		(declare(ignore s type))
 		,(princ-to-string section))))))
+
+(defun import(system)
+  (dolist(m (meta-datas<=system (asdf:find-system system)))
+    (dolist(s (meta-data-sections m))
+      (dolist(name (Section-names s))
+	(setf (documentation (find-symbol (symbol-name name)
+					  (meta-data-name m))
+			     (Section-doc-type s))
+	      (princ-to-string s))))))
