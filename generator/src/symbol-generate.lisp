@@ -30,7 +30,7 @@
 			     :separator '(#\newline))))
 
 (defun |variable|(symbol)
-  (format t "(requirements-about ~A)~2%~
+  (format t "(requirements-about ~A :doc-type variable)~2%~
 	  ;;;; Description:~%~
 	  ~A~%~
 	  ;;;; Value type is ~A~%~
@@ -76,7 +76,7 @@
 	  :class)))))
 
 (defun %type-template(symbol)
-  (format t "(requirements-about ~A)~%~
+  (format t "(requirements-about ~A :doc-type type)~%~
 	  ;;;; Description:~%~
 	  ~A~&~
 	  ;;;; Compound Type Specifier Kind:~2%~
@@ -89,7 +89,7 @@
 (defun class-template(type symbol)
   (declare(ignore type))
   (let((class(find-class symbol)))
-    (format t "(requirements-about ~A)~2%~
+    (format t "(requirements-about ~A :doc-type type)~2%~
 	    ;;;; Description:~%~
 	    ~A~&~
 	    ;;;; Class Precedence List: (case in ~A)~%~
@@ -155,7 +155,7 @@
   (let((lambda-list(millet:lambda-list symbol))
        (setf-expander(setf-expander symbol))
        (notation(ensure-symbol-notation symbol)))
-    (format t "(requirements-about ~A)~2%~
+    (format t "(requirements-about ~A :doc-type function)~2%~
     ;;;; Description:~%~
     ~A~%~
     #+syntax~%(~A~@[ ~{~(~S~)~^ ~}~]) ; => result~2%~

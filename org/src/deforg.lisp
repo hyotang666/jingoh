@@ -54,6 +54,7 @@
      (SETF (ORG-CURRENT-SUBJECTS *ORG*)(LIST ',subject))))
 
 (add-new-option-key :as)
+(add-new-option-key :doc-type)
 
 (defmacro common-requirements-about((&rest subject*) &rest option* &key(as (error "Keyword parameter :AS is required.")))
   (check-type as symbol)

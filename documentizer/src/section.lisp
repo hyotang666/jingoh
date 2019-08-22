@@ -9,6 +9,7 @@
     #:section-body
     #:section-path
     #:section-names
+    #:section-doc-type
     ; subtype predicates
     #:single-p
     #:common-p
@@ -16,9 +17,9 @@
   )
 (in-package :jingoh.documentizer.sections)
 
-(defstruct section body path names)
+(defstruct section body path names doc-type)
 (defstruct(single (:include section)
-		  (:constructor make-single (&key body path name
+		  (:constructor make-single (&key body path name doc-type
 						  &aux(names (list name))))))
 (defstruct(common (:include section))
   alias)
