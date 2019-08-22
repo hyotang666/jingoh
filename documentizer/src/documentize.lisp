@@ -61,4 +61,4 @@
 							   ,(string s)
 							   ,package))))
 					(type (eql ',(Section-doc-type section))))
-		(princ-to-string section))))))
+		,(princ-to-string section))))))
