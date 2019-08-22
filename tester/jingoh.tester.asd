@@ -2,7 +2,7 @@
 (in-package :asdf)
 (defsystem :jingoh.tester
   :description "Jingoh's requirement's tester."
-  :version "0.0.2"
+  :version "0.0.3"
   :long-description #.(uiop:read-file-string (merge-pathnames *load-pathname*
                                                               "CONCEPTS.md"))
   :in-order-to((test-op(test-op "jingoh.tester.test")))
@@ -16,6 +16,7 @@
                "structure-ext" ; to enable constructing structure with MAKE-INSTANCE.
                "uiop" ; utilities.
                "bordeaux-threads"       ; multi threading especially for timeout.
+               "resignal-bind" ; condition capturing for better error message.
                )
   :pathname "src/"
   :components ((:file "package")

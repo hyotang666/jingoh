@@ -40,17 +40,37 @@
 	:into result
 	:finally (return (delete-duplicates result))))
 
-(deftype option-key()
-  '(member :test :lazy :ignore-signals :with-restarts :stream :before :after :around :position :as :timeout))
+(macrolet((defs(&body keys)
+	    `(progn ,@(mapcar (lambda(key)
+				`(jingoh.org:add-new-option-key ,key))
+			      keys))))
+  (defs :test
+	:lazy
+	:ignore-signals
+	:with-restarts
+	:stream
+	:before
+	:after
+	:around
+	:position
+	:timeout))
 
 (defun canonicalize(test-form parameters)
   (setf test-form (copy-tree test-form))
   (labels((CHECK()
 	    (loop :for key :in parameters :by #'cddr
-		  :unless (typep key 'option-key)
-		  :do (error "Unknown options key ~S in ~S~&Allowed are ~S "
-			     key parameters
-			     (millet:type-expand 'option-key))))
+		  :do (resignal-bind:resignal-bind
+			((error(c)
+			   'simple-error
+			   :format-control
+			   (concatenate 'string
+					(simple-condition-format-control c)
+					"in ~S~&Allowed are ~S.")
+			   :format-arguments
+			   (append (simple-condition-format-arguments c)
+				   (list parameters
+					 (jingoh.org:list-all-option-keys)))))
+			(jingoh.org:find-option-key key))))
 	  (MAKE-BODY(test-form)
 	    (SET-AROUND (let((after(getf parameters :after)))
 			  (if after
