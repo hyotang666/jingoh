@@ -16,7 +16,7 @@
 
 ; subject, detail, summary
 (defparameter *verbose* 2 "Controls VERIFY's verbosity.")
-(declaim(type (mod 3) *verbose*))
+(declaim(type (mod 4) *verbose*))
 (defparameter *on-fails* NIL)
 (declaim(type (member :error :stop nil)*on-fails*))
 (defparameter *break-on-finish* NIL "Breaks when finish examine.")
