@@ -957,3 +957,147 @@
 
 ;;;; Exceptional-Situations:
 ;|#
+
+(requirements-about ADD-NEW-OPTION-KEY)
+
+;;;; Description:
+
+#+syntax
+(ADD-NEW-OPTION-KEY key) ; => result
+
+;;;; Arguments and Values:
+
+; key := keyword, otherwise TYPE-ERROR is signaled.
+#?(add-new-option-key "not-keyword-symbol") :signals type-error
+
+; result := key
+#?(add-new-option-key :this-is-returned) => :THIS-IS-RETURNED
+,:after (delete-option-key :this-is-returned)
+
+;;;; Affected By:
+;none
+
+;;;; Side-Effects:
+; JINGOH.ORG::*OPTION-KEYS* is modified.
+
+;;;; Notes:
+; Do nothing when key is conflicted.
+#?(values (find-option-key :as)
+	  (add-new-option-key :as))
+:values (:AS :AS)
+
+;;;; Exceptional-Situations:
+
+(requirements-about FIND-OPTION-KEY)
+
+;;;; Description:
+
+#+syntax
+(FIND-OPTION-KEY key &optional (errorp t)) ; => result
+
+;;;; Arguments and Values:
+
+; key := T
+#?(find-option-key "not keyword" nil) => NIL
+
+; errorp := generalized-boolean, to specify signal an error unless found.
+#?(find-option-key :no-such-key) :signals error
+#?(find-option-key :no-such-key nil) => NIL
+
+; result := (or KEY null)
+#?(find-option-key :as) => :AS
+
+;;;; Affected By:
+; State of JINGOH.ORG::*OPTION-KEYS*
+#?(let((jingoh.org::*option-keys*(make-hash-table)))
+    (find-option-key :as nil))
+=> NIL
+
+;;;; Side-Effects:
+; none
+
+;;;; Notes:
+
+;;;; Exceptional-Situations:
+
+(requirements-about DELETE-OPTION-KEY)
+
+;;;; Description:
+
+#+syntax
+(DELETE-OPTION-KEY key) ; => result
+
+;;;; Arguments and Values:
+
+; key := T
+#?(delete-option-key "not keyword") => NIL
+
+; result := BOOLEAN, T when KEY exists.
+#?(values (delete-option-key :no-such-key)
+	  (add-new-option-key :no-such-key)
+	  (delete-option-key :no-such-key))
+:values (NIL :NO-SUCH-KEY T)
+
+;;;; Affected By:
+; JINGOH.ORG::*OPTION-KEYS*
+
+;;;; Side-Effects:
+; Destructively modify JINGOH.ORG::*OPTION-KEYS*.
+
+;;;; Notes:
+
+;;;; Exceptional-Situations:
+
+(requirements-about LIST-ALL-OPTION-KEYS)
+
+;;;; Description:
+
+#+syntax
+(LIST-ALL-OPTION-KEYS) ; => result
+
+#?(list-all-option-keys) => (:AS)
+,:test equal
+;;;; Arguments and Values:
+
+; result := list
+
+;;;; Affected By:
+; JINGOH.ORG::*OPTION-KEYS*
+
+;;;; Side-Effects:
+
+;;;; Notes:
+
+;;;; Exceptional-Situations:
+
+(requirements-about CLEAR-OPTION-KEYS)
+
+;;;; Description:
+
+#+syntax
+(CLEAR-OPTION-KEYS) ; => result
+
+#?(let((jingoh.org::*option-keys*(make-hash-table)))
+    (values (add-new-option-key :one)
+	    (add-new-option-key :two)
+	    (find-option-key :one)
+	    (find-option-key :two)
+	    (type-of (clear-option-keys))
+	    (find-option-key :one nil)
+	    (find-option-key :two nil)))
+:values (:ONE :TWO :ONE :TWO HASH-TABLE NIL NIL)
+	  
+;;;; Arguments and Values:
+
+; result := hash-table
+
+;;;; Affected By:
+; JINGOH.ORG::*OPTION-KEYS*
+
+;;;; Side-Effects:
+; JINGOH.ORG::*OPTION-KEYS*
+
+;;;; Notes:
+
+;;;; Exceptional-Situations:
+
