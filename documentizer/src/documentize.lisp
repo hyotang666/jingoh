@@ -43,7 +43,9 @@
 	(meta-datas
 	  (meta-datas<=system system sys-dir))
 	(*default-pathname-defaults*
-	  sys-dir))
+	  sys-dir)
+	(*package*
+	  #.(find-package :jingoh.documentizer)))
     (With-output-to((merge-pathnames "doc.lisp"))
       (dolist(meta meta-datas)
 	(print `(in-package ,(meta-data-name meta)))
