@@ -87,16 +87,20 @@
 	  (comentize(documentation symbol 'type))))
 
 (defun class-template(type symbol)
-  (declare(ignore type))
   (let((class(find-class symbol)))
-    (format t "(requirements-about ~A :doc-type type)~2%~
+    (format t "(requirements-about ~A :doc-type ~A)~2%~
 	    ;;;; Description:~%~
 	    ~A~&~
 	    ;;;; Class Precedence List: (case in ~A)~%~
 	    ; ~{~(~A~)~^ ~}~2%~
 	    ;;;; Effective Slots:~2%"
 	    symbol
-	    (comentize(documentation symbol 'type))
+	    (if(eq :structure type)
+	      type
+	      :type)
+	    (comentize(documentation symbol (if (eq :structure type)
+					      'structure
+					      'type)))
 	    uiop:*implementation-type*
 	    (mapcar #'class-name(closer-mop:class-precedence-list class)))
     (dolist(slot(applicables class))
