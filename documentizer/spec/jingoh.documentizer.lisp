@@ -11,6 +11,7 @@
 		#:%packages
 		#:%top
 		#:meta-datas<=system)
+  (:shadowing-import-from :jingoh.documentizer #:import)
   (:use :cl :jingoh :jingoh.documentizer))
 (in-package :jingoh.documentizer.spec)
 (setup :jingoh.documentizer)
