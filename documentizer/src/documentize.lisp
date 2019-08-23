@@ -35,6 +35,9 @@
       (let((*default-pathname-defaults* spec-dir))
 	(mapcar #'Make-meta-data meta-datas)))))
 
+(defun importer(form)
+  (%import (Make-meta-data form)))
+
 (defun lisp(system)
   (let*((system
 	  (asdf:find-system system))
