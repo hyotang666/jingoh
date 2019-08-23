@@ -11,7 +11,7 @@
 	  (*default-pathname-defaults*(Spec-directory system))
 	  (forms `((defpackage ,package-name
 		     (:export ,symbol))))
-	  (path(test-asd-path system)))
+	  (path(Test-asd-path system)))
       (macrolet((expand(existsp)
 		  `(PROGN ,@(unless existsp
 			      `((GENERATE-ASD SYSTEM FORMS PATH)))

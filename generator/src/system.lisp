@@ -12,7 +12,7 @@
 	(*default-pathname-defaults*
 	  (Spec-directory system))
 	(test-asd-path
-	  (test-asd-path system)))
+	  (Test-asd-path system)))
     (mapc #'asdf:load-system(asdf:system-depends-on system))
     (asdf:load-system system :force t)
     (add-method-extension system test-asd-path)
@@ -21,14 +21,6 @@
       (generate form :append append)))
   #+quicklisp
   (ql:register-local-projects))
-
-(defun test-asd-path(system)
-  (make-pathname :name (test-name (asdf:coerce-name system))
-		 :type "asd"
-		 :defaults *default-pathname-defaults*))
-
-(defun test-name(name)
-  (concatenate 'string name ".test"))
 
 (defun add-method-extension (system test-asd-path)
   (unless(probe-file test-asd-path)
@@ -41,7 +33,7 @@
     (format t "~%;; These forms below are added by JINGOH.GENERATOR.~{~%~(~S~)~}"
 	    `((in-package :asdf)
 	      (defmethod asdf:component-depends-on((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name))))
-		(append (call-next-method) '((asdf:test-op ,(test-name name)))))
+		(append (call-next-method) '((asdf:test-op ,(Test-name name)))))
 	      (defmethod asdf:operate :around ((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name)))
 					       &rest asdf::keys
 					       &key ((:compile-print *compile-print*))
