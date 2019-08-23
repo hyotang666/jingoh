@@ -19,7 +19,7 @@
     ;; and avoid generate extension duplicatedly,
     ;; adding extension unless spec dir exists.
     (unless(probe-file test-asd-path)
-      (add-method-extension system test-asd-path))
+      (add-method-extension system))
     (generate-test-asd system forms test-asd-path)
     (dolist(form forms)
       (generate form :append append)))
