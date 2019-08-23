@@ -2,7 +2,7 @@
 (in-package :asdf)
 (defsystem :jingoh.tester
   :description "Jingoh's requirement's tester."
-  :version "0.0.3"
+  :version "0.0.4"
   :long-description #.(uiop:read-file-string (merge-pathnames *load-pathname*
                                                               "CONCEPTS.md"))
   :in-order-to((test-op(test-op "jingoh.tester.test")))
@@ -26,6 +26,30 @@
                ; top
                (:file "tester" :depends-on ("miscellaneous" "report"))
 	       ))
+
+;;; Two forms below are documentation importer.
+(let((system
+       (find-system "jingoh.documentizer" nil)))
+  ;; Weakly depends on.
+  (when system
+    (load-system system)))
+
+(defmethod operate :around((o load-op)(c (eql(find-system "jingoh.tester")))&key)
+  (if(not(find-package "JINGOH.DOCUMENTIZER"))
+    (call-next-method)
+    (let*((forms nil)
+          (*macroexpand-hook*
+            (let((outer-hook *macroexpand-hook*))
+              (lambda(expander form env)
+                (when(typep form '(cons (eql defpackage)*))
+                  (push form forms))
+                (funcall outer-hook expander form env))))
+          (*default-pathname-defaults*
+            (merge-pathnames "spec/"
+                             (system-source-directory c))))
+      (multiple-value-prog1(call-next-method)
+        (mapc (find-symbol "IMPORTER" "JINGOH.DOCUMENTIZER")
+              forms)))))
 
 (defmethod operate :around ((o test-op)(c (eql (find-system "jingoh.tester")))
                             &key ((:compile-print *compile-print*))
