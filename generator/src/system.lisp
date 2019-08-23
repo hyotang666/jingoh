@@ -15,18 +15,18 @@
 	  (Test-asd-path system)))
     (mapc #'asdf:load-system(asdf:system-depends-on system))
     (asdf:load-system system :force t)
-    (add-method-extension system test-asd-path)
+    (unless(probe-file test-asd-path)
+      (add-method-extension system test-asd-path))
     (generate-test-asd system forms test-asd-path)
     (dolist(form forms)
       (generate form :append append)))
   #+quicklisp
   (ql:register-local-projects))
 
-(defun add-method-extension (system test-asd-path)
-  (unless(probe-file test-asd-path)
+(defun add-method-extension (system)
     (let((directory(asdf:system-source-file system)))
       (uiop:with-output-file(*standard-output* directory :if-exists :append)
-	(%add-method-extension (asdf:coerce-name system))))))
+	(%add-method-extension (asdf:coerce-name system)))))
 
 ;; Splitted for easy debug/test.
 (defun %add-method-extension(name)
