@@ -28,6 +28,7 @@
       (uiop:with-output-file(*standard-output* directory :if-exists :append)
 	(%add-method-extension (asdf:coerce-name system))))))
 
+;; Splitted for easy debug/test.
 (defun %add-method-extension(name)
   (let((*package*(find-package :asdf)))
     (format t "~%;; These forms below are added by JINGOH.GENERATOR.~{~%~(~S~)~}"
