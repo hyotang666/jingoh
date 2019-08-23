@@ -6,7 +6,8 @@
 (setup :jingoh.tester)
 
 (requirements-about DEFSPEC :around (let((*org* (make-org)))
-				      (call-body)))
+				      (call-body))
+		    :doc-type function)
 
 ;;;; Description:
 ; Define specification.
@@ -36,7 +37,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about &)
+(requirements-about & :doc-type function)
 
 ;;;; Description:
 ; When (cl:and ...) is failed, we are not able to get information
@@ -80,7 +81,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about SEXP=)
+(requirements-about SEXP= :doc-type function)
 
 ;;;; Description:
 ; tests equalilty as syntax. This is useful to test MACROEXPENDed form.
@@ -112,7 +113,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about ?)
+(requirements-about ? :doc-type function)
 
 ;;;; Description:
 ; One shot tester.
@@ -266,7 +267,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about CHECK)
+(requirements-about CHECK :doc-type function)
 
 ;;;; Description:
 ; accept requirement, then check it.
@@ -292,7 +293,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about MAKE-REQUIREMENT)
+(requirements-about MAKE-REQUIREMENT :doc-type function)
 
 ;;;; Description:
 ; make requirement.
@@ -335,7 +336,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about THE-STANDARD-HANDLING-FORM)
+(requirements-about THE-STANDARD-HANDLING-FORM :doc-type function)
 
 ;;;; Description:
 ; Helper for writing make-requirement.
@@ -389,7 +390,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about THE-PUSH-INSTANCE-FORM)
+(requirements-about THE-PUSH-INSTANCE-FORM :doc-type function)
 
 ;;;; Description:
 ; helper for writing make-requirement.
@@ -429,7 +430,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about RESERVED-KEYWORDS)
+(requirements-about RESERVED-KEYWORDS :doc-type function)
 
 ;;;; Description:
 ; return dispatch keys.
@@ -458,7 +459,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about ENCALLABLE)
+(requirements-about ENCALLABLE :doc-type function)
 
 ;;;; Description:
 ; tiny helper for writing macro.
@@ -494,7 +495,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about CANONICALIZE)
+(requirements-about CANONICALIZE :doc-type function)
 
 ;;;; Description:
 ; Helper for MAKE-REQUIREMENT
@@ -561,7 +562,8 @@
 #?(canonicalize '(+) '(:no-such-key :comes)) :signals error
 
 (common-requirements-about (issue test-issue wrong-format condition-issue error-was-signaled warning-was-signaled debugger-was-invoked unmatch-condition unexpected-success unexpected-output issue-of-multiple-values missing-restarts unsatisfied-clause)
-			   :as object)
+			   :as object
+			   :doc-type structure)
 
 (defvar *test-issues* '(test-issue wrong-format))
 (defvar *condition-issues* '(condition-issue error-was-signaled warning-was-signaled debugger-was-invoked unmatch-condition))
@@ -607,7 +609,8 @@
 ; Slot names are not exported.
 
 (common-requirements-about (condition-issue error-was-signaled warning-was-signaled debugger-was-invoked unmatch-condition)
-			   :as object)
+			   :as object
+			   :doc-type structure)
 
 ;;;; Effective Slots:
 
@@ -619,7 +622,8 @@
 ;;;; Notes:
 
 (common-requirements-about (test-issue wrong-format)
-			   :as object)
+			   :as object
+			   :doc-type structure)
 
 ;;;; Effective Slots:
 
@@ -630,7 +634,7 @@
 		(eq 'eql (millet:function-name $result))))
 ;;;; Notes:
 
-(requirements-about UNSATISFIED-CLAUSE)
+(requirements-about UNSATISFIED-CLAUSE :doc-type structure)
 
 ;;;; Effective Slots:
 
@@ -641,7 +645,7 @@
 
 ;;;; Notes:
 
-(requirements-about ISSUE-P)
+(requirements-about ISSUE-P :doc-type function)
 
 ;;;; Description:
 ; when arg is issue object, returns t, otherwise nil.
@@ -669,7 +673,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about CONDITION-ISSUE-P)
+(requirements-about CONDITION-ISSUE-P :doc-type function)
 
 ;;;; Description:
 ; Tests arg is condition-issue.
@@ -700,7 +704,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about TEST-ISSUE-P)
+(requirements-about TEST-ISSUE-P :doc-type function)
 
 ;;;; Description:
 ; Tests arg is test-issue.
@@ -732,7 +736,8 @@
 ;;;; Exceptional-Situations:
 
 (common-requirements-about (error-was-signaled-p warning-was-signaled-p debugger-was-invoked-p unmatch-condition-p unexpected-success-p unexpected-output-p issue-of-multiple-values-p missing-restarts-p unsatisfied-clause-p wrong-format-p)
-			   :as pred)
+			   :as pred
+			   :doc-type function)
 
 ;;;; [Predicates]
 
@@ -762,7 +767,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about ISSUE-FORM)
+(requirements-about ISSUE-FORM :doc-type function)
 
 ;;;; [Accessor] ISSUE-FORM
 
@@ -799,7 +804,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about ISSUE-EXPECTED)
+(requirements-about ISSUE-EXPECTED :doc-type function)
 
 ;;;; Description: return expected value.
 #?(loop :for name :in *issues*
@@ -831,7 +836,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about ISSUE-ACTUAL)
+(requirements-about ISSUE-ACTUAL :doc-type function)
 
 ;;;; Description:
 ; return actual value
@@ -864,7 +869,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about ISSUE-POSITION)
+(requirements-about ISSUE-POSITION :doc-type function)
 
 ;;;; Description:
 ; return file position of test-form.
@@ -897,7 +902,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about TEST-ISSUE-TEST)
+(requirements-about TEST-ISSUE-TEST :doc-type function)
 
 ;;;; Description:
 ; return test function name.
@@ -933,7 +938,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about CONDITION-ISSUE-MESSAGE)
+(requirements-about CONDITION-ISSUE-MESSAGE :doc-type function)
 
 ;;;; Description:
 ; return condition message string.
@@ -969,7 +974,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about UNSATISFIED-CLAUSE-ARGS)
+(requirements-about UNSATISFIED-CLAUSE-ARGS :doc-type function)
 
 ;;;; Description:
 ; return args.
@@ -1004,7 +1009,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about *PRINT-VIVID*)
+(requirements-about *PRINT-VIVID* :doc-type variable)
 
 ;;;; Description:
 ; Controls print vividly or not.
@@ -1020,7 +1025,7 @@
 ;;;; Notes:
 ; refered by print-object specialized by issue, jingoh.tester::diff, and jingoh.tester::diff-string.
 
-(requirements-about MISMATCH-SEXP)
+(requirements-about MISMATCH-SEXP :doc-type function)
 
 ;;;; Description:
 ; When sexp is not syntactically equal, markup such diffs.
@@ -1083,7 +1088,7 @@
     (prin1 (mismatch-sexp "foo" "bar")))
 :outputs "\"instead of coloring\""
 
-(requirements-about SYNTAX-ERROR)
+(requirements-about SYNTAX-ERROR :doc-type type)
 
 ;;;; Description:
 ; signaled when macro expansion time.
