@@ -199,7 +199,7 @@
 ;;;; Description:
 ; Print symbol template.
 #?(symbol-generate 'symbol-generate :jingoh.generator)
-:outputs "(requirements-about SYMBOL-GENERATE)
+:outputs "(requirements-about SYMBOL-GENERATE :doc-type function)
 
 ;;;; Description:
 
