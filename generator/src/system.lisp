@@ -15,6 +15,9 @@
 	  (Test-asd-path system)))
     (mapc #'asdf:load-system(asdf:system-depends-on system))
     (asdf:load-system system :force t)
+    ;; In order to generate asd for already existing project,
+    ;; and avoid generate extension duplicatedly,
+    ;; adding extension unless spec dir exists.
     (unless(probe-file test-asd-path)
       (add-method-extension system test-asd-path))
     (generate-test-asd system forms test-asd-path)
