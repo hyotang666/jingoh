@@ -27,9 +27,11 @@
   (ql:register-local-projects))
 
 (defun add-method-extension (system)
-    (let((directory(asdf:system-source-file system)))
-      (uiop:with-output-file(*standard-output* directory :if-exists :append)
-	(%add-method-extension (asdf:coerce-name system)))))
+  (uiop:with-output-file(*standard-output*
+			  (asdf:system-source-file system)
+			  :if-exists
+			  :append)
+    (%add-method-extension (asdf:coerce-name system))))
 
 ;; Splitted for easy debug/test.
 (defun %add-method-extension(name)
