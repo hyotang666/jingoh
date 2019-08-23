@@ -8,7 +8,7 @@
 (in-package :jingoh.generator.spec)
 (setup :jingoh.generator)
 
-(requirements-about GENERATE)
+(requirements-about GENERATE :doc-type function)
 
 ;;;; Description:
 ; Generate specification template.
@@ -61,7 +61,7 @@
 ; when system is not found, an error of type ASDF/FIND-SYSTEM:MISSING-COMPONENT is signaled.
 #?(generate :no-such-system) :signals asdf:missing-component
 
-(requirements-about %GENERATE-ASD)
+(requirements-about %GENERATE-ASD :doc-type function)
 
 ;;;; Description:
 ; print asd file contents for spec file.
@@ -107,7 +107,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about %ADD-METHOD-EXTENSION)
+(requirements-about %ADD-METHOD-EXTENSION :doc-type function)
 
 ;;;; Description:
 ; print method extension.
@@ -158,7 +158,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about GENERATE-HEADER)
+(requirements-about GENERATE-HEADER :doc-type function)
 
 ;;;; Description:
 ; print spec file's header.
@@ -194,7 +194,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about SYMBOL-GENERATE)
+(requirements-about SYMBOL-GENERATE :doc-type function)
 
 ;;;; Description:
 ; Print symbol template.
