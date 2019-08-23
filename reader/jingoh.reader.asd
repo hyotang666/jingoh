@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.reader
-  :version "1.0.1"
+  :version "1.0.2"
   :description "Dispatch macro for jingoh"
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "CONCEPTS.md"))
@@ -14,29 +14,28 @@
   :pathname "src/"
   :components((:file "reader")))
 
-;;; Two forms below are documentation importer.
+;;; The form below is documentation importer.
 (let((system
        (find-system "jingoh.documentizer" nil)))
   ;; Weakly depends on.
   (when system
-    (load-system system)))
-
-(defmethod operate :around((o load-op)(c (eql(find-system "jingoh.reader")))&key)
-  (if(not(find-package "JINGOH.DOCUMENTIZER"))
-    (call-next-method)
-    (let*((forms nil)
-          (*macroexpand-hook*
-            (let((outer-hook *macroexpand-hook*))
-              (lambda(expander form env)
-                (when(typep form '(cons (eql defpackage)*))
-                  (push form forms))
-                (funcall outer-hook expander form env))))
-          (*default-pathname-defaults*
-            (merge-pathnames "spec/"
-                             (system-source-directory c))))
-      (multiple-value-prog1(call-next-method)
-        (mapc (find-symbol "IMPORTER" "JINGOH.DOCUMENTIZER")
-              forms)))))
+    (load-system system)
+    (defmethod operate :around((o load-op)
+                               (c (eql(find-system "jingoh.reader")))
+                               &key)
+      (let*((forms nil)
+            (*macroexpand-hook*
+              (let((outer-hook *macroexpand-hook*))
+                (lambda(expander form env)
+                  (when(typep form '(cons (eql defpackage)*))
+                    (push form forms))
+                  (funcall outer-hook expander form env))))
+            (*default-pathname-defaults*
+              (merge-pathnames "spec/"
+                               (system-source-directory c))))
+        (multiple-value-prog1(call-next-method)
+          (mapc (find-symbol "IMPORTER" "JINGOH.DOCUMENTIZER")
+                forms))))))
 
 (defmethod operate :around ((o test-op)(c (eql (find-system "jingoh.reader")))
                             &key ((:compile-print *compile-print*))
