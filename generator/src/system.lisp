@@ -10,7 +10,7 @@
 		(push form forms))
 	      (funcall outer-hook expander form env))))
 	(*default-pathname-defaults*
-	  (spec-directory system))
+	  (Spec-directory system))
 	(test-asd-path
 	  (test-asd-path system)))
     (mapc #'asdf:load-system(asdf:system-depends-on system))
@@ -77,8 +77,3 @@
 			(mapc (find-symbol (string :importer)
 					   :jingoh.documentizer)
 			      asdf::forms))))))))))
-
-(defun spec-directory(system)
-  (uiop:subpathname (asdf:system-source-directory (asdf:find-system system))
-		    "spec/"))
-
