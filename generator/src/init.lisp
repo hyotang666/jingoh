@@ -1,5 +1,13 @@
 (in-package :jingoh.generator)
 
+#| Generate project skelton.
+   project/---
+            |---project.asd
+            |---README.md
+            |---src/---
+                     |---project.lisp
+|#
+
 (defmethod generate((dispatcher (eql 'init))&key system pathname)
   (let*((system-name
 	  (asdf:coerce-name system))
