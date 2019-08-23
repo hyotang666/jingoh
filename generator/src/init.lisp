@@ -32,7 +32,9 @@
       (progn (loop :for d :in directories
 		   :for i :upfrom 0
 		   :do (format *query-io* "~%~3D: ~S"i d))
-	     (nth (prompt-for:prompt-for `(mod ,(length directories)) "~%Which directory do you use?~%Please type number >> ")
+	     (nth (prompt-for:prompt-for
+		    `(mod ,(length directories))
+		    "~%Which directory do you use?~%Please type number >> ")
 		  directories)))))
 
 (defun asd-generator(system-name)
