@@ -75,6 +75,7 @@
   (uiop:with-output-file(*standard-output* test-asd-path :if-exists :supersede)
     (%generate-test-asd system forms)))
 
+;; Splitted for easy debug/test.
 (defun %generate-test-asd(system forms)
   (labels((COMPONENT(form)
 	    `(:file ,(string-downcase(second form))))
