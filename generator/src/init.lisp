@@ -1,11 +1,13 @@
 (in-package :jingoh.generator)
 
 (defmethod generate((dispatcher (eql 'init))&key system pathname)
-  (let*((system-name(asdf:coerce-name system))
-	(*default-pathname-defaults*(uiop:subpathname (or (and pathname
-							       (uiop:ensure-directory-pathname pathname))
-							  (local-project-directory))
-						      (uiop:ensure-directory-pathname system-name))))
+  (let*((system-name
+	  (asdf:coerce-name system))
+	(*default-pathname-defaults*
+	  (uiop:subpathname (or (and pathname
+				     (uiop:ensure-directory-pathname pathname))
+				(local-project-directory))
+			    (uiop:ensure-directory-pathname system-name))))
     (flet((output-to(path thunk)
 	    (uiop:with-output-file(*standard-output*(ensure-directories-exist path)
 				    :if-exists :supersede)
@@ -18,8 +20,9 @@
 		 (asd-generator system-name))
       (output-to (path-of "README" "md")
 		 (readme-generator system-name))
-      (output-to (let((*default-pathname-defaults*(uiop:subpathname *default-pathname-defaults*
-								    "src/")))
+      (output-to (let((*default-pathname-defaults*
+			(uiop:subpathname *default-pathname-defaults*
+					  "src/")))
 		   (path-of system-name "lisp"))
 		 (cl-source-file-generator system-name)))
     (ql:register-local-projects)
