@@ -75,7 +75,8 @@
 			    (merge-pathnames "spec/"
 					     (asdf:system-source-directory asdf::c))))
 		      (multiple-value-prog1(call-next-method)
-			(mapc (find-symbol "IMPORTER" "JINGOH.DOCUMENTIZER")
+			(mapc (find-symbol (string :importer)
+					   :jingoh.documentizer)
 			      asdf::forms))))))))))
 
 (defun spec-directory(system)
