@@ -5,10 +5,10 @@
 		    "spec/"))
 
 (defun test-asd-path(system)
-  (make-pathname :name (test-name (asdf:coerce-name system))
+  (make-pathname :name (test-name system)
 		 :type "asd"
 		 :defaults *default-pathname-defaults*))
 
-(defun test-name(name)
-  (concatenate 'string name ".test"))
+(defun test-name(system)
+  (concatenate 'string (asdf:coerce-name system) ".test"))
 

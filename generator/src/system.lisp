@@ -89,9 +89,7 @@
       (format t "; vim: ft=lisp et~%~
 	      (in-package :asdf)~%~
 	      ~(~S~)"
-	      `(asdf:defsystem ,(intern (format nil "~:@(~A~).TEST"
-						(asdf:coerce-name system))
-					:keyword)
+	      `(asdf:defsystem ,(Test-name system)
 			       :version "0.0.0"
 			       :depends-on (:jingoh ,(asdf:coerce-name system))
 			       :components ,(mapcar #'COMPONENT forms)
