@@ -1,25 +1,24 @@
 (in-package :jingoh.generator)
 
 (defmethod generate ((system asdf:system) &key append)
-  (let(forms)
-    (labels((LOAD-DEPENDENCIES(system)
-	      (mapc #'asdf:load-system(asdf:system-depends-on system)))
-	    (HOOK(expander form env)
-	      (when(DEFPACKAGEP form)
+  (let*((forms)
+	(*macroexpand-hook*
+	  (let((outer-hook
+		 *macroexpand-hook*))
+	    (lambda(expander form env)
+	      (when(typep form '(cons (eql defpackage)*))
 		(push form forms))
-	      (funcall expander form env))
-	    (DEFPACKAGEP(form)
-	      (typep form '(CONS(EQL DEFPACKAGE)T)))
-	    )
-      (LOAD-DEPENDENCIES system)
-      (let((*macroexpand-hook* #'HOOK))
-	(asdf:load-system system :force t))
-      (let*((*default-pathname-defaults*(spec-directory system))
-	    (test-asd-path(test-asd-path system)))
-	(add-method-extension system test-asd-path)
-	(generate-asd system forms test-asd-path)
-	(dolist(form forms)
-	  (generate form :append append)))))
+	      (funcall outer-hook expander form env))))
+	(*default-pathname-defaults*
+	  (spec-directory system))
+	(test-asd-path
+	  (test-asd-path system)))
+    (mapc #'asdf:load-system(asdf:system-depends-on system))
+    (asdf:load-system system :force t)
+    (add-method-extension system test-asd-path)
+    (generate-asd system forms test-asd-path)
+    (dolist(form forms)
+      (generate form :append append)))
   #+quicklisp
   (ql:register-local-projects))
 
