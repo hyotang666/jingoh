@@ -56,7 +56,8 @@
 (add-new-option-key :as)
 (add-new-option-key :doc-type)
 
-(defmacro common-requirements-about((&rest subject*) &rest option* &key(as (error "Keyword parameter :AS is required.")))
+(defmacro common-requirements-about((&rest subject*) &rest option* &key(as (error "Keyword parameter :AS is required."))
+						     &allow-other-keys)
   (check-type as symbol)
   (assert (every #'symbolp subject*))
   `(EVAL-WHEN(:LOAD-TOPLEVEL :COMPILE-TOPLEVEL :EXECUTE)
