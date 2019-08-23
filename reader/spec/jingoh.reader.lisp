@@ -3,7 +3,7 @@
 (in-package :jingoh.reader.spec)
 (setup :jingoh.reader)
 
-(requirements-about ENABLE)
+(requirements-about ENABLE :doc-type function)
 
 ;;;; Description:
 ; Set dispatch macro wich specified character to `*readtable*`.
@@ -46,7 +46,7 @@
 :signals MACRO-CHAR-CONFLICTION
 ,:with-restarts REPLACE
 
-(requirements-about REPLACE-MACRO-CHARACTER)
+(requirements-about REPLACE-MACRO-CHARACTER :doc-type function)
 
 ;;;; Description:
 ; Short hand for CL:SET-DISPATCH-MACRO-CHARACTER.
@@ -71,7 +71,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about |#?reader|)
+(requirements-about |#?reader| :doc-type function)
 
 ;;;; Description:
 ; Dismatch macro function for making DEFSPEC form.
@@ -105,7 +105,7 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about *READ-VERBOSE*)
+(requirements-about *READ-VERBOSE* :doc-type variable)
 
 ;;;; Description:
 ; Controls verbosity of |\#?reader|
@@ -133,7 +133,7 @@
 
 ;;;; Notes:
 
-(requirements-about *READ-PRINT*)
+(requirements-about *READ-PRINT* :doc-type variable)
 
 ;;;; Control verbosity of |\#reader|.
 #?(let((*readtable*(copy-readtable nil))
@@ -168,7 +168,7 @@
 
 ;;;; Notes:
 
-(requirements-about MACRO-CHAR-CONFLICTION)
+(requirements-about MACRO-CHAR-CONFLICTION :doc-type type)
 
 ;;;; Description:
 ; Signaled when dispatch macro character is conflicted.
