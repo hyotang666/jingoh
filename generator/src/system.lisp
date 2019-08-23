@@ -16,7 +16,7 @@
     (mapc #'asdf:load-system(asdf:system-depends-on system))
     (asdf:load-system system :force t)
     (add-method-extension system test-asd-path)
-    (generate-asd system forms test-asd-path)
+    (generate-test-asd system forms test-asd-path)
     (dolist(form forms)
       (generate form :append append)))
   #+quicklisp
@@ -70,12 +70,12 @@
 					   :jingoh.documentizer)
 			      asdf::forms))))))))))
 
-(defun generate-asd(system forms test-asd-path)
+(defun generate-test-asd(system forms test-asd-path)
   (ensure-directories-exist *default-pathname-defaults*)
   (uiop:with-output-file(*standard-output* test-asd-path :if-exists :supersede)
-    (%generate-asd system forms)))
+    (%generate-test-asd system forms)))
 
-(defun %generate-asd(system forms)
+(defun %generate-test-asd(system forms)
   (labels((COMPONENT(form)
 	    `(:file ,(string-downcase(second form))))
 	  (EXAMINE-FORM(form)
