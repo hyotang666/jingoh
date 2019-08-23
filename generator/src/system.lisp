@@ -64,21 +64,19 @@
 		  (defmethod asdf:operate :around ((asdf::o asdf:load-op)
 						   (asdf::c (eql (asdf:find-system ,name)))
 						   &key)
-		    (if(not(find-package "JINGOH.DOCUMENTIZER"))
-		      (call-next-method)
-		      (let*((asdf::forms nil)
-			    (*macroexpand-hook*
-			      (let((asdf::outer-hook *macroexpand-hook*))
-				(lambda(asdf::expander asdf::form asdf::env)
-				  (when(typep asdf::form '(cons (eql defpackage)*))
-				    (push asdf::form asdf::forms))
-				  (funcall asdf::outer-hook asdf::expander asdf::form asdf::env))))
-			    (*default-pathname-defaults*
-			      (merge-pathnames "spec/"
-					       (asdf:system-source-directory asdf::c))))
-			(multiple-value-prog1(call-next-method)
-			  (mapc (find-symbol "IMPORTER" "JINGOH.DOCUMENTIZER")
-				asdf::forms)))))))))))
+		    (let*((asdf::forms nil)
+			  (*macroexpand-hook*
+			    (let((asdf::outer-hook *macroexpand-hook*))
+			      (lambda(asdf::expander asdf::form asdf::env)
+				(when(typep asdf::form '(cons (eql defpackage)*))
+				  (push asdf::form asdf::forms))
+				(funcall asdf::outer-hook asdf::expander asdf::form asdf::env))))
+			  (*default-pathname-defaults*
+			    (merge-pathnames "spec/"
+					     (asdf:system-source-directory asdf::c))))
+		      (multiple-value-prog1(call-next-method)
+			(mapc (find-symbol "IMPORTER" "JINGOH.DOCUMENTIZER")
+			      asdf::forms))))))))))
 
 (defun spec-directory(system)
   (uiop:subpathname (asdf:system-source-directory (asdf:find-system system))
