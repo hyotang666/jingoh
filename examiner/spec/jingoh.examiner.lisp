@@ -6,7 +6,8 @@
 (requirements-about EXAMINE
 		    :around
 		    (let(*break-on-finish*)
-		      (call-body)))
+		      (call-body))
+		    :doc-type function)
 
 ;;;; Description:
 ; Examine requirements then print result.
@@ -94,7 +95,7 @@
     (examine *org* :subject 'no-such-subject))
 :signals missing-subject
 
-(requirements-about *VERBOSE*)
+(requirements-about *VERBOSE* :doc-type variable)
 
 ;;;; Description:
 ; Controls examine's verbosity.
@@ -113,7 +114,8 @@
 (requirements-about *ISSUES*
 		    :around
 		    (let(*break-on-finish*)
-		      (call-body)))
+		      (call-body))
+		    :doc-type variable)
 
 ;;;; Description:
 ; Previous issues.
@@ -140,7 +142,7 @@
 ;;;; Notes:
 ; Debug use.
 
-(requirements-about *ON-FAILS*)
+(requirements-about *ON-FAILS* :doc-type variable)
 
 ;;;; Description:
 ; Specify EXAMINE's behavior.
