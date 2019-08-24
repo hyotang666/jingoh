@@ -6,6 +6,10 @@
 (in-package :jingoh.generator)
 
 (defgeneric generate(arg &key))
-(declaim (ftype (function (asdf:system)
+
+(deftype system-designator()
+  '(or keyword string asdf:system))
+
+(declaim (ftype (function (system-designator)
 			  (values null &optional))
 		add-method-extension))
