@@ -27,7 +27,7 @@
     (examine *org* :subject 0))
 :signals missing-subject
 
-; *verbose* := (mod 3) specify verbosity of print.
+; *verbose* := (mod 4) specify verbosity of print.
 ; when specified 0, only summary printed.
 #?(let((*org*(make-org))
        *issues*)
@@ -60,6 +60,16 @@
     (examine *org*))
 :outputs #.(format nil "~%NIL~A~%~A NIL~%"
 		   (cl-ansi-text:green ".")
+		   (cl-ansi-text:green "Pass"))
+
+; When specified 3, each test is printed.
+#?(let((*org*(make-org))
+       *issues*)
+    (eval '(defspec(+) => 0))
+    (examine *org* :verbose 3))
+:outputs #.(format nil "~2%NIL~%~A ~S~%~A NIL~%"
+		   (cl-ansi-text:green "Pass")
+		   '((+) => 0)
 		   (cl-ansi-text:green "Pass"))
 
 ; vivid := boolean, control print colorization.
