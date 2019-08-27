@@ -173,7 +173,7 @@
 	   (FLET((HOOK(CONDITION FUNCTION)
 		   (DECLARE(IGNORE FUNCTION))
 		   ,@(when test
-		       `((UNLESS (,(encallable test))
+		       `((UNLESS (,(encallable test)CONDITION)
 			   ,(the-push-instance-form result 'TEST-ISSUE `',test-form T NIL (getf parameters :position) :test `',test))))
 		   (IF(TYPEP CONDITION ',expected)
 		     ,(let((restarts(getf parameters :with-restarts)))
