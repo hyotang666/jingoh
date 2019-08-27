@@ -32,6 +32,7 @@ option-key := [ :test
               | :ignore-signals
               | :with-restarts
               | :stream
+              | :timesout
               | :before
               | :after
               | :around ]
@@ -250,21 +251,25 @@ Like `EVAL-WHEN` option.
 #? *foo* => 3 ; <--- compiler claims "*FOO* is not defined".
 ```
 
+#### :TIMEOUT
+Specify timeout second.
+The default is 1.
+
 ### Available keyword & option combinations
 
 | key			    | acceptable options |
 | -----------------------   | ----------- |
-| =>			    | :ignore-signals :lazy :stream :test |
-| :values		    | :ignore-signals :lazy :stream :test |
-| :equivalents		    | :ignore-signals :lazy :stream :test |
-| :outputs 		    | :ignore-signals :lazy :stream :test |
-| :be-the		    | :ignore-signals :lazy :stream |
-| :satisfies 		    | :ignore-signals :lazy :stream |
-| :multiple-value-satisfies | :ignore-signals :lazy :stream |
-| :output-satisfies         | :ignore-signals :lazy :stream |
-| :signals		    | :ignore-signals :lazy :with-restarts |
-| :invokes-debugger	    | :ignore-signals :lazy :with-restarts :test |
-| :expanded-to		    | :ignore-signals :stream :test |
+| =>			    | :ignore-signals :lazy :stream :test :timeout |
+| :values		    | :ignore-signals :lazy :stream :test :timeout |
+| :equivalents		    | :ignore-signals :lazy :stream :test :timeout |
+| :outputs 		    | :ignore-signals :lazy :stream :test :timeout |
+| :be-the		    | :ignore-signals :lazy :stream :timeout |
+| :satisfies 		    | :ignore-signals :lazy :stream :timeout |
+| :multiple-value-satisfies | :ignore-signals :lazy :stream :timeout |
+| :output-satisfies         | :ignore-signals :lazy :stream :timeout |
+| :signals		    | :ignore-signals :lazy :with-restarts :timeout |
+| :invokes-debugger	    | :ignore-signals :lazy :with-restarts :test :timeout |
+| :expanded-to		    | :ignore-signals :stream :test :timeout |
 
 ## expert
 ### IMPLEMENTATION-DEPENDENT
