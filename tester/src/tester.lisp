@@ -262,15 +262,24 @@
 	   (FLET((HOOK(CONDITION FUNCTION)
 		   (DECLARE(IGNORE FUNCTION))
 		   ,@(when test
-		       `((UNLESS (,(encallable test)CONDITION)
-			   ,(the-push-instance-form result
-						    'TEST-ISSUE
-						    `',test-form
-						    T
-						    NIL
-						    (getf parameters :position)
-						    :test
-						    `',test))))
+		       `((HANDLER-CASE(UNLESS (,(encallable test)CONDITION)
+					      ,(the-push-instance-form
+						 result
+						 'TEST-ISSUE
+						 `',test-form
+						 T
+						 NIL
+						 (getf parameters :position)
+						 :test
+						 `',test))
+			   (UNSATISFIED(CONDITION)
+			     ,(the-push-instance-form result
+						      'UNSATISFIED-CLAUSE
+						      `(TEST-FORM CONDITION)
+						      T
+						      NIL
+						      (getf parameters :position)
+						      :ARGS `(ARGS CONDITION))))))
 		   (IF(TYPEP CONDITION ',expected)
 		     ,(let((restarts
 			     (getf parameters :with-restarts)))
