@@ -197,13 +197,16 @@ In such case, you need to trick like below.
 ```
 
 *NOTE!* This option's meanings is different when it is used with `:INVOKES-DEBUGGER`.
-In such case, the function must zero arguments function, and testing environment (e.g. special symbols.) when debugger is invoked.
+In such case, the function must one argument function as (function(condition)boolean).
+You can test environment (e.g. special symbols.) in it.
 
 ```lisp
 #? (let((*package*(find-package :cl-user)))
      (error "hoge"))
 :invokes-debugger error
-,:test (lambda()(eq *package* (find-package :cl-user)))
+,:test (lambda(c)
+         (declare(ignore c))
+         (eq *package* (find-package :cl-user)))
 ```
 #### :STREAM
 The default is `*STANDARD-OUTPUT*`.
