@@ -1,7 +1,8 @@
 (in-package :jingoh.tester)
 
 (defun ignore-signals(type params)
-  (let((condition(getf params :ignore-signals)))
+  (let((condition
+	 (getf params :ignore-signals)))
     (or (eq type condition)
 	(eq T condition))))
 
@@ -13,30 +14,34 @@
 
 (defun encallable(form &optional not-first-p)
   (typecase form
-    (SYMBOL(if not-first-p
-	     `(FUNCTION ,form)
-	     form))
-    (FUNCTION(if not-first-p
-	       form
-	       (or (millet:function-name form)
-		   (function-lambda-expression form)
-		   `(LAMBDA(&REST ARGS)
-		      (APPLY ,form ARGS)))))
-    ((CONS (EQL LAMBDA) T)form)
+    (SYMBOL
+      (if not-first-p
+	`(FUNCTION ,form)
+	form))
+    (FUNCTION
+      (if not-first-p
+	form
+	(or (millet:function-name form)
+	    (function-lambda-expression form)
+	    `(LAMBDA(&REST ARGS)
+	       (APPLY ,form ARGS)))))
+    ((CONS (EQL LAMBDA) T)
+     form)
     ((OR (CONS (EQL FUNCTION)(CONS SYMBOL NULL))
 	 (CONS (EQL QUOTE)(CONS SYMBOL NULL)))
      (if not-first-p
        `(function ,(cadr form))
        (second form)))
-    (T (error'syntax-error
-	 :format-control "?: ~S is not function name"
-	 :format-arguments (list form)))))
+    (T (error 'syntax-error
+	      :format-control "?: ~S is not function name"
+	      :format-arguments (list form)))))
 
 (define-condition syntax-error(simple-error program-error)())
 
 (defun reserved-keywords(gf)
-  (loop :for method :in (closer-mop:generic-function-methods gf)
-	:collect (closer-mop:eql-specializer-object(second(closer-mop:method-specializers method)))
+  (loop :for method :in (c2mop:generic-function-methods gf)
+	:collect (c2mop:eql-specializer-object
+		   (second(c2mop:method-specializers method)))
 	:into result
 	:finally (return (delete-duplicates result))))
 
@@ -72,18 +77,22 @@
 					 (jingoh.org:list-all-option-keys)))))
 			(jingoh.org:find-option-key key))))
 	  (MAKE-BODY(test-form)
-	    (SET-AROUND (let((after(getf parameters :after)))
+	    (SET-AROUND (let((after
+			       (getf parameters :after)))
 			  (if after
 			    `(UNWIND-PROTECT ,(MAKE-PRIMARY test-form)
 					     ,after)
 			    (MAKE-PRIMARY test-form)))))
 	  (MAKE-PRIMARY(test-form)
-	    (let((before(getf parameters :before))
-		 (ignore-output-p(null(getf parameters :stream '#:not-specified)))
+	    (let((before
+		   (getf parameters :before))
+		 (ignore-output-p
+		   (null(getf parameters :stream '#:not-specified)))
 		 (time(getf parameters :timeout 1)))
 	      (if before
 		(if ignore-output-p
-		  `(LET((*STANDARD-OUTPUT*(MAKE-BROADCAST-STREAM)))
+		  `(LET((*STANDARD-OUTPUT*
+			  (MAKE-BROADCAST-STREAM)))
 		     (WITH-INTEGRATED-OUTPUT-STREAM(*STANDARD-OUTPUT*)
 		       ,before
 		       (BT:WITH-TIMEOUT(,time)
@@ -92,25 +101,30 @@
 			  (BT:WITH-TIMEOUT(,time)
 			    ,test-form)))
 		(if ignore-output-p
-		  `(LET((*STANDARD-OUTPUT*(MAKE-BROADCAST-STREAM)))
+		  `(LET((*STANDARD-OUTPUT*
+			  (MAKE-BROADCAST-STREAM)))
 		     (WITH-INTEGRATED-OUTPUT-STREAM(*STANDARD-OUTPUT*)
 		       (BT:WITH-TIMEOUT(,time)
 			 ,test-form)))
 		  `(BT:WITH-TIMEOUT(,time)
 		     ,test-form)))))
 	  (SET-AROUND(body)
-	    (let((around(getf parameters :around)))
+	    (let((around
+		   (getf parameters :around)))
 	      (if around
 		(subst body '(CALL-BODY) around :test #'equal)
 		body)))
 	  )
     (CHECK)
     (case(getf parameters :lazy :does-not-exist)
-      (:does-not-exist (MAKE-BODY test-form))
-      ((NIL)`(UIOP:CALL-WITH-MUFFLED-CONDITIONS
-	       (LAMBDA(),(make-body test-form))
-	       UIOP:*USUAL-UNINTERESTING-CONDITIONS*))
-      (otherwise (make-body `(EVAL(MACROEXPAND ',test-form)))))))
+      (:does-not-exist
+	(MAKE-BODY test-form))
+      ((NIL)
+       `(UIOP:CALL-WITH-MUFFLED-CONDITIONS
+	  (LAMBDA (),(make-body test-form))
+	  UIOP:*USUAL-UNINTERESTING-CONDITIONS*))
+      (otherwise
+	(make-body `(EVAL(MACROEXPAND ',test-form)))))))
 
 (defun sexp=(sexp1 sexp2)
   (let(env)
@@ -124,10 +138,12 @@
 		(symbol (and (symbolp sexp2)
 			     (if(symbol-package sexp1)
 			       (eq sexp1 sexp2)
-			       (let((pair(assoc sexp1 env :test #'eq)))
+			       (let((pair
+				      (assoc sexp1 env :test #'eq)))
 				 (if pair
 				   (eq sexp2 (cdr pair))
-				   (let((pair(rassoc sexp2 env :test #'eq)))
+				   (let((pair
+					  (rassoc sexp2 env :test #'eq)))
 				     (unless pair
 				       (push (cons sexp1 sexp2) env)
 				       T)))))))

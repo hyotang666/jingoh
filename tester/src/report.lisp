@@ -27,18 +27,23 @@
 (defmethod print-object((issue issue)stream)
   (if (null *print-vivid*)
     (call-next-method)
-    (let((string (with-output-to-string(stream)
-		   (let((i(copy-structure issue)))
-		     (when(should-print-vivid-p i)
-		       (setf (issue-actual i)
-			     (mismatch-sexp (issue-actual issue)
-					    (issue-expected issue))))
-		     (call-next-method i stream)))))
+    (let((string
+	   (with-output-to-string(stream)
+	     (let((i(copy-structure issue)))
+	       (when(should-print-vivid-p i)
+		 (setf (issue-actual i)
+		       (mismatch-sexp (issue-actual issue)
+				      (issue-expected issue))))
+	       (call-next-method i stream)))))
       (princ(regex-replace issue string)stream))))
 
 (defun should-print-vivid-p(issue)
-  (and (not (typep issue '(or condition-issue unexpected-success unexpected-output missing-restarts)))
-       (or (typep (issue-expected issue) '(or sequence pathname array))
+  (and (not (typep issue '(or condition-issue
+			      unexpected-success
+			      unexpected-output
+			      missing-restarts)))
+       (or (typep (issue-expected issue)
+		  '(or sequence pathname array))
 	   (typep (class-of(issue-expected issue))
 		  'structure-class))))
 
@@ -77,20 +82,25 @@
 
 (defmethod print-object((object diff)*standard-output*)
   (if *print-vivid*
-    (princ (let((string(prin1-to-string(diff-object object)))
-		(*print-circle* nil)) ; <--- sbcl needs.
+    (princ (let((string
+		  (prin1-to-string(diff-object object)))
+		(*print-circle*
+		  nil)) ; <--- sbcl needs.
 	     (funcall *color-hook* string)))
     (prin1(diff-object object))))
 
 (defmethod print-object((object string-diff)*standard-output*)
   (if (null *print-vivid*)
     (prin1(diff-object object))
-    (let*((pos(mismatch (string-diff-origin object)
-			(string-diff-object object)))
-	  (expected-in-bounds-p(array-in-bounds-p (string-diff-origin object)
-						  pos))
-	  (actual-in-bounds-p(array-in-bounds-p (string-diff-object object)
-						pos)))
+    (let*((pos
+	    (mismatch (string-diff-origin object)
+		      (string-diff-object object)))
+	  (expected-in-bounds-p
+	    (array-in-bounds-p (string-diff-origin object)
+			       pos))
+	  (actual-in-bounds-p
+	    (array-in-bounds-p (string-diff-object object)
+			       pos)))
       (if expected-in-bounds-p
 	(if actual-in-bounds-p
 	  ;; simply different. e.g. "foobar" "foohoge"
@@ -112,8 +122,10 @@
 	  (prin1(funcall *color-hook* (string-diff-object object))))))))
 
 (defmethod print-object((object pathname-diff)*standard-output*)
-  (let((diff(pathname-diff-object object))
-       (origin(pathname-diff-origin object)))
+  (let((diff
+	 (pathname-diff-object object))
+       (origin
+	 (pathname-diff-origin object)))
     (labels((DIFF?(a b &key (test #'eql))
 	      (if(funcall test a b)
 		a
