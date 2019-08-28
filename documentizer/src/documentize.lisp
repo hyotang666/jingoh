@@ -85,13 +85,10 @@
 		,(princ-to-string section))))))
 
 (defun import(system)
-  (mapc #'%import (meta-datas<=system (asdf:find-system system))))
-
-(defun %import(meta-data)
-  (dolist(s (meta-data-sections meta-data))
-    (dolist(name (Section-names s))
-      (when(Section-doc-type s)
+  (dolist(m (meta-datas<=system (asdf:find-system system)))
+    (dolist(s (meta-data-sections m))
+      (dolist(name (Section-names s))
 	(setf (documentation (find-symbol (symbol-name name)
-					  (meta-data-name meta-data))
+					  (meta-data-name m))
 			     (Section-doc-type s))
 	      (princ-to-string s))))))
