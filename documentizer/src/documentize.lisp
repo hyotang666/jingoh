@@ -38,7 +38,22 @@
 	(mapcar #'Make-meta-data meta-datas)))))
 
 (defun importer(form)
-  (%import (Make-meta-data form)))
+  (when(probe-file(make-pathname :name (string-downcase(string(second form)))
+				 :type "lisp"
+				 :defaults *default-pathname-defaults*))
+    (let((meta-data
+	   (Make-meta-data form)))
+      (loop :for s :in (meta-data-sections meta-data)
+	    :append
+	    (loop :for name :in (Section-names s)
+		  :when (Section-doc-type s)
+		  :collect
+		  `(defmethod documentation
+		     ((s (eql ',(find-symbol (symbol-name name)
+					     (meta-data-name meta-data))))
+		      (type (eql ',(Section-doc-type s))))
+		     (declare(ignore s))
+		     ,(princ-to-string s)))))))
 
 (defun lisp(system)
   (let*((system
