@@ -62,20 +62,27 @@
 		  (defmethod asdf:operate :around ((asdf::o asdf:load-op)
 						   (asdf::c (eql (asdf:find-system ,name)))
 						   &key)
-		    (let*((asdf::forms nil)
+		    (let*((asdf::seen nil)
+			  (*default-pathname-defaults*
+			    (merge-pathnames "spec/"
+					     (asdf:system-source-directory asdf::c)))
 			  (*macroexpand-hook*
 			    (let((asdf::outer-hook *macroexpand-hook*))
 			      (lambda(asdf::expander asdf::form asdf::env)
-				(when(typep asdf::form '(cons (eql defpackage)*))
-				  (push asdf::form asdf::forms))
-				(funcall asdf::outer-hook asdf::expander asdf::form asdf::env))))
-			  (*default-pathname-defaults*
-			    (merge-pathnames "spec/"
-					     (asdf:system-source-directory asdf::c))))
-		      (multiple-value-prog1(call-next-method)
-			(mapc (find-symbol (string :importer)
-					   :jingoh.documentizer)
-			      asdf::forms))))))))))
+				(if(not(typep asdf::form '(cons (eql defpackage)*)))
+				  (funcall asdf::outer-hook asdf::expander
+					   asdf::form asdf::env)
+				  (if(find (cadr asdf::form)asdf::seen
+					   :test #'string=)
+				    (funcall asdf::outer-hook asdf::expander
+					     asdf::form asdf::env)
+				    (progn (push (cadr asdf::form) asdf::seen)
+					   `(progn ,asdf::form
+						   ,@(uiop:symbol-call
+						       :JINGOH.DOCUMENTIZER
+						       :IMPORTER
+						       asdf::form)))))))))
+		      (call-next-method)))))))))
 
 (defun generate-test-asd(system forms test-asd-path)
   (ensure-directories-exist *default-pathname-defaults*)
