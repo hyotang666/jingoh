@@ -2,7 +2,7 @@
 (in-package :asdf)
 
 (defsystem :jingoh.org
-  :version "0.1.4"
+  :version "0.1.5"
   :description "Jingoh's background database system"
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "CONCEPTS.md"))
@@ -30,19 +30,22 @@
   (when system
     (load-system system)
     (defmethod operate :around((o load-op)(c (eql(find-system "jingoh.org")))&key)
-      (let*((forms nil)
+      (let*((seen nil)
+            (*default-pathname-defaults*
+              (merge-pathnames "spec/"
+                               (system-source-directory c)))
             (*macroexpand-hook*
               (let((outer-hook *macroexpand-hook*))
                 (lambda(expander form env)
-                  (when(typep form '(cons (eql defpackage)*))
-                    (push form forms))
-                  (funcall outer-hook expander form env))))
-            (*default-pathname-defaults*
-              (merge-pathnames "spec/"
-                               (system-source-directory c))))
-        (multiple-value-prog1(call-next-method)
-          (mapc (find-symbol "IMPORTER" "JINGOH.DOCUMENTIZER")
-                forms))))))
+                  (if(not(typep form '(cons (eql defpackage)*)))
+                    (funcall outer-hook expander form env)
+                    (if(find (cadr form) seen :test #'string=)
+                      (funcall outer-hook expander form env)
+                      (progn (push (cadr form) seen)
+                             `(progn ,form ,@(uiop:symbol-call "JINGOH.DOCUMENTIZER"
+                                                               "IMPORTER"
+                                                               form)))))))))
+        (call-next-method)))))
 
 (defmethod operate :around ((o test-op)(c (eql (find-system "jingoh.org")))
                             &key ((:compile-print *compile-print*))
