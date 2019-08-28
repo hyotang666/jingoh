@@ -24,7 +24,17 @@
 					 ,specifications
 					 :KEY #'SPEC-SUBJECT))))))))
 
-(defmacro do-requirements((var &optional(subject-designator T)(org '*org*) return)&body body)
+(defmacro do-requirements(&whole whole
+				 (var &optional(subject-designator T)
+				      (org '*org*)
+				      return-form)
+				 &body body)
+  (check-bnf:check-bnf(:whole whole)
+    (var (or symbol subject-spec))
+    (subject-spec (symbol symbol))
+    (subject-designator symbol)
+    (org check-bnf:expression)
+    (return-form check-bnf:expression))
   (setf var (uiop:ensure-list var))
   (let((gname(gensym "NAME")))
     `(MACROLET((?!(form)
@@ -36,9 +46,9 @@
 		    ,FORM)))
        (LET((,gname ,subject-designator))
 	 (CASE,gname
-	   ((NIL),(the-nil-subject-procedure org var body return))
-	   ((T),(the-subject-procedure var body `(SETF ,gname (ORG-CURRENT-SUBJECTS *ORG*)) org return))
-	   (OTHERWISE,(the-subject-procedure var body gname org return)))))))
+	   ((NIL),(the-nil-subject-procedure org var body return-form))
+	   ((T),(the-subject-procedure var body `(SETF ,gname (ORG-CURRENT-SUBJECTS *ORG*)) org return-form))
+	   (OTHERWISE,(the-subject-procedure var body gname org return-form)))))))
 
 (define-compiler-macro do-requirements(&whole whole (var &optional(subject-designator T)(org '*org*) return)&body body)
   (setf var (uiop:ensure-list var))
