@@ -135,27 +135,30 @@
 		  (let((args(jingoh.args keys)))
 		    (declare(special args))
 		    (call-next-method)))))
-      (equal (read)
-	     '(let((system(find-system "jingoh.documentizer" nil)))
-		(when system
-		  (load-system system)
-		  (defmethod operate :around ((o load-op)
-					      (c (eql (find-system "hoge")))
-					      &key)
-		    (let*((forms nil)
-			  (*macroexpand-hook*
-			    (let((outer-hook *macroexpand-hook*))
-			      (lambda(expander form env)
-				(when(typep form '(cons (eql defpackage)*))
-				  (push form forms))
-				(funcall outer-hook expander form env))))
-			  (*default-pathname-defaults*
-			    (merge-pathnames "spec/"
-					     (system-source-directory c))))
-		      (multiple-value-prog1(call-next-method)
-			(mapc (find-symbol (string :importer)
-					   :jingoh.documentizer)
-			      forms)))))))
+      (equalp (read)
+	      '(let((system(find-system "jingoh.documentizer" nil)))
+		 (when system
+		   (load-system system)
+		   (defmethod operate :around ((o load-op)
+					       (c (eql (find-system "hoge")))
+					       &key)
+		     (let*((seen nil)
+			   (*default-pathname-defaults*
+			     (merge-pathnames "spec/"
+					      (system-source-directory c)))
+			   (*macroexpand-hook*
+			     (let((outer-hook *macroexpand-hook*))
+			       (lambda(expander form env)
+				 (if(not(typep form '(cons (eql defpackage)*)))
+				   (funcall outer-hook expander form env)
+				   (if(find(cadr form)seen :test #'string=)
+				     (funcall outer-hook expander form env)
+				     (progn (push (cadr form) seen)
+					    `(progn ,form
+						    ,@(symbol-call :jingoh.documentizer
+								   :importer
+								   form)))))))))
+		       (call-next-method))))))
       (null (read nil nil)))))
 
 #+syntax
