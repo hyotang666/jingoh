@@ -2,7 +2,7 @@
 (in-package :asdf)
 (defsystem :jingoh.tester
   :description "Jingoh's requirement's tester."
-  :version "0.1.2"
+  :version "0.1.3"
   :long-description #.(uiop:read-file-string (merge-pathnames *load-pathname*
                                                               "CONCEPTS.md"))
   :in-order-to((test-op(test-op "jingoh.tester.test")))
@@ -17,6 +17,7 @@
                "uiop" ; utilities.
                "bordeaux-threads"       ; multi threading especially for timeout.
                "resignal-bind" ; condition capturing for better error message.
+               "check-bnf" ; Macro arguments checker.
                )
   :pathname "src/"
   :components ((:file "package")
