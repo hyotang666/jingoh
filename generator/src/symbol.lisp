@@ -14,7 +14,7 @@
 	  (path(Test-asd-path system)))
       (macrolet((expand(existsp)
 		  `(PROGN ,@(unless existsp
-			      `((GENERATE-ASD SYSTEM FORMS PATH)))
+			      `((GENERATE-TEST-ASD SYSTEM FORMS PATH)))
 			  (DOLIST(FORM FORMS)
 			    (GENERATE FORM :APPEND T)))))
 	(if(probe-file path)

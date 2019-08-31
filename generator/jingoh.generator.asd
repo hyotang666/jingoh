@@ -20,8 +20,9 @@
                (:file "symbol-generate" :depends-on ("package"))
 
                (:file "system" :depends-on ("util"))
-               (:file "symbol" :depends-on ("system" "util"))
                (:file "defpackage-form" :depends-on ("symbol-generate"))
+
+               (:file "symbol" :depends-on ("system" "util"))
                ))
 
 ;;; The form below is documentation importer.
