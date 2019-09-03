@@ -137,7 +137,8 @@
 		    (call-next-method)))))
       (equalp (read)
 	      '(let((system(find-system "jingoh.documentizer" nil)))
-		 (when system
+		 (when(and system
+			   (not(featurep :clisp)))
 		   (load-system system)
 		   (defmethod operate :around ((o load-op)
 					       (c (eql (find-system "hoge")))
