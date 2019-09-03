@@ -1,6 +1,6 @@
 (defpackage :jingoh.generator.spec (:use :cl :jingoh :jingoh.generator)
   (:import-from :jingoh.generator
-		#:%generate-asd
+		#:%generate-test-asd
 		#:%add-method-extension
 		#:generate-header
 		#:symbol-generate)
@@ -65,7 +65,7 @@
 
 ;;;; Description:
 ; print asd file contents for spec file.
-#?(%generate-asd :demo '((defpackage :hoge)))
+#?(%generate-test-asd :demo '((defpackage :hoge)))
 :output-satisfies
 (lambda($string)
   (with-input-from-string(*standard-input* $string)
@@ -86,14 +86,14 @@
 ;;;; Arguments and Values:
 
 ; system := asdf:system-designator otherwise error.
-#?(%generate-asd 0 ())
+#?(%generate-test-asd 0 ())
 :signals error
 
 ; forms := list which includes defpackage form. Otherwise unspecified.
-#?(%generate-asd :hoge 0) => unspecified
+#?(%generate-test-asd :hoge 0) => unspecified
 
 ; result := NIL
-#?(%generate-asd :hoge ()) => NIL
+#?(%generate-test-asd :hoge ()) => NIL
 ,:stream NIL
 
 ;;;; Affected By:
@@ -103,7 +103,7 @@
 ; print to `*standard-output*`
 
 ;;;; Notes:
-; %generate-asd can work even if specified system does not exist.
+; %generate-test-asd can work even if specified system does not exist.
 
 ;;;; Exceptional-Situations:
 
