@@ -40,9 +40,12 @@
 	  ;;;; Notes:~2%"
 	  symbol
 	  (comentize (documentation symbol 'variable))
-	  (if(boundp symbol)
-	    (type-of(symbol-value symbol))
-	    :unbound)
+	  (cond
+	    ((cdr(assoc 'type (nth-value 2(cltl2:variable-information symbol)))))
+	    ((boundp symbol)
+	     (type-of(symbol-value symbol)))
+	    (t
+	      :unbound))
 	  symbol
 	  (if(boundp symbol)
 	    (symbol-value symbol)
@@ -167,7 +170,7 @@
     ~@[;;;; Argument Precedence Order:~%; ~{~(~S~)~^ ~}~2%~]~
     ~@[;;;; Method signature:~%~{#+signature~S~%~}~%~]~
     ;;;; Arguments and Values:~2%~
-    ~{; ~(~A~) := ~2%~}; result := ~2%~
+    ~:{; ~(~A~) := ~@[~(~A~)~]~2%~}~
     ~{;;;; ~:(~A~):~2%~}"
     notation ; requirements-about
     (comentize(documentation symbol 'function)) ; description
@@ -182,9 +185,64 @@
     (when(eq :generic-function roll) ; Method Signature
       (specialized-lambda-lists symbol))
     ;; Arguments and Values
-    (lambda-fiddle:extract-all-lambda-vars (lambda-fiddle:flatten-lambda-list lambda-list))
+   (parse-lambda-list symbol)
     '(|affected by| side-effects notes exceptional-situations)
     )))
+
+(defun parse-lambda-list(symbol)
+  (multiple-value-bind(type _ information)(cltl2:function-information symbol)
+    (declare(ignore _))
+    (let*((lambda-list
+	    (millet:lambda-list symbol))
+	  (lambda-vars
+	    (lambda-fiddle:extract-all-lambda-vars
+	      (lambda-fiddle:flatten-lambda-list lambda-list))))
+      (if(or (eq :macro type)
+	     (null (assoc 'ftype information)))
+	(uiop:while-collecting(acc)
+	  (dolist(elt lambda-vars)
+	    (acc (list elt nil)))
+	  (acc (list "result" nil)))
+	(let*((variables
+		(mapcar (lambda(symbol)
+			  (intern (format nil "?~A"symbol)))
+			lambda-vars))
+	      (ftype
+		(cdr (assoc 'ftype information)))
+	      (environment
+		(cl-unification:unify (mapcar (lambda(elt)
+						(typecase elt
+						  (symbol elt)
+						  ((cons symbol *)
+						   (car elt))
+						  ((cons (cons keyword *) *)
+						   (cadar elt))))
+					      (sublis (mapcar #'cons lambda-vars
+							      variables)
+						      lambda-list))
+				      (second ftype))))
+	  (uiop:while-collecting(acc)
+	    (mapc (lambda(sym var)
+		    (acc (list sym
+			       (cl-unification:find-variable-value var
+								   environment
+								   nil))))
+		  lambda-vars
+		  variables)
+	    (let((return
+		   (third ftype)))
+	      (acc (etypecase return
+		     ((or null (eql *))
+		      '("result" nil))
+		     ((cons (eql values) *)
+		      (or (loop :for return :in (cdr return)
+				:for num :upfrom 1
+				:until (eq '&optional return)
+				:collect (list (format nil "result~D" num)
+					       return))
+			  '("result" nil)))
+		     (t
+		       (list "result" return)))))))))))
 
 (defun ensure-symbol-notation(symbol)
   (if(uiop:string-suffix-p(prin1-to-string symbol)"|")

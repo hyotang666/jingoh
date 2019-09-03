@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.generator
-  :version "0.4.2"
+  :version "0.5.0"
   :in-order-to((test-op(test-op "jingoh.generator.test")))
   :depends-on (
                "millet" ; wrappter for implementation dependent utilities.
@@ -11,6 +11,8 @@
                "uiop" ; utilities.
                "named-readtables" ; to manage readtable.
                "prompt-for" ; for type safe user input.
+               "trivial-cltl2" ; wrapper for cltl2.
+               "cl-unification" ; unification.
                )
   :pathname "src"
   :components ((:file "package")
