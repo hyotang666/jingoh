@@ -72,7 +72,7 @@
     (& (uiop:string-prefix-p "; vim: ft=lisp et" $string)
        (equal '(in-package :asdf)(read))
        (equal (read)
-	      '(defsystem :demo.test
+	      '(defsystem "demo.test"
 			  :version "0.0.0"
 			  :depends-on (:jingoh "demo")
 			  :components ((:file "hoge"))
