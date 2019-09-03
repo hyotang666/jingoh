@@ -2,7 +2,7 @@
 (in-package :asdf)
 
 (defsystem :jingoh.org
-  :version "0.1.6"
+  :version "0.1.7"
   :description "Jingoh's background database system"
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "CONCEPTS.md"))
@@ -28,7 +28,8 @@
 (let((system
        (find-system "jingoh.documentizer" nil)))
   ;; Weakly depends on.
-  (when system
+  (when(and system
+            (not(featurep :clisp)))
     (load-system system)
     (defmethod operate :around((o load-op)(c (eql(find-system "jingoh.org")))&key)
       (let*((seen nil)

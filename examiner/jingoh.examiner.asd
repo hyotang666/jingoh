@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.examiner
-  :version "0.0.8"
+  :version "0.0.9"
   :description "Jingoh's printing issues feature."
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "CONCEPTS.md"))
@@ -19,7 +19,8 @@
 (let((system
        (find-system "jingoh.documentizer" nil)))
   ;; Weakly depends on.
-  (when system
+  (when(and system
+            (not(featurep :clisp)))
     (load-system system)
     (defmethod operate :around((o load-op)
                                (c (eql(find-system "jingoh.examiner")))

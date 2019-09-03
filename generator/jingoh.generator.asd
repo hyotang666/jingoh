@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.generator
-  :version "0.5.0"
+  :version "0.5.1"
   :in-order-to((test-op(test-op "jingoh.generator.test")))
   :depends-on (
                "millet" ; wrappter for implementation dependent utilities.
@@ -31,7 +31,8 @@
 (let((system
        (find-system "jingoh.documentizer" nil)))
   ;; Weakly depends on.
-  (when system
+  (when(and system
+            (not(featurep :clisp)))
     (load-system system)
     (defmethod operate :around((o load-op)(c (eql(find-system "jingoh.org")))&key)
       (let*((forms nil)

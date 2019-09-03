@@ -2,7 +2,7 @@
 (in-package :asdf)
 (defsystem :jingoh.tester
   :description "Jingoh's requirement's tester."
-  :version "0.1.3"
+  :version "0.1.4"
   :long-description #.(uiop:read-file-string (merge-pathnames *load-pathname*
                                                               "CONCEPTS.md"))
   :in-order-to((test-op(test-op "jingoh.tester.test")))
@@ -32,7 +32,8 @@
 (let((system
        (find-system "jingoh.documentizer" nil)))
   ;; Weakly depends on.
-  (when system
+  (when(and system
+            (not(featurep :clisp)))
     (load-system system)
     (defmethod operate :around((o load-op)
                                (c (eql(find-system "jingoh.tester")))
