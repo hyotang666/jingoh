@@ -57,7 +57,8 @@
 		    (call-next-method))))
 	      (let((asdf::system
 		     (asdf:find-system "jingoh.documentizer" nil)))
-		(when asdf::system
+		(when(and asdf::system
+			  (not (uiop:featurep :clisp)))
 		  (asdf:load-system asdf::system)
 		  (defmethod asdf:operate :around ((asdf::o asdf:load-op)
 						   (asdf::c (eql (asdf:find-system ,name)))
