@@ -9,6 +9,7 @@
 |#
 
 (defmethod generate((dispatcher (eql 'init))&key system pathname)
+  (setf system (asdf:find-system system))
   (let*((system-name
 	  (asdf:coerce-name system))
 	(*default-pathname-defaults*
@@ -27,14 +28,14 @@
       (output-to (path-of system-name "asd")
 		 (asd-generator system-name))
       (output-to (path-of "README" "md")
-		 (readme-generator system-name))
+		 (readme-generator system))
       (output-to (let((*default-pathname-defaults*
 			(uiop:subpathname *default-pathname-defaults*
 					  "src/")))
 		   (path-of system-name "lisp"))
 		 (cl-source-file-generator system-name)))
     (ql:register-local-projects)
-    (generate(asdf:find-system system-name))))
+    (generate system)))
 
 (defun local-project-directory()
   (let((directories ql:*local-project-directories*))
@@ -71,9 +72,9 @@
 		 (:export))
 	      `(in-package ,package-name)))))
 
-(defun readme-generator(system-name)
+(defun readme-generator(system)
   (lambda()
-    (format t "# ~A 0.0.0~%~
+    (format t "# ~A ~A~%~
 	    ## What is this?~2%~
 	    ### Current lisp world~2%~
 	    ### Issues~2%~
@@ -85,4 +86,6 @@
 	    ### Developed with~2%~
 	    ### Tested with~2%~
 	    ## Installation~2%"
-	    system-name)))
+	    (asdf:coerce-name system)
+	    (or (asdf:system-version system)
+		"0.0.0"))))
