@@ -235,7 +235,7 @@ If you want to run tests in parallel, modify `spec/your-system.test.asd` like be
 MIT
 ### Tested with
 CCL/1.11.5
-SBCL/1.5.5
+SBCL/1.5.6
 
 ### Known issue.
 * Could not load JINGOH in CLISP/2.49, due to could not load TRIVIA/0.1.
