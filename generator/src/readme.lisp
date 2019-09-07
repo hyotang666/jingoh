@@ -17,7 +17,7 @@
       (if (or existp
 	      lines)
 	(readme-updator system lines)
-	(funcall(readme-generator (asdf:coerce-name system)))))))
+	(funcall(readme-generator system))))))
 
 (defun readme-updator(system readme-lines)
   (format t "# ~@:(~A~) ~A~%"(asdf:coerce-name system)
