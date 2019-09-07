@@ -6,7 +6,7 @@
 (defun check(requirement)
   (macrolet((with-internal-issue-handling(form)
 	      `(handler-case,form
-		 (condition(c)
+		 (error(c)
 		   (lambda()
 		     (list (make-instance
 			     'jingoh-internal-issue
