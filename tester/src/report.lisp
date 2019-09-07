@@ -8,6 +8,8 @@
 (defstruct(condition-issue (:include issue))
   message)
 
+(defstruct(jingoh-internal-issue(:include condition-issue)))
+
 (defstruct(error-was-signaled (:include condition-issue)))
 (defstruct(warning-was-signaled (:include condition-issue)))
 (defstruct(debugger-was-invoked (:include condition-issue)))

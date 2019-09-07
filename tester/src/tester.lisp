@@ -4,8 +4,21 @@
   (apply #'make-requirement requirement))
 
 (defun check(requirement)
-  (funcall (coerce (requirement-form requirement)
-		   'function)))
+  (macrolet((with-internal-issue-handling(form)
+	      `(handler-case,form
+		 (condition(c)
+		   (lambda()
+		     (list (make-instance
+			     'jingoh-internal-issue
+			     :actual :skipped
+			     :message (princ-to-string c)
+			     :form (car requirement)
+			     :expected :do-test
+			     :position (getf (cdr requirement):position))))))))
+    (funcall (with-internal-issue-handling
+	       (coerce (with-internal-issue-handling
+			 (requirement-form requirement))
+		       'function)))))
 
 (defmacro defspec(&whole whole &body body)
   (check-bnf:check-bnf(:whole whole)
