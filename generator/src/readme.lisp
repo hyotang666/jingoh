@@ -30,7 +30,8 @@
 	    (cond
 	      ((uiop:string-prefix-p "## What is this?" line)
 	       (write-line line)
-	       (write-line (asdf:system-description system))
+	       (write-line (or (asdf:system-description system)
+			       ""))
 	       (REC(SKIP-TO "##" rest)))
 	      ((uiop:string-prefix-p "### License"line)
 	       (write-line line)
