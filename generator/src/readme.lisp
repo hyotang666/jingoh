@@ -3,11 +3,21 @@
 (defmethod generate((dispatcher (eql :readme))&key system)
   (declare(ignore dispatcher))
   (setf system (asdf:find-system system)) ; as canonicalize.
-  (let*((ssd(asdf:system-source-directory system))
-	(readme-path(uiop:subpathname ssd "README.md"))
-	(readme-lines(uiop:read-file-lines readme-path)))
-    (uiop:with-output-file(*standard-output* readme-path :if-exists :supersede)
-      (readme-updator system readme-lines))))
+  (let*((ssd
+	  (asdf:system-source-directory system))
+	(readme-path
+	  (uiop:subpathname ssd "README.md"))
+	(existp
+	  (probe-file readme-path))
+	(lines
+	  (and existp
+	       (uiop:read-file-lines readme-path))))
+    (uiop:with-output-file(*standard-output* readme-path :if-exists :supersede
+					     :if-does-not-exist :create)
+      (if (or existp
+	      lines)
+	(readme-updator system lines)
+	(funcall(readme-generator (asdf:coerce-name system)))))))
 
 (defun readme-updator(system readme-lines)
   (format t "# ~@:(~A~) ~A~%"(asdf:coerce-name system)
