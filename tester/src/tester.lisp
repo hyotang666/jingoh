@@ -22,15 +22,15 @@
 
 (defmacro defspec(&whole whole &body body)
   (check-bnf:check-bnf(:whole whole)
-    (body (test-form dispatch-key expected option*))
-    (test-form check-bnf:expression)
-    (dispatch-key (member => :be-the :satisfies :outputs :values
-			  :multiple-value-satisfies :output-satisfies
-			  :expanded-to :equivalents :signals :invokes-debugger))
-    (expected check-bnf:expression)
-    (option* option-key check-bnf:expression)
-    (option-key (member :timeout :position :around :before :after :stream
-			:with-restarts :ignore-signals :lazy :test :doc-type :as)))
+    ((body (test-form dispatch-key expected option*))
+     (test-form check-bnf:expression)
+     (dispatch-key (member => :be-the :satisfies :outputs :values
+			   :multiple-value-satisfies :output-satisfies
+			   :expanded-to :equivalents :signals :invokes-debugger))
+     (expected check-bnf:expression)
+     (option* option-key check-bnf:expression)
+     (option-key (member :timeout :position :around :before :after :stream
+			 :with-restarts :ignore-signals :lazy :test :doc-type :as))))
     `(EVAL-WHEN(:LOAD-TOPLEVEL :EXECUTE)
      ,@(unless(getf(cdddr body):lazy '#:does-not-exist)
 	 `(,(canonicalize (car body)(cdddr body))))
