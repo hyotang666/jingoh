@@ -500,9 +500,12 @@
 ;;;; Description:
 ; Helper for MAKE-REQUIREMENT
 #?(canonicalize '(+) ())
-=> (bt:with-timeout(1)
-     (+))
-,:test equal
+:satisfies (lambda(form)
+	     (equal form
+		    (if bt:*supports-threads-p*
+		      '(bt:with-timeout(1)
+			 (+))
+		      '(+))))
 
 #+syntax
 (CANONICALIZE test-form parameters) ; => result
@@ -516,29 +519,47 @@
 ; key := (member :before :after :around :lazy :timeout)
 
 #?(canonicalize '(+) '(:before (print :before)))
-=> (progn (print :before)
-	  (bt:with-timeout(1)
-	    (+)))
-,:test equal
+:satisfies (lambda(form)
+	     (equal form
+		    `(progn (print :before)
+			    ,(if bt:*supports-threads-p*
+			       '(bt:with-timeout(1)
+				  (+))
+			       '(+)))))
+
 #?(canonicalize '(+) '(:after (print :after)))
-=> (unwind-protect (bt:with-timeout(1)
-		     (+))
-     (print :after))
-,:test equal
+:satisfies (lambda(form)
+	     (equal form
+		    `(unwind-protect ,(if bt:*supports-threads-p*
+					'(bt:with-timeout(1)
+					   (+))
+					'(+))
+		       (print :after))))
+
 #?(canonicalize '(+) '(:around (let((a 0))(call-body))))
-=> (let((a 0))
-     (bt:with-timeout(1)
-       (+)))
-,:test equal
+:satisfies (lambda(form)
+	     (equal form
+		    `(let((a 0))
+		       ,(if bt:*supports-threads-p*
+			  '(bt:with-timeout(1)
+			     (+))
+			  '(+)))))
+
 #?(canonicalize '(+) '(:lazy t))
-=> (bt:with-timeout(1)
-     (eval (macroexpand '(+))))
-,:test equal
+:satisfies (lambda(form)
+	     (equal form
+		    (if bt:*supports-threads-p*
+		      '(bt:with-timeout(1)
+			 (eval (macroexpand '(+))))
+		      '(eval (macroexpand '(+))))))
 
 #?(canonicalize '(+) '(:timeout 2))
-=> (bt:with-timeout(2)
-     (+))
-,:test equal
+:satisfies (lambda(form)
+	     (equal form
+		    (if bt:*supports-threads-p*
+		      '(bt:with-timeout(2)
+			 (+))
+		      '(+))))
 
 ; result := form.
 
@@ -554,8 +575,11 @@
 	(result(canonicalize form ())))
     (rplaca form '-)
     result)
-=> (bt:with-timeout(1)(+))
-,:test equal
+:satisfies (lambda(form)
+	     (equal form
+		    (if bt:*supports-threads-p*
+		      '(bt:with-timeout(1)(+))
+		      '(+))))
 
 ;;;; Exceptional-Situations:
 ; when unsupported key comes (See ?), an error is signaled.
