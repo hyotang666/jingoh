@@ -238,7 +238,6 @@ CCL/1.11.5
 SBCL/1.5.6
 
 ### Known issue.
-* Could not load JINGOH in CLISP/2.49, due to could not load TRIVIA/0.1.
 * Could not load JINGOH.DOCUMENTIZER in CLISP/2.49, due to could not load 3BMD.
 
 ## Installation
