@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.generator
-  :version "0.6.2"
+  :version "0.6.3"
   :in-order-to((test-op(test-op "jingoh.generator.test")))
   :depends-on (
                "millet" ; wrappter for implementation dependent utilities.
@@ -54,3 +54,8 @@
                             ((:compile-verbose *compile-verbose*))
                             &allow-other-keys)
   (call-next-method))
+
+(defmethod operate :after ((o load-op)(c (eql (find-system "jingoh.generator")))&key)
+  (unless(fboundp(find-symbol "FUNCTION-INFORMATION" "CLTL2"))
+    (warn "TRIVIAL-CLTL2 does not support ~A so JINGOH.GENERATOR can not provide full feature."
+          (lisp-implementation-type))))

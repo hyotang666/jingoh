@@ -41,7 +41,8 @@
 	  symbol
 	  (comentize (documentation symbol 'variable))
 	  (cond
-	    ((cdr(assoc 'type (nth-value 2(cltl2:variable-information symbol)))))
+	    ((when(fboundp 'cltl2:variable-information)
+	       (cdr(assoc 'type (nth-value 2(cltl2:variable-information symbol))))))
 	    ((boundp symbol)
 	     (type-of(symbol-value symbol)))
 	    (t
@@ -190,7 +191,8 @@
     )))
 
 (defun parse-lambda-list(symbol)
-  (multiple-value-bind(type _ information)(cltl2:function-information symbol)
+  (multiple-value-bind(type _ information)(when(fboundp 'cltl2:function-information)
+					    (cltl2:function-information symbol))
     (declare(ignore _))
     (let*((lambda-list
 	    (millet:lambda-list symbol))
