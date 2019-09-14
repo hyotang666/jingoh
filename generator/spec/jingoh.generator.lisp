@@ -136,7 +136,7 @@
 		    (declare(special args))
 		    (call-next-method)))))
       (equalp (read)
-	      '(let((system(find-system "jingoh.documentizer" nil)))
+	      `(let((system(find-system "jingoh.documentizer" nil)))
 		 (when(and system
 			   (not(featurep :clisp)))
 		   (load-system system)
