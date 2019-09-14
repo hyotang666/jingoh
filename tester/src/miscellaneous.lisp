@@ -95,19 +95,20 @@
 			  (MAKE-BROADCAST-STREAM)))
 		     (WITH-INTEGRATED-OUTPUT-STREAM(*STANDARD-OUTPUT*)
 		       ,before
-		       (BT:WITH-TIMEOUT(,time)
-			 ,test-form)))
+		       ,(MAY-MAKE-TIMEOUT-FORM time test-form)))
 		  `(PROGN ,before
-			  (BT:WITH-TIMEOUT(,time)
-			    ,test-form)))
+			  ,(MAY-MAKE-TIMEOUT-FORM time test-form)))
 		(if ignore-output-p
 		  `(LET((*STANDARD-OUTPUT*
 			  (MAKE-BROADCAST-STREAM)))
 		     (WITH-INTEGRATED-OUTPUT-STREAM(*STANDARD-OUTPUT*)
-		       (BT:WITH-TIMEOUT(,time)
-			 ,test-form)))
-		  `(BT:WITH-TIMEOUT(,time)
-		     ,test-form)))))
+		       ,(MAY-MAKE-TIMEOUT-FORM time test-form)))
+		  (MAY-MAKE-TIMEOUT-FORM time test-form)))))
+	  (MAY-MAKE-TIMEOUT-FORM(time test-form)
+	    (if bt:*supports-threads-p*
+	      `(BT:WITH-TIMEOUT(,time)
+		 ,test-form)
+	      test-form))
 	  (SET-AROUND(body)
 	    (let((around
 		   (getf parameters :around)))

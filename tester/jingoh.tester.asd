@@ -2,7 +2,7 @@
 (in-package :asdf)
 (defsystem :jingoh.tester
   :description "Jingoh's requirement's tester."
-  :version "0.1.5"
+  :version "0.1.6"
   :long-description #.(uiop:read-file-string (merge-pathnames *load-pathname*
                                                               "CONCEPTS.md"))
   :in-order-to((test-op(test-op "jingoh.tester.test")))
@@ -57,3 +57,7 @@
                             ((:compile-verbose *compile-verbose*))
                             &allow-other-keys)
   (call-next-method))
+
+(defmethod operate :after ((o load-op)(c (eql (find-system "jingoh.tester"))) &key)
+  (unless(featurep :bordeaux-threads)
+    (warn "JINGOH: TIMEOUT is not work due to BORDEAUX-THREADS is not featured.")))
