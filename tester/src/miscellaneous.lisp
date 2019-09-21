@@ -174,5 +174,6 @@
   `(let((*standard-output* ,var)
 	(*error-output* ,var)
 	(*trace-output* ,var)
+	(*debug-io* (make-two-way-stream *debug-io* ,var))
 	(*query-io* (make-two-way-stream *query-io* ,var)))
      ,@body))
