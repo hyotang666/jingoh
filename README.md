@@ -234,8 +234,8 @@ If you want to run tests in parallel, modify `spec/your-system.test.asd` like be
 ### License
 MIT
 ### Tested with
-CCL/1.11.5
-SBCL/1.5.6
+* CCL/1.11.5
+* SBCL/1.5.7
 
 ### Known issue.
 * Could not load JINGOH.DOCUMENTIZER in CLISP/2.49, due to could not load 3BMD.
