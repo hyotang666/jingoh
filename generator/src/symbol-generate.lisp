@@ -70,14 +70,16 @@
        (class-template type symbol)))))
 
 (defun type-of-type(symbol)
-  (let((instance(ignore-errors(make-instance symbol))))
-    (if(not instance)
-      :type
-      (if(typep (class-of instance)'structure-class)
-	:structure
-	(if(typep instance 'condition)
-	  :condition
-	  :class)))))
+  (let((class
+	 (find-class symbol nil)))
+    (cond
+      ((null class)
+       :type)
+      ((typep class 'structure-class)
+       :structure)
+      ((subtypep symbol 'condition)
+       :condition)
+      (t :class))))
 
 (defun %type-template(symbol)
   (format t "(requirements-about ~A :doc-type type)~%~
