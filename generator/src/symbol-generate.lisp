@@ -224,7 +224,11 @@
 					      (sublis (mapcar #'cons lambda-vars
 							      variables)
 						      lambda-list))
-				      (second ftype))))
+				      (let((type
+					     (second ftype)))
+					(if(eq '* type)
+					  '_
+					  type)))))
 	  (uiop:while-collecting(acc)
 	    (mapc (lambda(sym var)
 		    (acc (list sym
