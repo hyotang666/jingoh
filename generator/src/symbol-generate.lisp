@@ -243,14 +243,51 @@
 			    ((or null (eql *))
 			     '(("result" nil)))
 			    ((cons (eql values) *)
-			     (or (loop :for return :in (cdr return)
-				       :for num :upfrom 1
-				       :until (eq '&optional return)
-				       :collect (list (format nil "result-~D" num)
-						      return))
-				 '(("result" nil))))
+			     (parse-values return))
 			    (t
 			      (list (list "result" return))))))))))))
+
+(defun parse-values(values)
+  (labels((rec(spec* &optional optionalp (num 1) acc)
+	    (if(endp spec*)
+	      (do-return acc)
+	      (body (car spec*)
+		    (cdr spec*)
+		    optionalp
+		    num
+		    acc)))
+	  (do-return(acc)
+	    (case(length acc)
+	      (0
+	       `(("result" nil)))
+	      (1
+	       (destructuring-bind((k v))acc
+		 (if(string= "result 1" k)
+		   `(("result" ,v))
+		   acc)))
+	      (otherwise
+		(nreverse acc))))
+	  (body(spec rest optionalp num acc)
+	    (case spec
+	      (&optional
+		(rec rest "optional" 1 acc))
+	      (&rest
+		(rec (cdr rest)
+		     optionalp
+		     (1+ num)
+		     (cons (list "rest values"
+				 (car rest))
+			   acc)))
+	      (&allow-other-keys
+		(do-return acc))
+	      (otherwise
+		(rec rest
+		     optionalp
+		     (1+ num)
+		     (cons (list (format nil "~@[~A ~]result ~D" optionalp num)
+				 spec)
+			   acc))))))
+    (rec (cdr values))))
 
 (defun ensure-symbol-notation(symbol)
   (if(uiop:string-suffix-p(prin1-to-string symbol)"|")
