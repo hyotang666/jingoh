@@ -239,18 +239,18 @@
 		  variables)
 	    (let((return
 		   (third ftype)))
-	      (acc (etypecase return
-		     ((or null (eql *))
-		      '("result" nil))
-		     ((cons (eql values) *)
-		      (or (loop :for return :in (cdr return)
-				:for num :upfrom 1
-				:until (eq '&optional return)
-				:collect (list (format nil "result~D" num)
-					       return))
-			  '("result" nil)))
-		     (t
-		       (list "result" return)))))))))))
+	      (mapc #'acc (etypecase return
+			    ((or null (eql *))
+			     '(("result" nil)))
+			    ((cons (eql values) *)
+			     (or (loop :for return :in (cdr return)
+				       :for num :upfrom 1
+				       :until (eq '&optional return)
+				       :collect (list (format nil "result-~D" num)
+						      return))
+				 '(("result" nil))))
+			    (t
+			      (list (list "result" return))))))))))))
 
 (defun ensure-symbol-notation(symbol)
   (if(uiop:string-suffix-p(prin1-to-string symbol)"|")
