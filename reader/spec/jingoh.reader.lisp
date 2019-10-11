@@ -79,7 +79,7 @@
     (enable)
     (with-input-from-string(in "#?(+) => 0")
       (read in)))
-=> (DEFSPEC (+) => 0 :POSITION 2)
+=> (DEFSPEC (+) => 0 :POSITION NIL)
 ,:test equal
 
 #+syntax
@@ -120,7 +120,7 @@
 	      (subseq $string 0 7))
      (equal (with-input-from-string(in $string :start 7)
 	      (read in))
-	    `(defspec (+) => 0 :position 2))))
+	    `(defspec (+) => 0 :position NIL))))
 ,:stream *trace-output*
 
 ; Value type is NULL
@@ -153,7 +153,7 @@
        (char= #\A (read-char in))
        (char= #\D (read-char in))
        (char= #\: (read-char in))
-       (equal `(defspec(+) => 0 :position 2)
+       (equal `(defspec(+) => 0 :position NIL)
 	      (read in))
        (null (read in nil nil)))))
 ,:stream *trace-output*
