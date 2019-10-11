@@ -70,7 +70,7 @@
     (let((form `(DEFSPEC ,(read-form '#:test-form)
 			 ,(read-form '#:keyword)
 			 ,(read-form '#:expected)
-			 :POSITION ,(pop *lines*)
+			 :LINE ,(pop *lines*)
 			 ,@(options))))
       (when (or *read-verbose* *read-print*)
 	(format *trace-output* "~%READ: ~S"form))

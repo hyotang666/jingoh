@@ -57,7 +57,7 @@
 	:before
 	:after
 	:around
-	:position
+	:line
 	:timeout))
 
 (defun canonicalize(test-form parameters)

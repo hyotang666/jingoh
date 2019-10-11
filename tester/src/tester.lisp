@@ -14,7 +14,7 @@
 			     :message (princ-to-string c)
 			     :form (car requirement)
 			     :expected :do-test
-			     :position (getf (cdr requirement):position))))))))
+			     :line (getf (cdr requirement):line))))))))
     (funcall (with-internal-issue-handling
 	       (coerce (with-internal-issue-handling
 			 (requirement-form requirement))
@@ -29,7 +29,7 @@
 			   :expanded-to :equivalents :signals :invokes-debugger))
      (expected check-bnf:expression)
      (option* option-key check-bnf:expression)
-     (option-key (member :timeout :position :around :before :after :stream
+     (option-key (member :timeout :line :around :before :after :stream
 			 :with-restarts :ignore-signals :lazy :test :doc-type :as))))
     `(EVAL-WHEN(:LOAD-TOPLEVEL :EXECUTE)
      ,@(unless(getf(cdddr body):lazy '#:does-not-exist)
@@ -96,7 +96,7 @@
 					    `',test-form
 					    expected
 					    'CONDITION
-					    (getf parameters :position)
+					    (getf parameters :line)
 					    :message
 					    `(PRINC-TO-STRING CONDITION)))))
 	   ,@(unless(ignore-signals 'error parameters)
@@ -106,7 +106,7 @@
 					    `',test-form
 					    expected
 					    'CONDITION
-					    (getf parameters :position)
+					    (getf parameters :line)
 					    :message
 					    `(PRINC-TO-STRING CONDITION))))))
 	 (UNLESS(STRING= "" ,output)
@@ -115,7 +115,7 @@
 				    `',test-form
 				    ""
 				    output
-				    (getf parameters :position)))
+				    (getf parameters :line)))
 	 ,result))))
 
 (defmethod make-requirement(test-form (key(eql '=>)) expected
@@ -134,7 +134,7 @@
 				      `',test-form
 				      expected
 				      actual
-				      (getf parameters :position)
+				      (getf parameters :line)
 				      :test
 				      `',test)))))))
 
@@ -154,7 +154,7 @@
 			       `',test-form
 			       expected
 			       'CONDITION
-			       (getf parameters :position)
+			       (getf parameters :line)
 			       :MESSAGE
 			       `(PRINC-TO-STRING CONDITION))
 			    ,(ecase type
@@ -178,7 +178,7 @@
 				  `',test-form
 				  restarts
 				  `(COMPUTE-RESTARTS CONDITION)
-				  (getf parameters :position)))))))
+				  (getf parameters :line)))))))
 		   (GO ,end)))
 	      )
 	`(LAMBDA()
@@ -199,7 +199,7 @@
 					`',test-form
 					expected
 					actual
-					(getf parameters :position)))
+					(getf parameters :line)))
 	     ,end
 	     (WHEN(AND ,output (NOT(STRING= "" ,output)))
 	       ,(the-push-instance-form result
@@ -207,7 +207,7 @@
 					`',test-form
 					""
 					output
-					(getf parameters :position)))
+					(getf parameters :line)))
 	     (RETURN ,result)))))))
 
 (defmethod make-requirement(test-form (key (eql :invokes-debugger))
@@ -228,7 +228,7 @@
 					      `',test-form
 					      NIL
 					      'CONDITION
-					      (getf parameters :position)
+					      (getf parameters :line)
 					      :MESSAGE
 					      `(PRINC-TO-STRING CONDITION)))
 		   (GO ,end))
@@ -241,7 +241,7 @@
 				     `',test-form
 				     NIL
 				     'CONDITION
-				     (getf parameters :position)
+				     (getf parameters :line)
 				     :MESSAGE
 				     `(PRINC-TO-STRING CONDITION))))
 			    (MUFFLE-WARNING CONDITION))
@@ -261,7 +261,7 @@
 				      `',test-form
 				      ""
 				      output
-				      (getf parameters :position)))
+				      (getf parameters :line)))
 	   ,end
 	   (RETURN ,result))))))
 
@@ -292,7 +292,7 @@
 						 `',test-form
 						 T
 						 NIL
-						 (getf parameters :position)
+						 (getf parameters :line)
 						 :test
 						 `',test))
 			   (UNSATISFIED(CONDITION)
@@ -301,7 +301,7 @@
 						      `(TEST-FORM CONDITION)
 						      T
 						      NIL
-						      (getf parameters :position)
+						      (getf parameters :line)
 						      :ARGS `(ARGS CONDITION))))))
 		   (IF(TYPEP CONDITION ',expected)
 		     ,(let((restarts
@@ -317,13 +317,13 @@
 				  `',test-form
 				  restarts
 				  `(COMPUTE-RESTARTS CONDITION)
-				  (getf parameters :position))))))
+				  (getf parameters :line))))))
 		     ,(the-push-instance-form result
 					      'UNMATCH-CONDITION
 					      `',test-form
 					      expected
 					      'CONDITION
-					      (getf parameters :position)
+					      (getf parameters :line)
 					      :MESSAGE
 					      `(PRINC-TO-STRING CONDITION)))
 		   (GO ,end))
@@ -335,7 +335,7 @@
 						    `',test-form
 						    expected
 						    'CONDITION
-						    (getf parameters :position)
+						    (getf parameters :line)
 						    :MESSAGE
 						    `(PRINC-TO-STRING CONDITION))))
 		     (MUFFLE-WARNING CONDITION)))
@@ -350,14 +350,14 @@
 				    `',test-form
 				    expected
 				    actual
-				    (getf parameters :position))
+				    (getf parameters :line))
 	   (WHEN(AND ,output (NOT(STRING= "" ,output)))
 	     ,(the-push-instance-form result
 				      'UNEXPECTED-OUTPUT
 				      `',test-form
 				      ""
 				      output
-				      (getf parameters :position)))
+				      (getf parameters :line)))
 	   ,end
 	   (RETURN ,result))))))
 
@@ -378,7 +378,7 @@
 				       `',test-form
 				       expected
 				       actual
-				       (getf parameters :position)
+				       (getf parameters :line)
 				       :TEST `',test)))))))
 
 (defmethod make-requirement(test-form (key(eql :outputs)) expected
@@ -399,7 +399,7 @@
 				      `',test-form
 				      expected
 				      actual
-				      (getf parameters :position)
+				      (getf parameters :line)
 				      :TEST `',test)))))))
 
 (defmethod make-requirement(test-form(key(eql :satisfies))expected
@@ -421,14 +421,14 @@
 						 `',test-form
 						 `(SATISFIES ,test)
 						 NIL
-						 (getf parameters :position)))
+						 (getf parameters :line)))
 	   (UNSATISFIED(CONDITION)
 	     ,(the-push-instance-form result
 				      'UNSATISFIED-CLAUSE
 				      `(TEST-FORM CONDITION)
 				      T
 				      NIL
-				      (getf parameters :position)
+				      (getf parameters :line)
 				      :ARGS `(ARGS CONDITION))))))))
 
 (defmethod no-applicable-method((gf(eql #'make-requirement))&rest args)
@@ -473,14 +473,14 @@
 						 `',test-form
 						 expected
 						 actual
-						 (getf parameters :position)))
+						 (getf parameters :line)))
 	   (UNSATISFIED(CONDITION)
 	     ,(the-push-instance-form result
 				      'UNSATISFIED-CLAUSE
 				      `(TEST-FORM CONDITION)
 				      T
 				      NIL
-				      (getf parameters :position)
+				      (getf parameters :line)
 				      :ARGS `(ARGS CONDITION))))))))
 
 (defmethod make-requirement(test-form(key(eql :be-the))
@@ -497,7 +497,7 @@
 				      `',test-form
 				      expected
 				      `(LIST 'THE (type-of ,actual) ,actual)
-				      (getf parameters :position))))))))
+				      (getf parameters :line))))))))
 
 (defmethod make-requirement(test-form(key(eql :equivalents))
 			     expected &rest parameters)
@@ -518,7 +518,7 @@
 				    `(LIST ',test ',test-form ',expected)
 				    T
 				    `(LIST ',test ,actual1 ,actual2)
-				    (getf parameters :position))))))))
+				    (getf parameters :line))))))))
 
 
 (defmethod make-requirement(test-form(key (eql :expanded-to))
@@ -534,7 +534,7 @@
 				    `',test-form
 				    expected
 				    actual
-				    (getf parameters :position)))))))
+				    (getf parameters :line)))))))
 
 (defmethod make-requirement(test-form (key(eql :output-satisfies)) expected
 				      &rest parameters)
@@ -554,12 +554,12 @@
 						   `',test-form
 						   `(SATISFIES ,test)
 						   NIL
-						   (getf parameters :position)))
+						   (getf parameters :line)))
 	     (UNSATISFIED(CONDITION)
 	       ,(the-push-instance-form result
 					'UNSATISFIED-CLAUSE
 					`(TEST-FORM CONDITION)
 					T
 					NIL
-					(getf parameters :position)
+					(getf parameters :line)
 					:ARGS `(ARGS CONDITION)))))))))
