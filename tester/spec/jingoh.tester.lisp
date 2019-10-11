@@ -138,7 +138,7 @@
 
 ; option := key value pair.
 
-; key := (member :test :lazy :ignore-signals :with-restarts :stream :before :after :around :position :as :timeout)
+; key := (member :test :lazy :ignore-signals :with-restarts :stream :before :after :around :line :as :timeout)
 
 ;;; dispatch-keys.
 
@@ -231,8 +231,8 @@
 		      (call-body)))
 => NIL
 
-; :position is used to store file-position internally.
-#?(? t => NIL :position 123)
+; :line is used to store file line internally.
+#?(? t => NIL :line 123)
 :satisfies (lambda($result)
 	     (& (listp $result)
 		(= 1 (length $result))
