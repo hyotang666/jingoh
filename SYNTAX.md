@@ -358,7 +358,7 @@ In such cases, we can use `&` macro.
    :FORM (= 4 (LENGTH STRING))
    :EXPECTED T
    :ACTUAL NIL
-   :POSITION NIL
+   :LINE NIL
    :ARGS (4 3))
 ```
 
@@ -376,6 +376,6 @@ Otherwise you can not get enough information especially about ARGS.
            (= 4 LENGTH))
    :EXPECTED T
    :ACTUAL NIL
-   :POSITION NIL
+   :LINE NIL
    :ARGS NIL)
 ```

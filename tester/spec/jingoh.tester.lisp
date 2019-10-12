@@ -237,7 +237,7 @@
 	     (& (listp $result)
 		(= 1 (length $result))
 		(every #'issue-p $result)
-		(= 123 (issue-position (car $result)))))
+		(= 123 (issue-line (car $result)))))
 
 ; :as is used internally to substitute.
 ; And it is specifyed via COMMON-REQUIREMENTS-ABOUT only.
@@ -348,17 +348,17 @@
 				     3)))
 	 (warning(condition)
 	   (push (make-instance 'warning-was-signaled :form '1 :expected '2
-				:actual condition :position nil
+				:actual condition :line nil
 				:message (princ-to-string condition))
 		 0))
 	 (error(condition)
 	   (push (make-instance 'error-was-signaled :form '1 :expected '2
-				:actual condition :position nil
+				:actual condition :line nil
 				:message (princ-to-string condition))
 		 0)))
        (unless(string= "" output)
 	 (push (make-instance 'unexpected-output :form '1 :expected '""
-			      :actual output :position nil)
+			      :actual output :line nil)
 	       0))
        0))
 ,:test sexp=
@@ -395,7 +395,7 @@
 ;;;; Description:
 ; helper for writing make-requirement.
 #?(the-push-instance-form 0 1 2 3 4 5 6)
-=> (push (make-instance '1 :form 2 :expected '3 :actual 4 :position 5 6)
+=> (push (make-instance '1 :form 2 :expected '3 :actual 4 :line 5 6)
 	 0)
 ,:test equal
 
@@ -625,8 +625,8 @@
 ; ACTUAL [Type] T
 #?(issue-actual (make-instance 'object :actual :get!)) => :get!
 
-; POSITION [Type] T
-#?(issue-position (make-instance 'object :position 0)) => 0
+; LINE [Type] T
+#?(issue-line (make-instance 'object :line 0)) => 0
 
 ;;;; Notes:
 ; Can construct with MAKE-INSTANCE.
@@ -893,24 +893,24 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about ISSUE-POSITION :doc-type function)
+(requirements-about ISSUE-LINE :doc-type function)
 
 ;;;; Description:
 ; return file position of test-form.
 #?(loop :for name :in *issues*
-	:always (zerop (issue-position(make-instance name :position 0))))
+	:always (zerop (issue-line (make-instance name :line 0))))
 => T
 
 #+syntax
-(ISSUE-POSITION sb-kernel:instance) ; => result
+(ISSUE-LINE sb-kernel:instance) ; => result
 
 #+setf
-(SETF (ISSUE-POSITION SB-KERNEL:INSTANCE) SB-KERNEL::VALUE) ; => new-value
+(SETF (ISSUE-LINE SB-KERNEL:INSTANCE) SB-KERNEL::VALUE) ; => new-value
 
 ;;;; Arguments and Values:
 
 ; instance := issue, otherwise error.
-#?(issue-position 0) :signals error
+#?(issue-line 0) :signals error
 ,:lazy t
 ,:ignore-signals warning
 

@@ -1,6 +1,6 @@
 (in-package :jingoh.tester)
 
-(defstruct issue form expected actual position)
+(defstruct issue form expected actual line)
 
 (defstruct(test-issue(:include issue))
   test)

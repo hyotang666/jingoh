@@ -31,6 +31,7 @@
     #:form
     #:expected
     #:actual
+    #:line
     #:test
     #:message
     #:args

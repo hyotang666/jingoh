@@ -70,13 +70,13 @@
 
 (defgeneric make-requirement(form key expected &rest params))
 
-(defun the-push-instance-form (place type test-form expected actual position
+(defun the-push-instance-form (place type test-form expected actual line
 				     &rest options)
   `(PUSH (MAKE-INSTANCE ',type
 			:FORM ,test-form
 			:EXPECTED ',expected
 			:ACTUAL ,actual
-			:POSITION ,position
+			:LINE ,line
 			,@options)
 	 ,place))
 
