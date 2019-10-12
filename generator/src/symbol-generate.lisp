@@ -82,15 +82,28 @@
       (t :class))))
 
 (defun %type-template(symbol)
-  (format t "(requirements-about ~A :doc-type type)~%~
-	  ;;;; Description:~%~
-	  ~A~&~
-	  ;;;; Compound Type Specifier Kind:~2%~
-	  ;;;; Compound Type Specifier Syntax:~2%~
-	  ;;;; Compound Type Specifier Arguments:~2%~
-	  ;;;; Compound Type Specifier Description:~2%"
-	  symbol
-	  (comentize(documentation symbol 'type))))
+  (let((lambda-list
+	 (progn #+sbcl
+		(millet:lambda-list(sb-int:info :type :expander symbol)))))
+    (format t "(requirements-about ~A :doc-type type)~%~
+	    ;;;; Description:~%~
+	    ~A~&~
+	    ;;;; Compound Type Specifier Kind:~%~
+	    ; TODO: Choose one of below and delete others includes this line.~%~
+	    ; Specializing.~%~
+	    ; Abbreviating.~%~
+	    ; Combining.~%~
+	    ; Predicating.~2%~
+	    ;;;; Compound Type Specifier Syntax:~2%~
+	    ~@[#+syntax~%(~(~A~) ~{~(~A~)~^ ~})~]~2%~
+	    ;;;; Compound Type Specifier Arguments:~2%~
+	    ~@[~{; ~(~A~) := ~%~}~]~%"
+	    symbol
+	    (comentize(documentation symbol 'type))
+	    symbol
+	    lambda-list
+	    (lambda-fiddle:extract-all-lambda-vars lambda-list)
+	    )))
 
 (defun class-template(type symbol)
   (let((class(find-class symbol)))
