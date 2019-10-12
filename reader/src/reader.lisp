@@ -25,7 +25,7 @@
 	   (,it(GET-DISPATCH-MACRO-CHARACTER #\# ,var)))
        (IF(NULL ,it) ; Noone use it.
 	 #0=(REPLACE-MACRO-CHARACTER ,var)
-	 (IF(EQ '|#?reader| (MILLET:FUNCTION-NAME ,it)) ; it's me!
+	 (IF(EQ '|#?reader| ,it) ; it's me!
 	   #0#
 	   (RESTART-CASE(ERROR'MACRO-CHAR-CONFLICTION 
 			  :FORMAT-CONTROL "Dispatch macro #~C is used. ~S"
@@ -33,7 +33,7 @@
 	     (REPLACE() :REPORT "Replace it." #0#)))))))
 
 (defun replace-macro-character(char)
-  (set-dispatch-macro-character #\# char #'|#?reader|))
+  (set-dispatch-macro-character #\# char '|#?reader|))
 
 (define-condition macro-char-confliction(simple-error)())
 
@@ -89,5 +89,5 @@
 
 (defreadtable syntax
   (:merge :standard)
-  (:dispatch-macro-char #\# #\? #'|#?reader|))
+  (:dispatch-macro-char #\# #\? '|#?reader|))
 
