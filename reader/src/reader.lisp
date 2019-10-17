@@ -100,9 +100,9 @@
 			'|#?reader|))
 
 ;;;; COLLECT-SPEC-LINES
-(defvar *line* 1)
+(defvar *line*)
 
-(defvar *line-pos* nil)
+(defvar *line-pos*)
 
 (defun collect-spec-lines(pathname)
   (let((*readtable*
