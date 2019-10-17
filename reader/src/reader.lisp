@@ -50,6 +50,8 @@
 
 (defparameter *lines* nil)
 
+(defvar *line*)
+
 (defun |#?reader|(stream character number)
   (declare(ignore character))
   (unless *lines*
@@ -100,8 +102,6 @@
 			'|#?reader|))
 
 ;;;; COLLECT-SPEC-LINES
-(defvar *line*)
-
 (defvar *line-pos*)
 
 (defun collect-spec-lines(pathname)
