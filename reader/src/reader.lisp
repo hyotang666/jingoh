@@ -57,6 +57,9 @@
 	   (ignore-errors(pathname stream))))
       (when pathname
 	(setf *lines* (collect-spec-lines pathname)))))
+  (|#?reader-body| stream number))
+
+(defun |#?reader-body| (stream number)
   (labels((read-form(as)
 	    (let((form(read stream t t t)))
 	      (when *read-print*
@@ -72,8 +75,14 @@
 		    :collect (read-form '#:option-value))))
 	  (have-option?()
 	    (case (peek-char t stream nil nil t)
+	      (#\newline
+	       (read-char stream)
+	       (incf *line*)
+	       (have-option?))
 	      (#\, (read-char stream t t t))
-	      (#\; (read-line stream t t t)(have-option?))))
+	      (#\; (read-line stream t t t)
+	       (incf *line*)
+	       (have-option?))))
 	  )
     (let((form `(DEFSPEC ,(read-form '#:test-form)
 			 ,(read-form '#:keyword)
@@ -84,19 +93,75 @@
 	(format *trace-output* "~%READ: ~S"form))
       form)))
 
-(defun collect-spec-lines(pathname)
-  (with-open-file(s pathname)
-    (loop :for char = (read-char s nil)
-	  :while char
-	  :if (char= #\newline char)
-	  :count it :into line
-	  :and :if (and (eql *dispatch-macro-character* (peek-char nil s nil))
-			(read-char s)
-			(eql *dispatch-macro-sub-char* (peek-char nil s nil)))
-	  :collect (1+ line))))
-
 (defreadtable syntax
   (:merge :standard)
   (:dispatch-macro-char *dispatch-macro-character* *dispatch-macro-sub-char*
 			'|#?reader|))
 
+;;;; COLLECT-SPEC-LINES
+(defvar *line* 1)
+
+(defvar *line-pos* nil)
+
+(defun collect-spec-lines(pathname)
+  (let((*readtable*
+	 (named-readtables:find-readtable 'counter))
+       (*line-pos*)
+       (*line* 1)
+       )
+    ;; To set dispatch macro dynamically, since it may be constomized.
+    (set-dispatch-macro-character *dispatch-macro-character* *dispatch-macro-sub-char*
+				  '|#?counter|)
+    (with-open-file(s pathname)
+      (loop :with tag = '#:end
+	    :for line = *line*
+	    :for sexp = (read s nil tag)
+	    :until (eq sexp tag)))
+    (nreverse *line-pos*)))
+
+(defun |line-counter|(stream character)
+  (declare(ignore stream character))
+  (incf *line*)
+  (values))
+
+(defun |#?counter|(stream character number)
+  (declare(ignore character))
+  (push *line* *line-pos*)
+  (|#?reader-body| stream number))
+
+(defun |line-comment|(stream character)
+  (declare(ignore character))
+  (read-line stream)
+  (incf *line*)
+  (values))
+
+(defun |block-comment|(stream character number)
+  (declare(ignore character number))
+  (loop :for char = (peek-char nil stream nil nil)
+	:while char
+	:if (char= #\# char)
+	:do (read-char stream) ; consume #\#.
+	(setf char (peek-char nil stream t t t))
+	(case char
+	  (#\| ; nested comment.
+	   (|block-comment| stream char nil))
+	  ((#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9)
+	   (loop :initially (read-char stream)
+		 :for char = (peek-char nil stream)
+		 :while (digit-char-p char)
+		 :do (read-char stream))
+	   (if(char= #\| (read-char stream)) ; nested comment with number, e.g. #1|.
+	     (|block-comment| stream #\| nil)))
+	  (#\newline
+	   (read-char stream)
+	   (incf *line*))
+	  (otherwise
+	    (read-char stream))))
+  (values))
+
+(defreadtable counter
+  (:merge :standard)
+  (:macro-char #\newline '|line-counter|)
+  (:macro-char #\; '|line-comment|)
+  (:dispatch-macro-char #\# #\| '|block-comment|)
+  )
