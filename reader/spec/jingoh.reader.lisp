@@ -49,7 +49,9 @@
 (requirements-about REPLACE-MACRO-CHARACTER :doc-type function)
 
 ;;;; Description:
-; Short hand for CL:SET-DISPATCH-MACRO-CHARACTER.
+; Wrapper to CL:SET-DISPATCH-MACRO-CHARACTER.
+; When you want to customize dispatch macro character, you should use this,
+; otherwise :LINE number will be confused.
 
 #+syntax
 (REPLACE-MACRO-CHARACTER char sub-char) ; => result
