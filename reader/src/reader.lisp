@@ -137,10 +137,10 @@
 
 (defun |block-comment|(stream character number)
   (declare(ignore character number))
-  (loop :for char = (peek-char nil stream nil nil)
+  (loop :for char = (read-char stream nil nil)
 	:while char
 	:if (char= #\# char)
-	:do (read-char stream) ; consume #\#.
+	:do
 	(setf char (peek-char nil stream t t t))
 	(case char
 	  (#\| ; nested comment.
@@ -156,7 +156,11 @@
 	   (read-char stream)
 	   (incf *line*))
 	  (otherwise
-	    (read-char stream))))
+	    (read-char stream)))
+	:else :if (and (char= #\| char)
+		       (char= #\# (peek-char nil stream)))
+	:do (read-char stream)
+	(loop-finish))
   (values))
 
 (defreadtable counter
