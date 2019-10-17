@@ -76,12 +76,11 @@
 	  (have-option?()
 	    (case (peek-char t stream nil nil t)
 	      (#\newline
-	       (read-char stream)
-	       (incf *line*)
+	       (|line-counter| stream (read-char stream))
 	       (have-option?))
 	      (#\, (read-char stream t t t))
-	      (#\; (read-line stream t t t)
-	       (incf *line*)
+	      (#\;
+	       (|line-comment| stream (read-char stream))
 	       (have-option?))))
 	  )
     (let((form `(DEFSPEC ,(read-form '#:test-form)
