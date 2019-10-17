@@ -52,12 +52,15 @@
 ; Short hand for CL:SET-DISPATCH-MACRO-CHARACTER.
 
 #+syntax
-(REPLACE-MACRO-CHARACTER char) ; => result
+(REPLACE-MACRO-CHARACTER char sub-char) ; => result
 
 ;;;; Arguments and Values:
 
 ; char := character, otherwise error.
-#?(replace-macro-character 0) :signals TYPE-ERROR
+#?(replace-macro-character 0 #\?) :signals TYPE-ERROR
+
+; sub-char := character, otherwise error.
+#?(replace-macro-character #\# "not-character") :signals type-error
 
 ; result := implementation-dependent
 
@@ -66,6 +69,7 @@
 
 ;;;; Side-Effects:
 ; Modify `*readtable*` state.
+; Modify `JINGOH.READER::*DISPATCH-MACRO-CHARACTER*`, `JINGOH.READER::*DISPATCH-MACRO-SUB-CHAR*`.
 
 ;;;; Notes:
 
