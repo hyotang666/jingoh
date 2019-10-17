@@ -57,7 +57,9 @@
 	   (ignore-errors(pathname stream))))
       (when pathname
 	(setf *lines* (collect-spec-lines pathname)))))
-  (|#?reader-body| stream number))
+  (let((*line*
+	 1))
+    (|#?reader-body| stream number)))
 
 (defun |#?reader-body| (stream number)
   (labels((read-form(as)
