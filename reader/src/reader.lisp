@@ -18,13 +18,17 @@
     ))
 (in-package :jingoh.reader)
 
-(defmacro enable(&optional(char #\?))
+(defparameter *dispatch-macro-character* #\#)
+
+(defparameter *dispatch-macro-sub-char* #\?)
+
+(defmacro enable(&optional(char '*dispatch-macro-sub-char*))
   (let((var (gensym "CHAR"))
        (it(gensym "TEMP")))
     `(LET*((,var ,char)
-	   (,it(GET-DISPATCH-MACRO-CHARACTER #\# ,var)))
+	   (,it(GET-DISPATCH-MACRO-CHARACTER *DISPATCH-MACRO-CHARACTER* ,var)))
        (IF(NULL ,it) ; Noone use it.
-	 #0=(REPLACE-MACRO-CHARACTER ,var)
+	 #0=(REPLACE-MACRO-CHARACTER *DISPATCH-MACRO-CHARACTER* ,var)
 	 (IF(EQ '|#?reader| ,it) ; it's me!
 	   #0#
 	   (RESTART-CASE(ERROR'MACRO-CHAR-CONFLICTION 
@@ -32,8 +36,10 @@
 			  :FORMAT-ARGUMENTS (LIST ,var ,it))
 	     (REPLACE() :REPORT "Replace it." #0#)))))))
 
-(defun replace-macro-character(char)
-  (set-dispatch-macro-character #\# char '|#?reader|))
+(defun replace-macro-character(char sub-char)
+  (setf *dispatch-macro-character* char
+	*dispatch-macro-sub-char* sub-char)
+  (set-dispatch-macro-character char sub-char '|#?reader|))
 
 (define-condition macro-char-confliction(simple-error)())
 
@@ -82,12 +88,13 @@
 	  :while char
 	  :if (char= #\newline char)
 	  :count it :into line
-	  :and :if (and (eql #\# (peek-char nil s nil))
+	  :and :if (and (eql *dispatch-macro-character* (peek-char nil s nil))
 			(read-char s)
-			(eql #\? (peek-char nil s nil)))
+			(eql *dispatch-macro-sub-char* (peek-char nil s nil)))
 	  :collect (1+ line))))
 
 (defreadtable syntax
   (:merge :standard)
-  (:dispatch-macro-char #\# #\? '|#?reader|))
+  (:dispatch-macro-char *dispatch-macro-character* *dispatch-macro-sub-char*
+			'|#?reader|))
 
