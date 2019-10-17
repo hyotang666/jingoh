@@ -37,6 +37,8 @@
 	     (REPLACE() :REPORT "Replace it." #0#)))))))
 
 (defun replace-macro-character(char sub-char)
+  (check-type char character)
+  (check-type sub-char character)
   (setf *dispatch-macro-character* char
 	*dispatch-macro-sub-char* sub-char)
   (set-dispatch-macro-character char sub-char '|#?reader|))
