@@ -213,6 +213,13 @@
 ; character := #\|, ignored.
 
 ; number := NIL, ignored.
+#?(with-input-from-string(s "outer comment.
+			    #234| <--- this number will be ignored.
+			    |#
+			    outer end |# :next")
+    (|block-comment| s '#:ignored '#:ignored)
+    (read s))
+=> :NEXT
 
 ; result := (values)
 
@@ -231,6 +238,10 @@
     (|block-comment| s '#:ignored '#:ignored)
     (read s))
 => :NEXT
+
+#?(with-input-from-string(s "outer comment #| nested |# but without outer end tag.~%:next")
+    (|block-comment| s '#:ignored '#:ignored))
+:signals END-OF-FILE
 
 ;;;; Exceptional-Situations:
 ; When missing end tag `|#`, signals END-OF-FILE.
