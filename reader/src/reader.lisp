@@ -137,8 +137,7 @@
 
 (defun |block-comment|(stream character number)
   (declare(ignore character number))
-  (loop :for char = (read-char stream nil nil)
-	:while char
+  (loop :for char = (read-char stream)
 	:do
 	(case char
 	  (#\#
