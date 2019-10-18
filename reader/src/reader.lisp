@@ -9,7 +9,7 @@
     ;;;; special symbol for debug/trace
     #:*read-verbose*
     #:*read-print*
-    
+
     ;;;; readtable name
     #:syntax
 
@@ -115,7 +115,6 @@
 				  '|#?counter|)
     (with-open-file(s pathname)
       (loop :with tag = '#:end
-	    :for line = *line*
 	    :for sexp = (read s nil tag)
 	    :until (eq sexp tag)))
     (nreverse *line-pos*)))
