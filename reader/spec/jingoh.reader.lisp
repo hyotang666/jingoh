@@ -1,4 +1,6 @@
 (defpackage :jingoh.reader.spec
+  (:import-from :jingoh.reader
+		#:|block-comment| #:*line*)
   (:use :cl :jingoh :jingoh.reader :jingoh.tester))
 (in-package :jingoh.reader.spec)
 (setup :jingoh.reader)
@@ -192,3 +194,46 @@
 
 ;;;; Notes:
 
+(requirements-about |block-comment| :doc-type function
+		    :around (let((*line* 1))
+			      (call-body)))
+
+;;;; Description:
+; Dispatch macro function for block comment, a.k.a `#|`.
+; Consume block comment from STREAM with counting newlines.
+
+#+syntax
+(|block-comment| stream character number) ; => result
+
+;;;; Arguments and Values:
+
+; stream := input stream, otherwise error.
+#?(|block-comment| "not-stream" #\| nil) :signals error
+
+; character := #\|, ignored.
+
+; number := NIL, ignored.
+
+; result := (values)
+
+;;;; Affected By:
+
+;;;; Side-Effects:
+; Increse `JINGOH.READER::*LINE*`.
+#?(with-input-from-string(s (format nil "comment~%|#"))
+    (|block-comment| s '#:ignored '#:ignored)
+    *line*)
+=> 2
+
+;;;; Notes:
+; Works same with common lisp, i.e. tag must nested.
+#?(with-input-from-string(s "outer comment #| nested |# outer end|#:next")
+    (|block-comment| s '#:ignored '#:ignored)
+    (read s))
+=> :NEXT
+
+;;;; Exceptional-Situations:
+; When missing end tag `|#`, signals END-OF-FILE.
+#?(with-input-from-string(s "Missing end tag")
+    (|block-comment| s '#:ignored '#:ignored))
+:signals END-OF-FILE
