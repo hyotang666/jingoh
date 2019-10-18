@@ -153,10 +153,11 @@
 	   (if(char= #\| (read-char stream)) ; nested comment with number, e.g. #1|.
 	     (|block-comment| stream #\| nil)))
 	  (#\newline
-	   (read-char stream)
-	   (incf *line*))
+	   (|line-counter| stream (read-char stream)))
 	  (otherwise
 	    (read-char stream)))
+	:else :if (char= #\newline char)
+	:do (|line-counter| stream (read-char stream))
 	:else :if (and (char= #\| char)
 		       (char= #\# (peek-char nil stream)))
 	:do (read-char stream)
