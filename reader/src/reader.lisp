@@ -139,29 +139,33 @@
   (declare(ignore character number))
   (loop :for char = (read-char stream nil nil)
 	:while char
-	:if (char= #\# char)
 	:do
-	(setf char (peek-char nil stream t t t))
 	(case char
-	  (#\| ; nested comment.
-	   (|block-comment| stream char nil))
-	  ((#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9)
-	   (loop :initially (read-char stream)
-		 :for char = (peek-char nil stream)
-		 :while (digit-char-p char)
-		 :do (read-char stream))
-	   (if(char= #\| (read-char stream)) ; nested comment with number, e.g. #1|.
-	     (|block-comment| stream #\| nil)))
+	  (#\#
+	   (let((char
+		  (peek-char nil stream t t t)))
+	     (case char
+	       (#\| ; nested comment.
+		(|block-comment| stream char nil))
+	       ((#\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9)
+		(loop :initially (read-char stream)
+		      :for char = (peek-char nil stream)
+		      :while (digit-char-p char)
+		      :do (read-char stream))
+		(if(char= #\| (read-char stream)) ; nested comment with number, e.g. #1|.
+		  (|block-comment| stream #\| nil)))
+	       (#\newline
+		(|line-counter| stream (read-char stream)))
+	       (otherwise
+		 #|Do nothing, to next loop|#))))
 	  (#\newline
 	   (|line-counter| stream (read-char stream)))
-	  (otherwise
-	    (read-char stream)))
-	:else :if (char= #\newline char)
-	:do (|line-counter| stream (read-char stream))
-	:else :if (and (char= #\| char)
-		       (char= #\# (peek-char nil stream)))
-	:do (read-char stream)
-	(loop-finish))
+	  (#\|
+	   (if(char= #\# (peek-char nil stream))
+	     (progn (read-char stream)
+		    (loop-finish))
+	     #|Do nothing, to next loop|#))
+	  (otherwise #|Do nothing, to next loop|#)))
   (values))
 
 (defreadtable counter
