@@ -159,7 +159,7 @@
 	       (otherwise
 		 #|Do nothing, to next loop|#))))
 	  (#\newline
-	   (|line-counter| stream (read-char stream)))
+	   (|line-counter| stream char))
 	  (#\|
 	   (if(char= #\# (peek-char nil stream))
 	     (progn (read-char stream)
