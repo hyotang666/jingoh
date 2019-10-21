@@ -37,10 +37,13 @@
 ;; Splitted for easy debug/test.
 (defun %add-method-extension(name)
   (let((*package*(find-package :asdf)))
-    (format t "~%;; These forms below are added by JINGOH.GENERATOR.~{~%~(~S~)~}"
-	    `((in-package :asdf)
+    (format t "~%;;; These forms below are added by JINGOH.GENERATOR.~{~%~A~%~(~S~)~}"
+	    `(";; Ensure in ASDF for pretty printings."
+	      (in-package :asdf)
+	      ";; Enable testing via (asdf:test-system :system-name)."
 	      (defmethod asdf:component-depends-on((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name))))
 		(append (call-next-method) '((asdf:test-op ,(Test-name name)))))
+	      ";; Enable passing parameter for JINGOH:EXAMINER via ASDF:TEST-SYSTEM."
 	      (defmethod asdf:operate :around ((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name)))
 					       &rest asdf::keys
 					       &key ((:compile-print *compile-print*))
@@ -55,6 +58,7 @@
 		  (let((asdf::args(asdf::jingoh.args asdf::keys)))
 		    (declare(special asdf::args))
 		    (call-next-method))))
+	      ";; Enable importing spec documentations."
 	      (let((asdf::system
 		     (asdf:find-system "jingoh.documentizer" nil)))
 		(when(and asdf::system
