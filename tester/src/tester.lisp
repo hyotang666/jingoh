@@ -88,7 +88,15 @@
 	 (HANDLER-CASE (SETF ,output
 			     (WITH-OUTPUT-TO-STRING(*STANDARD-OUTPUT*)
 			       (with-integrated-output-stream(*standard-output*)
-				 ,@body)))
+				 ,@(if(ignore-signals 'warning parameters)
+				     `((handler-bind
+					 ((,(getf parameters :ignore-signals)
+					    (lambda(condition)
+					      (when(find-restart
+						     ',(getf parameters :ignore-signals))
+						(muffle-warning condition)))))
+					 ,@body))
+				     body))))
 	   ,@(unless(ignore-signals 'warning parameters)
 	       `((WARNING(CONDITION)
 		   ,(the-push-instance-form result
