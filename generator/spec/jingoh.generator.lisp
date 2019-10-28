@@ -115,7 +115,7 @@
 :output-satisfies
 (lambda($string)
   (with-input-from-string(*standard-input* $string)
-    (&(uiop:string-prefix-p (format nil "~%;; These forms below are added by JINGOH.GENERATOR.")
+    (&(uiop:string-prefix-p (format nil "~%;;; These forms below are added by JINGOH.GENERATOR.")
 			    $string)
       (equal (read) '(in-package :asdf))
       (equal (read)
