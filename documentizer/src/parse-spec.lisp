@@ -20,7 +20,9 @@
 
 (defun enlist(pathname)
   (with-open-file(s pathname)
-    (loop :for exp = (Read-as-string s nil nil)
+    (loop :for exp = (let((read-as-string:*muffle-reader-error*
+			    T))
+		       (Read-as-string s nil nil))
 	  :while exp
 	  :collect exp)))
 
