@@ -1,6 +1,18 @@
 (in-package #:jingoh.generator)
 
 ;;;; GENERATOR
+(declaim (ftype (function *
+			  (values (function ()
+					    (values null &optional))
+				  &optional))
+		asd-generator
+		readme-generator
+		method-extension-appender
+		test-asd-generator
+		cl-source-file-generator
+		readme-updator
+		))
+
 ;;; ASD
 (defun asd-generator(system-name)
   (lambda()
