@@ -15,6 +15,12 @@
 		     :if-exists :append)
       (repl))))
 
+(defun spec-appender(appender)
+  (with-open-file(*spec-output* *default-pathname-defaults*
+				:direction :output
+				:if-exists :append)
+    (funcall appender)))
+
 (defun repl()
   (catch
     'quit
