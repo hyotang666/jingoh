@@ -12,16 +12,16 @@
 	  (*package*(find-package(second form)))
 	  (existp
 	    (probe-file path)))
-      (uiop:with-output-file(*standard-output* path
-					       :if-exists
-					       (if (and existp
-							append)
-						 :append
-						 :error))
-	(unless existp
-	  (generate-header (second form)))
-	(dolist(symbol (exports form))
-	  (symbol-generate symbol (second form)))))))
+      (Output-to path
+		 (lambda()
+		   (unless existp
+		     (generate-header (second form)))
+		   (dolist(symbol (exports form))
+		     (symbol-generate symbol (second form))))
+		 :if-exists (if (and existp
+				     append)
+			      :append
+			      :error)))))
 
 (defun generate-header(package-name)
   (let((spec-name(intern (format nil "~A.SPEC"package-name)
