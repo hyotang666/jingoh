@@ -10,12 +10,12 @@
 	(lines
 	  (and existp
 	       (uiop:read-file-lines readme-path))))
-    (uiop:with-output-file(*standard-output* readme-path :if-exists :supersede
-					     :if-does-not-exist :create)
-      (if (or existp
-	      lines)
-	(readme-updator system lines)
-	(funcall(readme-generator system))))))
+    (Output-to readme-path
+	       (if (or existp
+		       lines)
+		 (lambda()
+		   (readme-updator system lines))
+		 (readme-generator system)))))
 
 (defun readme-updator(system readme-lines)
   (format t "# ~@:(~A~) ~A~%"(asdf:coerce-name system)
