@@ -49,8 +49,10 @@
 	    (handler-bind((condition
 			    (lambda(c)
 			      (setq condition c))))
-	      (with-output-to-string(*standard-output*)
-		(setq result (multiple-value-list(eval form))))))))
+	      (with-output-to-string(s)
+		(let((*standard-output*
+		       (make-broadcast-stream *standard-output* s)))
+		  (setq result (multiple-value-list(eval form)))))))))
     (shiftf +++ ++ + form)
     (shiftf *** ** * (car result))
     (shiftf /// // / result)
