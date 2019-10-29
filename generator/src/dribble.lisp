@@ -11,3 +11,7 @@
 		     :if-exists :append)
       (repl))))
 
+(defun dribble-read(&optional (*standard-input* *query-io*))
+  (write-string "DRIBBLE> ")
+  (force-output)
+  (read))
