@@ -4,6 +4,7 @@
   (:export
     #:generate
     #:add-method-extension
+    #:dribble
     ))
 (in-package :jingoh.generator)
 
