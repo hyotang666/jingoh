@@ -77,3 +77,7 @@
 
 (defun unreadable-objectp(object)
   (uiop:string-prefix-p "#<" (prin1-to-string object)))
+
+(defun dribble-print(&rest values)
+  (map nil #'print values)
+  (values))
