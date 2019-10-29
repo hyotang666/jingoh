@@ -5,17 +5,17 @@
 (defvar *spec-append-hook* 'funcall)
 
 (defun dribble(system &optional package)
-  (let((*default-pathname-defaults*
-	 (make-pathname :name (string-downcase(package-name *package*))
-			:type "lisp"
-			:defaults (Spec-directory system)))
-       (*package*
-	 (or (when package
-	       (or (find-package package)
-		   (error "Package missing: ~S" package)))
-	     *package*))
-       (*spec-append-hook*
-	 'spec-appender))
+  (let*((*package*
+	  (or (when package
+		(or (find-package package)
+		    (error "Package missing: ~S" package)))
+	      *package*))
+	(*default-pathname-defaults*
+	  (make-pathname :name (string-downcase(package-name *package*))
+			 :type "lisp"
+			 :defaults (Spec-directory system)))
+	(*spec-append-hook*
+	  'spec-appender))
     (repl)))
 
 (defun spec-appender(appender)
