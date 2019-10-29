@@ -9,7 +9,11 @@
 	 (make-pathname :name (string-downcase(package-name *package*))
 			:type "lisp"
 			:defaults (Spec-directory system)))
-       (*package* (or package *package*))
+       (*package*
+	 (or (when package
+	       (or (find-package package)
+		   (error "Package missing: ~S" package)))
+	     *package*))
        (*spec-append-hook*
 	 'spec-appender))
     (repl)))
