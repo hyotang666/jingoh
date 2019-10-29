@@ -329,12 +329,3 @@
 	      (class-name specializer))))
     (REC (closer-mop:method-specializers method)
 	 (closer-mop:method-lambda-list method))))
-
-(defvar +cl-special-symbols+ (loop :for symbol :being :each :external-symbol :of :cl
-				  :when (millet:special-symbol-p symbol)
-				  :collect symbol))
-(defun special-symbols(symbols)
-  (loop :for symbol :in symbols
-	:when (millet:special-symbol-p symbol)
-	:collect symbol :into result
-	:finally (return(append +cl-special-symbols+ result))))
