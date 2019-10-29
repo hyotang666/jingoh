@@ -6,15 +6,12 @@
   (let((*default-pathname-defaults*
 	 (Spec-directory system))
        (*package* (or package *package*)))
-    (append-spec #'repl)))
-
-(defun append-spec(appender)
-  (with-open-file(*spec-output*
-		   (make-pathname :name (string-downcase(package-name *package*))
-				  :type "lisp")
-		   :direction :output
-		   :if-exists :append)
-    (funcall appender)))
+    (with-open-file(*spec-output*
+		     (make-pathname :name (string-downcase(package-name *package*))
+				    :type "lisp")
+		     :direction :output
+		     :if-exists :append)
+      (repl))))
 
 (defun repl()
   (catch
