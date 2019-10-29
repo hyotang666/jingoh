@@ -17,8 +17,11 @@
   (catch
     'quit
     (loop
-      (restart-case(multiple-value-call #'dribble-print
-		     (dribble-eval (dribble-read)))
+      (restart-case(map nil
+			(lambda(x)
+			  (print x)
+			  (force-output))
+			(multiple-value-list(dribble-eval (dribble-read))))
 	(dribble()
 	  :report "Return to dribble.")))))
 
@@ -90,7 +93,3 @@
 
 (defun unreadable-objectp(object)
   (uiop:string-prefix-p "#<" (prin1-to-string object)))
-
-(defun dribble-print(&rest values)
-  (map nil #'print values)
-  (values))
