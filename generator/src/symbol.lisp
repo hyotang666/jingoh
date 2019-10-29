@@ -14,12 +14,8 @@
 	  (path
 	    (Path-of (Test-name system)
 		     "asd")))
-      (macrolet((expand(existsp)
-		  `(PROGN ,@(unless existsp
-			      `((GENERATE-TEST-ASD SYSTEM FORMS PATH)))
-			  (DOLIST(FORM FORMS)
-			    (GENERATE FORM :APPEND T)))))
-	(if(probe-file path)
-	  (expand T)
-	  (expand nil))))))
+      (when(probe-file path)
+	(Generate-test-asd system forms path))
+      (dolist(form forms)
+	(generate form :append t)))))
 
