@@ -1,4 +1,6 @@
 (defpackage :jingoh.generator(:use :cl)
+  (:shadow
+    #:dribble)
   (:export
     #:generate
     #:add-method-extension
