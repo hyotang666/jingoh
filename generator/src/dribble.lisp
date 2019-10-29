@@ -102,6 +102,14 @@
 	    form
 	    (type-of condition))))
 
+(defun spec-of-output(form output)
+  (unless(equal "" output)
+    (format *spec-output* "~%#?~S :outputs ~S"
+	    form
+	    (if(y-or-n-p "Expected output? ~S" output)
+	      output
+	      (read-expected)))))
+
 (defun unreadable-objectp(object)
   (uiop:string-prefix-p "#<" (prin1-to-string object)))
 
