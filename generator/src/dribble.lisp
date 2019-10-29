@@ -1,5 +1,7 @@
 (in-package #:jingoh.generator)
 
+(defvar *spec-output* *standard-output*)
+
 (defun dribble(system &optional package)
   (let((*default-pathname-defaults*
 	 (Spec-directory system))
