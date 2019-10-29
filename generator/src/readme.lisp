@@ -3,10 +3,10 @@
 (defmethod generate((dispatcher (eql :readme))&key system)
   (declare(ignore dispatcher))
   (setf system (asdf:find-system system)) ; as canonicalize.
-  (let*((ssd
-	  (asdf:system-source-directory system))
-	(readme-path
-	  (uiop:subpathname ssd "README.md"))
+  (let*((readme-path
+	  (let((*default-pathname-defaults*
+		 (asdf:system-source-directory system)))
+	    (Path-of "README" "md")))
 	(existp
 	  (probe-file readme-path))
 	(lines

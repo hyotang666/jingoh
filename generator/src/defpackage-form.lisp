@@ -14,9 +14,9 @@
 	      (loop :for elt :in form
 		    :when (typep elt '(CONS(EQL :EXPORT)T))
 		    :append (cdr elt))))
-      (let((path(format nil "~A~(~A~).lisp"
-			*default-pathname-defaults*
-			(second form)))
+      (let((path
+	     (Path-of (string-downcase(second form))
+		      "lisp"))
 	   (*package*(find-package(second form))))
 	(if (probe-file path)
 	  (when append

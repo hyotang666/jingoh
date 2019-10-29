@@ -11,9 +11,10 @@
 		    (error "Package missing: ~S" package)))
 	      *package*))
 	(*default-pathname-defaults*
-	  (make-pathname :name (string-downcase(package-name *package*))
-			 :type "lisp"
-			 :defaults (Spec-directory system)))
+	  (let((*default-pathname-defaults*
+		 (Spec-directory system)))
+	    (Path-of (string-downcase(package-name *package*))
+		     "lisp")))
 	(*spec-append-hook*
 	  'spec-appender))
     (repl)))
