@@ -15,3 +15,6 @@
   (write-string "DRIBBLE> ")
   (force-output)
   (read))
+
+(defun unreadable-objectp(object)
+  (uiop:string-prefix-p "#<" (prin1-to-string object)))
