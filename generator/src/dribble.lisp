@@ -33,7 +33,7 @@
     (read)))
 
 (defun dribble-eval(form)
-  (when(equal form '(dribble))
+  (when(string= 'dribble (car(uiop:ensure-list form)))
     (throw 'quit (values)))
   (let*((condition)
 	(result)
