@@ -95,6 +95,13 @@
     (force-output)
     (values-list result)))
 
+(defun spec-of-warns(form condition)
+  (when (and (typep condition 'warning)
+	     (y-or-n-p "Expected signals? ~S" condition))
+    (format *spec-output* "~%#?~S :signals ~S"
+	    form
+	    (type-of condition))))
+
 (defun unreadable-objectp(object)
   (uiop:string-prefix-p "#<" (prin1-to-string object)))
 
