@@ -97,3 +97,11 @@
 
 (defun unreadable-objectp(object)
   (uiop:string-prefix-p "#<" (prin1-to-string object)))
+
+(defun read-expected()
+  (format *query-io* "Type expected output till Ctl-D.~%")
+  (force-output *query-io*)
+  (loop :for line := (read-line *query-io* nil nil)
+	:while line
+	:collect line :into lines
+	:finally (return (format nil "~{~A~^~%~}" lines))))
