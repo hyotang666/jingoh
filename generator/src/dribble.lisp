@@ -58,14 +58,8 @@
     (shiftf /// // / result)
     (unless(find form '(+++ ++ + *** ** * /// // /)
 		 :test #'equal)
-      (when (typep condition 'warning)
-	(format *spec-output* "~%#?~S :signals ~S"
-		form
-		(type-of condition)))
-      (unless(equal "" output)
-	(format *spec-output* "~%#?~S :outputs ~S"
-		form
-		output))
+      (spec-of-warns form condition)
+      (spec-of-output form output)
       (if(cdr result) ; multiple-value.
 	(if(typep form '(cons (eql macroexpand-1)
 			      *))
