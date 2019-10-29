@@ -46,6 +46,13 @@
 ; Generate new spec directory and all spec template.
 ; About append see above.
 
+#+signature(GENERATE (DISPATCHER (EQL :README)) &KEY SYSTEM)
+; Generate README.md file.
+; If it is already exists, update it, especially version information.
+
+#+signature(GENERATE (DISPATCHER (EQL TEST-ASD)) &KEY SYSTEM FORMS PATH)
+; Generate asd file which for test.
+
 ;;;; Arguments and Values:
 
 ; result := NIL
@@ -160,4 +167,3 @@
 
 ; when specified symbol is not found, an error is signaled.
 #?(symbol-generate 'fuga :jingoh.generator) :signals error
-
