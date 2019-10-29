@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.generator
-  :version "1.7.2"
+  :version "1.8.0"
   :in-order-to((test-op(test-op "jingoh.generator.test")))
   :depends-on (
                "millet" ; wrappter for implementation dependent utilities.

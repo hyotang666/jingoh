@@ -177,7 +177,7 @@
 	    (Path-of (Test-name system)
 		     "asd")))
       (when(probe-file path)
-	(generate-test-asd system forms path))
+	(generate 'test-asd :system system :forms forms :path path))
       (dolist(form forms)
 	(generate form :append t)))))
 
@@ -242,7 +242,7 @@
     ;; adding extension unless spec dir exists.
     (unless(probe-file test-asd-path)
       (add-method-extension system))
-    (generate-test-asd system forms test-asd-path)
+    (generate 'test-asd :system system :forms forms :path test-asd-path)
     (dolist(form forms)
       (generate form :append append)))
   #+quicklisp
@@ -254,9 +254,10 @@
 	       (method-extension-appender (asdf:coerce-name system))
 	       :if-exists :append)))
 
-(defun generate-test-asd(system forms test-asd-path)
+;;; TEST-ASD
+(defmethod generate((dispatcher (eql 'test-asd)) &key system forms path)
   (ensure-directories-exist *default-pathname-defaults*)
-  (Output-to test-asd-path
+  (Output-to path
 	     (test-asd-generator system forms)))
 
 ;;; DEFPACKAGE-FORM
