@@ -6,14 +6,13 @@
 
 (defun dribble(system &optional package)
   (let((*default-pathname-defaults*
-	 (Spec-directory system))
-       (*package* (or package *package*)))
-    (with-open-file(*spec-output*
-		     (make-pathname :name (string-downcase(package-name *package*))
-				    :type "lisp")
-		     :direction :output
-		     :if-exists :append)
-      (repl))))
+	 (make-pathname :name (string-downcase(package-name *package*))
+			:type "lisp"
+			:defaults (Spec-directory system)))
+       (*package* (or package *package*))
+       (*spec-append-hook*
+	 'spec-appender))
+    (repl)))
 
 (defun spec-appender(appender)
   (with-open-file(*spec-output* *default-pathname-defaults*
