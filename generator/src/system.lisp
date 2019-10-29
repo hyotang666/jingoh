@@ -91,27 +91,28 @@
 
 (defun generate-test-asd(system forms test-asd-path)
   (ensure-directories-exist *default-pathname-defaults*)
-  (uiop:with-output-file(*standard-output* test-asd-path :if-exists :supersede)
-    (%generate-test-asd system forms)))
+  (Output-to test-asd-path
+	     (test-asd-generator system forms)))
 
 ;; Splitted for easy debug/test.
-(defun %generate-test-asd(system forms)
-  (labels((COMPONENT(form)
-	    `(:file ,(string-downcase(second form))))
-	  (EXAMINE-FORM(form)
-	    `(apply #'uiop:symbol-call :jingoh :examine ,(PACKAGE-KEY (second form))
-		    asdf::args))
-	  (PACKAGE-KEY(package-name)
-	    (intern (string package-name) :keyword))
-	  )
-    (let((*package* (find-package :asdf)))
-      (format t "; vim: ft=lisp et~%~
-	      (in-package :asdf)~%~
-	      ~(~S~)"
-	      `(asdf:defsystem ,(Test-name system)
-			       :version "0.0.0"
-			       :depends-on (:jingoh ,(asdf:coerce-name system))
-			       :components ,(mapcar #'COMPONENT forms)
-			       :perform (asdf:test-op(asdf::o asdf::c)
-					  (declare(special asdf::args))
-					  ,@(mapcar #'EXAMINE-FORM forms)))))))
+(defun test-asd-generator(system forms)
+  (lambda()
+    (labels((COMPONENT(form)
+	      `(:file ,(string-downcase(second form))))
+	    (EXAMINE-FORM(form)
+	      `(apply #'uiop:symbol-call :jingoh :examine ,(PACKAGE-KEY (second form))
+		      asdf::args))
+	    (PACKAGE-KEY(package-name)
+	      (intern (string package-name) :keyword))
+	    )
+      (let((*package* (find-package :asdf)))
+	(format t "; vim: ft=lisp et~%~
+		(in-package :asdf)~%~
+		~(~S~)"
+		`(asdf:defsystem ,(Test-name system)
+				 :version "0.0.0"
+				 :depends-on (:jingoh ,(asdf:coerce-name system))
+				 :components ,(mapcar #'COMPONENT forms)
+				 :perform (asdf:test-op(asdf::o asdf::c)
+					    (declare(special asdf::args))
+					    ,@(mapcar #'EXAMINE-FORM forms))))))))
