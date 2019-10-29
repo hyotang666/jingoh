@@ -16,6 +16,15 @@
 		   :if-exists :append)
     (funcall appender)))
 
+(defun repl()
+  (catch
+    'quit
+    (loop
+      (restart-case(multiple-value-call #'dribble-print
+		     (dribble-eval (dribble-read)))
+	(dribble()
+	  :report "Return to dribble.")))))
+
 (defun dribble-read(&optional (*standard-input* *query-io*))
   (format t "~%DRIBBLE> ")
   (force-output)
