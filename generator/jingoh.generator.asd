@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.generator
-  :version "1.7.0"
+  :version "1.7.1"
   :in-order-to((test-op(test-op "jingoh.generator.test")))
   :depends-on (
                "millet" ; wrappter for implementation dependent utilities.
@@ -19,13 +19,8 @@
                (:file "util" :depends-on ("package"))
                (:file "symbol-generate" :depends-on ("package"))
 
-               (:file "init" :depends-on ("util"))
-               (:file "readme" :depends-on ("init" "util"))
-               (:file "system" :depends-on ("util"))
+               (:file "generate" :depends-on ("symbol-generate"))
                (:file "dribble" :depends-on ("util"))
-               (:file "defpackage-form" :depends-on ("symbol-generate" "util"))
-
-               (:file "symbol" :depends-on ("system" "util"))
                ))
 
 ;;; The form below is documentation importer.
