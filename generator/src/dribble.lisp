@@ -23,7 +23,9 @@
 			(lambda(x)
 			  (print x)
 			  (force-output))
-			(multiple-value-list(dribble-eval (dribble-read))))
+			(multiple-value-list(funcall *spec-append-hook*
+						     (lambda()
+						       (dribble-eval (dribble-read))))))
 	(dribble()
 	  :report "Return to dribble.")))))
 
