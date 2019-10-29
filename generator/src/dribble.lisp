@@ -26,9 +26,11 @@
 	  :report "Return to dribble.")))))
 
 (defun dribble-read(&optional (*standard-input* *query-io*))
-  (format t "~%DRIBBLE> ")
-  (force-output)
-  (read))
+  (let((*standard-output*
+	 *query-io*))
+    (format t "~%DRIBBLE> ")
+    (force-output)
+    (read)))
 
 (defun dribble-eval(form)
   (shiftf +++ ++ + form)
