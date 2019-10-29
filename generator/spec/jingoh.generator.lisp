@@ -1,4 +1,6 @@
 (defpackage :jingoh.generator.spec (:use :cl :jingoh :jingoh.generator)
+  (:shadowing-import-from :jingoh.generator
+			  #:dribble)
   (:import-from :jingoh.generator
 		#:%generate-test-asd
 		#:%add-method-extension
