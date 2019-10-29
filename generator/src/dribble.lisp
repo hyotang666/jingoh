@@ -17,7 +17,7 @@
     (funcall appender)))
 
 (defun dribble-read(&optional (*standard-input* *query-io*))
-  (write-string "DRIBBLE> ")
+  (format t "~%DRIBBLE> ")
   (force-output)
   (read))
 
