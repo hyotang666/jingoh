@@ -24,10 +24,8 @@
 		 (asd-generator system-name))
       (output-to (Path-of "README" "md")
 		 (readme-generator system-name))
-      (output-to (let((*default-pathname-defaults*
-			(uiop:subpathname *default-pathname-defaults*
-					  "src/")))
-		   (Path-of system-name "lisp"))
+      (output-to (Path-of system-name "lisp" (uiop:subpathname *default-pathname-defaults*
+							       "src/"))
 		 (cl-source-file-generator system-name)))
     (ql:register-local-projects)
     (generate (asdf:find-system system))))

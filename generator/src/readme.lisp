@@ -4,9 +4,7 @@
   (declare(ignore dispatcher))
   (setf system (asdf:find-system system)) ; as canonicalize.
   (let*((readme-path
-	  (let((*default-pathname-defaults*
-		 (asdf:system-source-directory system)))
-	    (Path-of "README" "md")))
+	  (Path-of "README" "md"(asdf:system-source-directory system)))
 	(existp
 	  (probe-file readme-path))
 	(lines
