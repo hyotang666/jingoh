@@ -33,7 +33,6 @@
     (read)))
 
 (defun dribble-eval(form)
-  (shiftf +++ ++ + form)
   (when(equal form '(dribble))
     (throw 'quit (values)))
   (let*((condition)
@@ -52,6 +51,7 @@
 			      (setq condition c))))
 	      (with-output-to-string(*standard-output*)
 		(setq result (multiple-value-list(eval form))))))))
+    (shiftf +++ ++ + form)
     (shiftf *** ** * (car result))
     (shiftf /// // / result)
     (when (typep condition 'warning)
