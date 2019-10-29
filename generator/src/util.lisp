@@ -14,7 +14,7 @@
 		 :type type
 		 :defaults *default-pathname-defaults*))
 
-(defun output-to(path thunk)
+(defun output-to(path thunk &key (if-exists :supersede))
   (uiop:with-output-file(*standard-output*(ensure-directories-exist path)
-			  :if-exists :supersede)
+			  :if-exists if-exists)
     (funcall thunk)))
