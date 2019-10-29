@@ -54,40 +54,42 @@
     (shiftf +++ ++ + form)
     (shiftf *** ** * (car result))
     (shiftf /// // / result)
-    (when (typep condition 'warning)
-      (format *spec-output* "~%#?~S :signals ~S"
-	      form
-	      (type-of condition)))
-    (unless(equal "" output)
-      (format *spec-output* "~%#?~S :outputs ~S"
-	      form
-	      output))
-    (if(cdr result) ; multiple-value.
-      (if(typep form '(cons (eql macroexpand-1)
-			    *))
-	(format *spec-output* "~%#?~S :expanded-to ~S"
-		(cadr form)
-		(car result))
-	(if(some #'unreadable-objectp result)
-	  (format *spec-output* "~%#?~S~%:multiple-value-satisfies~%~S"
-		  form
-		  `(lambda,(loop :for i :upfrom 1 :to (length result)
-				 :collect (intern(format nil "RESULT~D" i)))
-		     :TODO))
-	  (format *spec-output* "~%#?~S~%:values ~S"
-		  form
-		  result)))
-      (if(unreadable-objectp (car result))
-	(format *spec-output* "~%#?~S :be-the ~S"
+    (unless(find form '(+++ ++ + *** ** * /// // /)
+		 :test #'equal)
+      (when (typep condition 'warning)
+	(format *spec-output* "~%#?~S :signals ~S"
 		form
-		(type-of (car result)))
-	(format *spec-output* "~%#?~S => ~S~@[~%~A~]~@[~%~A~]"
+		(type-of condition)))
+      (unless(equal "" output)
+	(format *spec-output* "~%#?~S :outputs ~S"
 		form
-		(car result)
-		(when (typep condition 'warning)
-		  ", :ignore-signals warning")
-		(unless(equal "" output)
-		  ", :stream nil"))))
+		output))
+      (if(cdr result) ; multiple-value.
+	(if(typep form '(cons (eql macroexpand-1)
+			      *))
+	  (format *spec-output* "~%#?~S :expanded-to ~S"
+		  (cadr form)
+		  (car result))
+	  (if(some #'unreadable-objectp result)
+	    (format *spec-output* "~%#?~S~%:multiple-value-satisfies~%~S"
+		    form
+		    `(lambda,(loop :for i :upfrom 1 :to (length result)
+				   :collect (intern(format nil "RESULT~D" i)))
+		       :TODO))
+	    (format *spec-output* "~%#?~S~%:values ~S"
+		    form
+		    result)))
+	(if(unreadable-objectp (car result))
+	  (format *spec-output* "~%#?~S :be-the ~S"
+		  form
+		  (type-of (car result)))
+	  (format *spec-output* "~%#?~S => ~S~@[~%~A~]~@[~%~A~]"
+		  form
+		  (car result)
+		  (when (typep condition 'warning)
+		    ", :ignore-signals warning")
+		  (unless(equal "" output)
+		    ", :stream nil")))))
     (force-output)
     (values-list result)))
 
