@@ -9,7 +9,7 @@
     (append-spec #'repl)))
 
 (defun append-spec(appender)
-  (with-open-file(*standard-output*
+  (with-open-file(*spec-output*
 		   (make-pathname :name (string-downcase(package-name *package*))
 				  :type "lisp")
 		   :direction :output
