@@ -29,66 +29,65 @@
 
 (defun add-method-extension (system)
   (let((system(asdf:find-system system)))
-    (uiop:with-output-file(*standard-output*
-			    (asdf:system-source-file system)
-			    :if-exists
-			    :append)
-      (%add-method-extension (asdf:coerce-name system)))))
+    (Output-to (asdf:system-source-file system)
+	       (method-extension-appender (asdf:coerce-name system))
+	       :if-exists :append)))
 
 ;; Splitted for easy debug/test.
-(defun %add-method-extension(name)
-  (let((*package*(find-package :asdf)))
-    (format t "~%;;; These forms below are added by JINGOH.GENERATOR.~{~%~A~%~(~S~)~}"
-	    `(";; Ensure in ASDF for pretty printings."
-	      (in-package :asdf)
-	      ";; Enable testing via (asdf:test-system :system-name)."
-	      (defmethod asdf:component-depends-on((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name))))
-		(append (call-next-method) '((asdf:test-op ,(Test-name name)))))
-	      ";; Enable passing parameter for JINGOH:EXAMINER via ASDF:TEST-SYSTEM."
-	      (defmethod asdf:operate :around ((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name)))
-					       &rest asdf::keys
-					       &key ((:compile-print *compile-print*))
-					       ((:compile-verbose *compile-verbose*))
-					       &allow-other-keys)
-		(flet((asdf::jingoh.args(asdf::keys)
-			(loop :for (asdf::key asdf::value) :on asdf::keys :by #'cddr
-			      :when (find asdf::key '(:on-fails :subject :vivid) :test #'eq)
-			      :collect asdf::key :and :collect asdf::value
-			      :else :when (eq :jingoh.verbose asdf::key)
-			      :collect :verbose :and :collect asdf::value)))
-		  (let((asdf::args(asdf::jingoh.args asdf::keys)))
-		    (declare(special asdf::args))
-		    (call-next-method))))
-	      ";; Enable importing spec documentations."
-	      (let((asdf::system
-		     (asdf:find-system "jingoh.documentizer" nil)))
-		(when(and asdf::system
-			  (not (uiop:featurep :clisp)))
-		  (asdf:load-system asdf::system)
-		  (defmethod asdf:operate :around ((asdf::o asdf:load-op)
-						   (asdf::c (eql (asdf:find-system ,name)))
-						   &key)
-		    (let*((asdf::seen nil)
-			  (*default-pathname-defaults*
-			    (merge-pathnames "spec/"
-					     (asdf:system-source-directory asdf::c)))
-			  (*macroexpand-hook*
-			    (let((asdf::outer-hook *macroexpand-hook*))
-			      (lambda(asdf::expander asdf::form asdf::env)
-				(if(not(typep asdf::form '(cons (eql defpackage)*)))
-				  (funcall asdf::outer-hook asdf::expander
-					   asdf::form asdf::env)
-				  (if(find (cadr asdf::form)asdf::seen
-					   :test #'string=)
+(defun method-extension-appender(name)
+  (lambda()
+    (let((*package*(find-package :asdf)))
+      (format t "~%;;; These forms below are added by JINGOH.GENERATOR.~{~%~A~%~(~S~)~}"
+	      `(";; Ensure in ASDF for pretty printings."
+		(in-package :asdf)
+		";; Enable testing via (asdf:test-system :system-name)."
+		(defmethod asdf:component-depends-on((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name))))
+		  (append (call-next-method) '((asdf:test-op ,(Test-name name)))))
+		";; Enable passing parameter for JINGOH:EXAMINER via ASDF:TEST-SYSTEM."
+		(defmethod asdf:operate :around ((asdf::o asdf:test-op)(asdf::c (eql (asdf:find-system ,name)))
+						 &rest asdf::keys
+						 &key ((:compile-print *compile-print*))
+						 ((:compile-verbose *compile-verbose*))
+						 &allow-other-keys)
+		  (flet((asdf::jingoh.args(asdf::keys)
+			  (loop :for (asdf::key asdf::value) :on asdf::keys :by #'cddr
+				:when (find asdf::key '(:on-fails :subject :vivid) :test #'eq)
+				:collect asdf::key :and :collect asdf::value
+				:else :when (eq :jingoh.verbose asdf::key)
+				:collect :verbose :and :collect asdf::value)))
+		    (let((asdf::args(asdf::jingoh.args asdf::keys)))
+		      (declare(special asdf::args))
+		      (call-next-method))))
+		";; Enable importing spec documentations."
+		(let((asdf::system
+		       (asdf:find-system "jingoh.documentizer" nil)))
+		  (when(and asdf::system
+			    (not (uiop:featurep :clisp)))
+		    (asdf:load-system asdf::system)
+		    (defmethod asdf:operate :around ((asdf::o asdf:load-op)
+						     (asdf::c (eql (asdf:find-system ,name)))
+						     &key)
+		      (let*((asdf::seen nil)
+			    (*default-pathname-defaults*
+			      (merge-pathnames "spec/"
+					       (asdf:system-source-directory asdf::c)))
+			    (*macroexpand-hook*
+			      (let((asdf::outer-hook *macroexpand-hook*))
+				(lambda(asdf::expander asdf::form asdf::env)
+				  (if(not(typep asdf::form '(cons (eql defpackage)*)))
 				    (funcall asdf::outer-hook asdf::expander
 					     asdf::form asdf::env)
-				    (progn (push (cadr asdf::form) asdf::seen)
-					   `(progn ,asdf::form
-						   ,@(uiop:symbol-call
-						       :JINGOH.DOCUMENTIZER
-						       :IMPORTER
-						       asdf::form)))))))))
-		      (call-next-method)))))))))
+				    (if(find (cadr asdf::form)asdf::seen
+					     :test #'string=)
+				      (funcall asdf::outer-hook asdf::expander
+					       asdf::form asdf::env)
+				      (progn (push (cadr asdf::form) asdf::seen)
+					     `(progn ,asdf::form
+						     ,@(uiop:symbol-call
+							 :JINGOH.DOCUMENTIZER
+							 :IMPORTER
+							 asdf::form)))))))))
+			(call-next-method))))))))))
 
 (defun generate-test-asd(system forms test-asd-path)
   (ensure-directories-exist *default-pathname-defaults*)
