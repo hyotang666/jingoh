@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.generator
-  :version "1.1.0"
+  :version "1.2.0"
   :in-order-to((test-op(test-op "jingoh.generator.test")))
   :depends-on (
                "millet" ; wrappter for implementation dependent utilities.
@@ -17,9 +17,9 @@
   :pathname "src"
   :components ((:file "package")
                (:file "util" :depends-on ("package"))
-               (:file "init" :depends-on ("package"))
                (:file "symbol-generate" :depends-on ("package"))
 
+               (:file "init" :depends-on ("util"))
                (:file "readme" :depends-on ("init"))
                (:file "system" :depends-on ("util"))
                (:file "dribble" :depends-on ("util"))

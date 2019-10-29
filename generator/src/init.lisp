@@ -19,19 +19,15 @@
     (flet((output-to(path thunk)
 	    (uiop:with-output-file(*standard-output*(ensure-directories-exist path)
 				    :if-exists :supersede)
-	      (funcall thunk)))
-	  (path-of(name type)
-	    (make-pathname :name name
-			   :type type
-			   :defaults *default-pathname-defaults*)))
-      (output-to (path-of system-name "asd")
+	      (funcall thunk))))
+      (output-to (Path-of system-name "asd")
 		 (asd-generator system-name))
-      (output-to (path-of "README" "md")
+      (output-to (Path-of "README" "md")
 		 (readme-generator system-name))
       (output-to (let((*default-pathname-defaults*
 			(uiop:subpathname *default-pathname-defaults*
 					  "src/")))
-		   (path-of system-name "lisp"))
+		   (Path-of system-name "lisp"))
 		 (cl-source-file-generator system-name)))
     (ql:register-local-projects)
     (generate (asdf:find-system system))))

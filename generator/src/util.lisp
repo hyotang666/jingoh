@@ -12,3 +12,7 @@
 (defun test-name(system)
   (concatenate 'string (asdf:coerce-name system) ".test"))
 
+(defun path-of(name type)
+  (make-pathname :name name
+		 :type type
+		 :defaults *default-pathname-defaults*))
