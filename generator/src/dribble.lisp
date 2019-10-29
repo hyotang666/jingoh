@@ -11,6 +11,14 @@
 		     :if-exists :append)
       (repl))))
 
+(defun append-spec(appender)
+  (with-open-file(*standard-output*
+		   (make-pathname :name (string-downcase(package-name *package*))
+				  :type "lisp")
+		   :direction :output
+		   :if-exists :append)
+    (funcall appender)))
+
 (defun dribble-read(&optional (*standard-input* *query-io*))
   (write-string "DRIBBLE> ")
   (force-output)
