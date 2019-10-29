@@ -88,8 +88,8 @@
 		  ", :ignore-signals warning")
 		(unless(equal "" output)
 		  ", :stream nil"))))
-	(force-output)
-	(values-list result)))
+    (force-output)
+    (values-list result)))
 
 (defun unreadable-objectp(object)
   (uiop:string-prefix-p "#<" (prin1-to-string object)))
