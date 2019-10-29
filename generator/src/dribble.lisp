@@ -22,6 +22,8 @@
   (read))
 
 (defun dribble-eval(form)
+  (when(equal form '(dribble))
+    (throw 'quit (values)))
   (let*((condition)
 	(result)
 	(output
