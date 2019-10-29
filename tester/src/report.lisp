@@ -39,6 +39,20 @@
 	       (call-next-method i stream)))))
       (princ(regex-replace issue string)stream))))
 
+(defmethod print-object((issue unsatisfied-clause)stream)
+  (if (not *print-vivid*)
+    (call-next-method)
+    (progn (when(typep (issue-form issue)
+		       '(cons (member eq eql equal equalp)
+			      *))
+	     (let((args
+		    (unsatisfied-clause-args issue)))
+	       (setf (unsatisfied-clause-args issue)
+		     (list (car args)
+			   (mismatch-sexp (cadr args)
+					  (car args))))))
+	   (call-next-method))))
+
 (defun should-print-vivid-p(issue)
   (and (not (typep issue '(or condition-issue
 			      unexpected-success
