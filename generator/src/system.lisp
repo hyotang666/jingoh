@@ -12,7 +12,8 @@
 	(*default-pathname-defaults*
 	  (Spec-directory system))
 	(test-asd-path
-	  (Test-asd-path system)))
+	  (Path-of (Test-name system)
+		   "asd")))
     (mapc #'asdf:load-system(asdf:system-depends-on system))
     (asdf:load-system system :force t)
     ;; In order to generate asd for already existing project,

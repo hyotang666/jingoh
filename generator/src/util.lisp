@@ -4,11 +4,6 @@
   (uiop:subpathname (asdf:system-source-directory (asdf:find-system system))
 		    "spec/"))
 
-(defun test-asd-path(system)
-  (make-pathname :name (test-name system)
-		 :type "asd"
-		 :defaults *default-pathname-defaults*))
-
 (defun test-name(system)
   (concatenate 'string (asdf:coerce-name system) ".test"))
 
