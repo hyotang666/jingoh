@@ -177,7 +177,7 @@
 	    (Path-of (Test-name system)
 		     "asd")))
       (when(probe-file path)
-	(Generate-test-asd system forms path))
+	(generate-test-asd system forms path))
       (dolist(form forms)
 	(generate form :append t)))))
 
