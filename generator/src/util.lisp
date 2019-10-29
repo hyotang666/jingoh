@@ -13,3 +13,8 @@
   (make-pathname :name name
 		 :type type
 		 :defaults *default-pathname-defaults*))
+
+(defun output-to(path thunk)
+  (uiop:with-output-file(*standard-output*(ensure-directories-exist path)
+			  :if-exists :supersede)
+    (funcall thunk)))
