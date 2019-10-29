@@ -2,6 +2,8 @@
 
 (defvar *spec-output* *standard-output*)
 
+(defvar *spec-append-hook* 'funcall)
+
 (defun dribble(system &optional package)
   (let((*default-pathname-defaults*
 	 (Spec-directory system))
