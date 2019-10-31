@@ -2,8 +2,6 @@
   (:shadowing-import-from :jingoh.generator
 			  #:dribble)
   (:import-from :jingoh.generator
-		#:%generate-test-asd
-		#:%add-method-extension
 		#:generate-header
 		#:symbol-generate)
   )
