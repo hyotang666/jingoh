@@ -68,6 +68,12 @@
 ; when system is not found, an error of type ASDF/FIND-SYSTEM:MISSING-COMPONENT is signaled.
 #?(generate :no-such-system) :signals asdf:missing-component
 
+; When specify :init T, and specified name is already exists in quicklisp,
+; an error is signaled.
+; In such case, restart `CONTINUE` and `RENAME` are achived.
+#?(generate :alexandria :init t) :signals error
+,:with-restarts (jingoh.generator::rename continue)
+
 (requirements-about GENERATE-HEADER :doc-type function)
 
 ;;;; Description:
