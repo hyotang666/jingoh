@@ -204,7 +204,7 @@
 
 (defmethod generate((dispatcher (eql 'init))&key system pathname)
   (let*((system-name
-	  (asdf:coerce-name system))
+	  (ensure-name system))
 	(*default-pathname-defaults*
 	  (uiop:subpathname (or (and pathname
 				     (uiop:ensure-directory-pathname pathname))
@@ -219,6 +219,25 @@
 	       (cl-source-file-generator system-name))
     (ql:register-local-projects)
     (generate (asdf:find-system system))))
+
+(defun ensure-name(system)
+  (let((name
+	 (asdf:coerce-name system)))
+    (if(not(find name (ql-dist:provided-systems t)
+		 :key #'ql-dist:name
+		 :test #'equal))
+      name
+      (restart-case (error "~S is already used in quicklisp." name)
+	(continue()
+	  :report "Use it anyway."
+	  name)
+	(rename(name)
+	  :report "Specify new name."
+	  :interactive (lambda()
+			 (format *query-io* ">> ")
+			 (force-output *query-io*)
+			 (list(read-line *query-io*)))
+	  (ensure-name name))))))
 
 (defun local-project-directory()
   (let((directories ql:*local-project-directories*))

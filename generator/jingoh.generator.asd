@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.generator
-  :version "1.8.3"
+  :version "1.9.0"
   :in-order-to((test-op(test-op "jingoh.generator.test")))
   :depends-on (
                "millet" ; wrappter for implementation dependent utilities.
@@ -9,6 +9,7 @@
                "lambda-fiddle" ; utilities for lambda-list.
                "asdf" ; system loading.
                "uiop" ; utilities.
+               "quicklisp" ; system installing.
                "named-readtables" ; to manage readtable.
                "prompt-for" ; for type safe user input.
                "trivial-cltl2" ; wrapper for cltl2.
