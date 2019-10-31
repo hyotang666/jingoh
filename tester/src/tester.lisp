@@ -185,7 +185,7 @@
 				  'MISSING-RESTARTS
 				  `',test-form
 				  restarts
-				  `(COMPUTE-RESTARTS CONDITION)
+				  `(MAPCAR #'RESTART-NAME (COMPUTE-RESTARTS CONDITION))
 				  (getf parameters :line)))))))
 		   (GO ,end)))
 	      )
@@ -324,7 +324,7 @@
 				  'MISSING-RESTARTS
 				  `',test-form
 				  restarts
-				  `(COMPUTE-RESTARTS CONDITION)
+				  `(MAPCAR #'RESTART-NAME (COMPUTE-RESTARTS CONDITION))
 				  (getf parameters :line))))))
 		     ,(the-push-instance-form result
 					      'UNMATCH-CONDITION
