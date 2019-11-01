@@ -118,6 +118,16 @@
 			    (REC rest (push (Escape-* symbol) acc))))))))
 	    (REC (Meta-data-exports meta-data)))))
 
+;;; ABOUT-SYMBOLS
+(defun about-symbols(meta-data)
+  (flet((PUT(section)
+	  (With-doc-directory((merge-pathnames(Section-path section)))
+	    (princ section))))
+    (dolist(section(Meta-data-singles meta-data))
+      (PUT section))
+    (dolist(section(Meta-data-commons meta-data))
+      (PUT section))))
+
 (defun meta-datas<=system(system
 			   &optional
 			   (sys-dir(asdf:system-source-directory system)))
