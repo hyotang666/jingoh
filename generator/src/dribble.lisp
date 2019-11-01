@@ -34,9 +34,18 @@
 			  (force-output))
 			(multiple-value-list(funcall *spec-append-hook*
 						     (lambda()
-						       (dribble-eval (dribble-read))))))
+						       (handler-bind((append-spec #'append-spec))
+							 (dribble-eval (dribble-read)))))))
 	(dribble()
 	  :report "Return to dribble.")))))
+
+(define-condition append-spec(simple-condition)
+  ())
+
+(defun append-spec(condition)
+  (when(find-restart 'append-spec condition)
+    (princ condition *spec-output*)
+    (force-output *spec-output*)))
 
 (defun dribble-read(&optional (*standard-input* *query-io*))
   (let((*standard-output*
@@ -54,9 +63,10 @@
 	(output
 	  (restart-bind((append-spec
 			  (lambda()
-			    (format *spec-output* "~%#?~S :signals ~S"
-				    form
-				    (type-of condition)))
+			    (signal 'append-spec
+				    :format-control "~%#?~S :signals ~S"
+				    :format-arguments (list form (type-of condition)))
+			    (return-from dribble-eval (values)))
 			  :report-function
 			  (lambda(s)
 			    (format s "Append spec. This error is valid behavior."))))
