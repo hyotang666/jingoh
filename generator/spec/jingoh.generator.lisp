@@ -2,6 +2,7 @@
   (:shadowing-import-from :jingoh.generator
 			  #:dribble)
   (:import-from :jingoh.generator
+		#:ensure-name
 		#:generate-header
 		#:symbol-generate)
   )
@@ -171,3 +172,51 @@
 
 ; when specified symbol is not found, an error is signaled.
 #?(symbol-generate 'fuga :jingoh.generator) :signals error
+
+(requirements-about ENSURE-NAME :doc-type function)
+
+;;;; Description:
+
+#+syntax
+(ENSURE-NAME system) ; => result
+
+#?(ENSURE-NAME :NAME) => "name"
+,:test equal
+
+;;;; Arguments and Values:
+
+; system := asdf:system designator, otherwise error.
+#?(ENSURE-NAME 0) :signals ASDF/SESSION:FORMATTED-SYSTEM-DEFINITION-ERROR
+
+; result := string
+
+;;;; Affected By:
+; QUICKLISP provided system status.
+
+;;;; Side-Effects:
+
+;;;; Notes:
+
+;;;; Exceptional-Situations:
+; When system name already provided by quicklisp, an error is signaled.
+#?(ENSURE-NAME :ALEXANDRIA) :signals SIMPLE-ERROR
+,:with-restarts (jingoh.generator::rename continue)
+
+; In such case, restart CONTINUE is achieved.
+#?(handler-bind((error #'continue))
+    (ensure-name :alexandria))
+=> "alexandria"
+,:test equal
+
+; Samely, restart JINGOH.GENERATOR::RENAME is also achieved.
+#?(with-input-from-string(s "new-name")
+    (let((*query-io*
+	   (make-two-way-stream s (make-broadcast-stream))))
+      (handler-bind((error (lambda(condition)
+			     (let((restart
+				    (find-restart 'jingoh.generator::rename condition)))
+			       (when restart
+				 (invoke-restart-interactively restart))))))
+	(ensure-name :alexandria))))
+=> "new-name"
+,:test equal
