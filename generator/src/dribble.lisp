@@ -28,14 +28,11 @@
   (catch
     'quit
     (loop
-      (restart-case(map nil
-			(lambda(x)
-			  (print x)
-			  (force-output))
-			(multiple-value-list(funcall *spec-append-hook*
-						     (lambda()
-						       (handler-bind((append-spec #'append-spec))
-							 (dribble-eval (dribble-read)))))))
+      (restart-case(multiple-value-call #'dribble-print
+		     (funcall *spec-append-hook*
+			      (lambda()
+				(handler-bind((append-spec #'append-spec))
+				  (dribble-eval (dribble-read))))))
 	(dribble()
 	  :report "Return to dribble.")))))
 
@@ -146,3 +143,7 @@
 	:while line
 	:collect line :into lines
 	:finally (return (format nil "~{~A~^~%~}" lines))))
+
+(defun dribble-print(&rest values)
+  (map nil #'print values)
+  (values))
