@@ -1,10 +1,6 @@
 (defpackage :jingoh.documentizer.dsl
-  (:use :cl :3bmd :jingoh.documentizer.sections :jingoh.documentizer.parse-spec)
+  (:use :cl :jingoh.documentizer.sections :jingoh.documentizer.parse-spec)
   (:export
-    ; context abstractions
-    #:with-doc-directory
-    #:with-open-markdown
-    #:with-output-to
     ; slot reader
     #:meta-data-name
     #:meta-data-exports
@@ -17,26 +13,6 @@
     #:make-meta-data
     ))
 (in-package :jingoh.documentizer.dsl)
-
-(defmacro with-output-to((pathname)&body body)
-  `(WITH-OPEN-FILE(*STANDARD-OUTPUT* ,pathname
-				     :DIRECTION :OUTPUT
-				     :IF-EXISTS :SUPERSEDE
-				     :IF-DOES-NOT-EXIST :CREATE)
-     ,@body))
-
-(defmacro with-doc-directory((pathname) &body body)
-  `(WITH-OUTPUT-TO(,pathname)
-     (LET((3BMD-CODE-BLOCKS:*CODE-BLOCKS* T))
-       (PARSE-STRING-AND-PRINT-TO-STREAM (WITH-OUTPUT-TO-STRING(*STANDARD-OUTPUT*)
-					   ,@body)
-					 *STANDARD-OUTPUT*))))
-
-(defmacro with-open-markdown((name)&body body)
-  `(WITH-OUTPUT-TO((MAKE-PATHNAME :NAME ,name
-				  :TYPE "md"
-				  :DEFAULTS *DEFAULT-PATHNAME-DEFAULTS*))
-     ,@body))
 
 (defstruct(meta-data (:constructor %make-meta-data)
 		     (:copier nil)
