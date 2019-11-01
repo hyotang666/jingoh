@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.documentizer
-  :version "1.1.4"
+  :version "1.1.5"
   :depends-on (
                "3bmd" ; markdown.
                "3bmd-ext-code-blocks"
@@ -19,10 +19,9 @@
               (:file "package" :depends-on ("dsl"))
               (:file "about-package" :depends-on ("package"))
               (:file "about-symbols" :depends-on ("package"))
-              (:file "symbol-index" :depends-on ("package"))
               (:file "table" :depends-on ("package"))
               ;; main api.
-              (:file "documentize" :depends-on ("about-package" "symbol-index" "about-symbols" "table"))
+              (:file "documentize" :depends-on ("about-package" "about-symbols" "table"))
               ;; extension.
               (:file "github-wiki" :depends-on ("documentize"))
               ))
