@@ -55,7 +55,8 @@
       (format t "~%;;; These forms below are added by JINGOH.GENERATOR.~{~%~A~%~(~S~)~}"
 	      `(";; Ensure in ASDF for pretty printings."
 		(in-package :asdf)
-		";; Enable testing via (asdf:test-system :system-name)."
+		,(format nil ";; Enable testing via (asdf:test-system ~S)."
+			 name)
 		(defmethod asdf:component-depends-on((asdf::o asdf:test-op)
 						     (asdf::c (eql (asdf:find-system ,name))))
 		  (append (call-next-method) '((asdf:test-op ,(Test-name name)))))
