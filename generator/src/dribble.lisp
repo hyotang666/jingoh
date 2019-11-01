@@ -69,7 +69,7 @@
 			    (return-from dribble-eval (values)))
 			  :report-function
 			  (lambda(s)
-			    (format s "Append spec. This error is valid behavior."))))
+			    (format s "Append spec, returning to dribble."))))
 	    (handler-bind((condition
 			    (lambda(c)
 			      (setq condition c))))
