@@ -240,6 +240,13 @@ If specified restart is not found, it is issued.
 , :with-restarts muffle-warning
 ```
 
+You can specify some restarts at once.
+
+```lisp
+#? (cerror "test" "dummy") :signals error
+, :with-restarts (continue abort)
+```
+
 #### :LAZY
 Like `EVAL-WHEN` option.
 
