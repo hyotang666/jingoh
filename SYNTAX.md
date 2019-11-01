@@ -266,17 +266,17 @@ The default is 1.
 
 | key			    | acceptable options |
 | -----------------------   | ----------- |
-| =>			    | :ignore-signals :lazy :stream :test :timeout |
-| :values		    | :ignore-signals :lazy :stream :test :timeout |
-| :equivalents		    | :ignore-signals :lazy :stream :test :timeout |
-| :outputs 		    | :ignore-signals :lazy :stream :test :timeout |
-| :be-the		    | :ignore-signals :lazy :stream :timeout |
-| :satisfies 		    | :ignore-signals :lazy :stream :timeout |
-| :multiple-value-satisfies | :ignore-signals :lazy :stream :timeout |
-| :output-satisfies         | :ignore-signals :lazy :stream :timeout |
-| :signals		    | :ignore-signals :lazy :with-restarts :timeout |
-| :invokes-debugger	    | :ignore-signals :lazy :with-restarts :test :timeout |
-| :expanded-to		    | :ignore-signals :stream :test :timeout |
+| =>			    | :ignore-signals :timeout :lazy :stream :test |
+| :values		    | :ignore-signals :timeout :lazy :stream :test |
+| :equivalents		    | :ignore-signals :timeout :lazy :stream :test |
+| :outputs 		    | :ignore-signals :timeout :lazy :stream :test |
+| :be-the		    | :ignore-signals :timeout :lazy :stream |
+| :satisfies 		    | :ignore-signals :timeout :lazy :stream |
+| :multiple-value-satisfies | :ignore-signals :timeout :lazy :stream |
+| :output-satisfies         | :ignore-signals :timeout :lazy :stream |
+| :signals		    | :ignore-signals :timeout :lazy :with-restarts |
+| :invokes-debugger	    | :ignore-signals :timeout :lazy :with-restarts :test |
+| :expanded-to		    | :ignore-signals :timeout :stream :test |
 
 ## expert
 ### IMPLEMENTATION-DEPENDENT
