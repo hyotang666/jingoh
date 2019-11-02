@@ -8,6 +8,13 @@
 (defun first-char(symbol)
   (char-upcase(char(symbol-name symbol)0)))
 
+(defmacro with-doc-directory((pathname) &body body)
+  `(WITH-OUTPUT-TO(,pathname)
+     (LET((3BMD-CODE-BLOCKS:*CODE-BLOCKS* T))
+       (3BMD:PARSE-STRING-AND-PRINT-TO-STREAM (WITH-OUTPUT-TO-STRING(*STANDARD-OUTPUT*)
+						,@body)
+	*STANDARD-OUTPUT*))))
+
 ;;;; VARIABLE for debug use.
 (defvar *meta* nil)
 
@@ -31,7 +38,7 @@
 
 ;;; TOP
 (defun top(system)
-  (With-doc-directory((merge-pathnames "top.html"))
+  (with-doc-directory((merge-pathnames "top.html"))
     (%top system)))
 
 (defun %top(system)
@@ -47,7 +54,7 @@
 
 ;;; PACKAGES
 (defun packages(meta-datas)
-  (With-doc-directory((merge-pathnames "packages.html"))
+  (with-doc-directory((merge-pathnames "packages.html"))
     (%packages meta-datas)))
 
 (defun %packages(meta-datas)
@@ -61,7 +68,7 @@
 
 ;;; SYMBOL-INDEX
 (defun symbol-index(meta-datas system)
-  (With-doc-directory((merge-pathnames(Target-path "symbols")))
+  (with-doc-directory((merge-pathnames(Target-path "symbols")))
     (%symbol-index meta-datas system)))
 
 (defun %symbol-index (meta-datas system)
@@ -95,7 +102,7 @@
 
 ;;; ABOUT-PACKAGE
 (defun about-package(meta-data)
-  (With-doc-directory((merge-pathnames(format nil "P_~A.html"(Meta-data-name meta-data))
+  (with-doc-directory((merge-pathnames(format nil "P_~A.html"(Meta-data-name meta-data))
 ))
     (%about-package meta-data)))
 
@@ -132,7 +139,7 @@
 ;;; ABOUT-SYMBOLS
 (defun about-symbols(meta-data)
   (flet((PUT(section)
-	  (With-doc-directory((merge-pathnames(Section-path section)))
+	  (with-doc-directory((merge-pathnames(Section-path section)))
 	    (princ section))))
     (dolist(section(Meta-data-singles meta-data))
       (PUT section))
@@ -159,7 +166,7 @@
 (defun table-callback(chars pairs)
   (let((char (car chars))
        return)
-    (With-doc-directory((if(alpha-char-p char)
+    (with-doc-directory((if(alpha-char-p char)
 			  (X-alph-pathname char)
 			  *X-non-alph-namestring*))
       (setf return(table-printer chars pairs)))
