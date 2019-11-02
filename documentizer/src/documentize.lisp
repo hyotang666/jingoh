@@ -1,5 +1,13 @@
 (in-package :jingoh.documentizer)
 
+;;;; UTILITIES
+(defun index-chars(symbols)
+  (sort (delete-duplicates(mapcar #'first-char symbols))
+	#'char<))
+
+(defun first-char(symbol)
+  (char-upcase(char(symbol-name symbol)0)))
+
 (defvar *meta* nil)
 (defun documentize(system)
   (let*((system(asdf:find-system system))
@@ -75,7 +83,7 @@
 		      (LINKS chars (1+ code) have-non-alph-p
 			     (push (princ-to-string (code-char code))acc)))))))))
     (let*((symbols(apply #'append (mapcar #'Meta-data-specifieds meta-datas)))
-	  (index-chars(Index-chars symbols)))
+	  (index-chars(index-chars symbols)))
       (format t "# Alphabetical Symbol Index~2%There ~:[is~;are~] ~D symbol~:*~P by ~A.~2%~{~A~^ | ~}"
 	      (not(= 1(length symbols)))
 	      (length symbols)
@@ -139,7 +147,7 @@
     (let*((pairs(loop :for sec :in (apply #'append (mapcar #'Meta-data-sections meta-datas))
 		      :nconc (LINE sec) :into result
 		      :finally (return (sort result #'string< :key #'car))))
-	  (index-chars(Index-chars(apply #'append (mapcar #'Meta-data-specifieds meta-datas)))))
+	  (index-chars(index-chars(apply #'append (mapcar #'Meta-data-specifieds meta-datas)))))
       (labels((REC(chars pairs)
 		(unless(endp chars)
 		  (apply #'REC (funcall callback chars pairs)))))
@@ -157,13 +165,12 @@
 (defun table-printer(chars pairs)
   (if(endp pairs)
     (list nil nil)
-    (if(char= (car chars) (First-char(caar pairs)))
+    (if(char= (car chars) (first-char(caar pairs)))
       (progn #1=(format t "* ~A~&"(cdar pairs))
 	     (table-printer chars (cdr pairs))) ; cdring pairs.
       (if(alpha-char-p(car chars))
 	#0=(list (cdr chars)pairs) ; cdring chars.
-	(if(alpha-char-p(First-char(caar pairs)))
+	(if(alpha-char-p(first-char(caar pairs)))
 	  #0# ; cdring chars.
 	  (progn #1#
 		 (table-printer (cdr chars)(cdr pairs)))))))) ; cdring pairs and chars.
-

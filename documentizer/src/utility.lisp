@@ -12,9 +12,6 @@
 	  :else :collect c :into result
 	  :finally (return (coerce result 'string)))))
 
-(defun first-char(symbol)
-  (char-upcase(char(symbol-name symbol)0)))
-
 (defun x-alph-pathname(char)
   (target-path (format nil "X_Alph_~A"char)))
 
@@ -23,10 +20,6 @@
 (defvar *target-type* "html")
 (defun target-path(name)
   (make-pathname :name name :type *target-type*))
-
-(defun index-chars(symbols)
-  (sort (delete-duplicates(mapcar #'first-char symbols))
-	#'char<))
 
 (defmacro with-output-to((pathname)&body body)
   `(WITH-OPEN-FILE(*STANDARD-OUTPUT* ,pathname
