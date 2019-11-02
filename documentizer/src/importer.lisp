@@ -6,14 +6,14 @@
 				 :defaults *default-pathname-defaults*))
     (let((meta-data
 	   (Make-meta-data form)))
-      (loop :for s :in (meta-data-sections meta-data)
+      (loop :for s :in (Meta-data-sections meta-data)
 	    :append
 	    (loop :for name :in (Section-names s)
 		  :when (Section-doc-type s)
 		  :collect
 		  `(defmethod documentation
 		     ((s (eql ',(find-symbol (symbol-name name)
-					     (meta-data-name meta-data))))
+					     (Meta-data-name meta-data))))
 		      (type (eql ',(Section-doc-type s))))
 		     (declare(ignore s))
 		     ,(princ-to-string s)))))))
@@ -24,7 +24,7 @@
 	(sys-dir
 	  (asdf:system-source-directory system))
 	(meta-datas
-	  (meta-datas<=system system sys-dir))
+	  (Meta-datas<=system system sys-dir))
 	(*default-pathname-defaults*
 	  sys-dir)
 	(*package*
@@ -32,8 +32,8 @@
     (With-output-to((merge-pathnames "doc.lisp"))
       (dolist(meta meta-datas)
 	(print `(in-package ,(meta-data-name meta)))
-	(dolist(s(meta-data-sections meta))
-	  (print-doc s (meta-data-name meta)))))))
+	(dolist(s(Meta-data-sections meta))
+	  (print-doc s (Meta-data-name meta)))))))
 
 (defun print-doc(section package)
   (dolist(s (Section-names section))
@@ -48,10 +48,10 @@
 		,(princ-to-string section))))))
 
 (defun import(system)
-  (dolist(m (meta-datas<=system (asdf:find-system system)))
-    (dolist(s (meta-data-sections m))
+  (dolist(m (Meta-datas<=system (asdf:find-system system)))
+    (dolist(s (Meta-data-sections m))
       (dolist(name (Section-names s))
 	(setf (documentation (find-symbol (symbol-name name)
-					  (meta-data-name m))
+					  (Meta-data-name m))
 			     (Section-doc-type s))
 	      (princ-to-string s))))))

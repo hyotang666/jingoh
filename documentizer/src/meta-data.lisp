@@ -57,4 +57,4 @@
 	   (asdf::*asdf-session* nil))
 	(asdf:load-system system :force t))
       (let((*default-pathname-defaults* spec-dir))
-	(mapcar #'Make-meta-data meta-datas)))))
+	(mapcar #'make-meta-data meta-datas)))))
