@@ -1,15 +1,10 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.documentizer.test
-  :version "0.0.0"
+  :version "0.0.1"
   :depends-on
   (:jingoh "jingoh.documentizer")
   :components
-  ((:file "jingoh.documentizer") (:file "jingoh.documentizer.dsl")
-   (:file "jingoh.documentizer.parse-spec")
-   (:file "jingoh.documentizer.utility"))
+  ((:file "jingoh.documentizer"))
   :perform
-  (test-op (o c) (symbol-call :jingoh :examine :jingoh.documentizer)
-   (symbol-call :jingoh :examine :jingoh.documentizer.dsl)
-   (symbol-call :jingoh :examine :jingoh.documentizer.parse-spec)
-   (symbol-call :jingoh :examine :jingoh.documentizer.utility)))
+  (test-op (o c) (symbol-call :jingoh :examine :jingoh.documentizer)))

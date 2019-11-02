@@ -1,17 +1,25 @@
 (defpackage :jingoh.documentizer.spec
-  (:import-from :jingoh.documentizer.dsl
-		#:meta-data
-		#:%make-meta-data)
-  (:import-from :jingoh.documentizer.parse-spec
-		#:make-single
-		#:make-common)
-  (:import-from :jingoh.documentizer
-		#:%about-package
-		#:%symbol-index
-		#:%packages
-		#:%top
-		#:meta-datas<=system)
   (:shadowing-import-from :jingoh.documentizer #:import)
+  (:import-from :jingoh.documentizer
+		#:meta-datas<=system
+		#:meta-data
+		#:%make-meta-data
+		#:make-single
+		#:make-common
+		#:%top
+		#:%packages
+		#:%symbol-index
+		#:%about-package
+		#:with-doc-directory
+		#:replace-invalid-chars
+		#:escape-*
+		#:first-char
+		#:x-alph-pathname
+		#:*x-non-alph-namestring*
+		#:*target-type*
+		#:target-path
+		#:index-chars
+		)
   (:use :cl :jingoh :jingoh.documentizer))
 (in-package :jingoh.documentizer.spec)
 (setup :jingoh.documentizer)
@@ -251,6 +259,251 @@ package documentation
 ; print to `*standard-output*`
 
 ;;;; Notes:
+
+;;;; Exceptional-Situations:
+
+(requirements-about WITH-DOC-DIRECTORY)
+
+;;;; Description:
+; make environment to output html.
+
+#+syntax
+(WITH-DOC-DIRECTORY (pathname) &body body) ; => result
+
+;;;; Arguments and Values:
+
+; pathname := form generates pathname, otherwise error.
+#?(with-doc-directory(0):body) :signals type-error
+,:ignore-signals warning
+
+; body := lisp form which print markdown contents.
+
+; result := unspecified.
+
+;;;; Affected By:
+
+;;;; Side-Effects:
+; make file on file system.
+
+;;;; Notes:
+
+;;;; Exceptional-Situations:
+
+(requirements-about REPLACE-INVALID-CHARS
+		    :test string=)
+
+;;;; Description:
+; Replace invalid chars with its char-name's first character, but dot(i.e. .).
+
+#+syntax
+(REPLACE-INVALID-CHARS arg) ; => result
+
+#?(replace-invalid-chars '*hoge*)
+=> "42hoge42"
+;;;; Arguments and Values:
+
+; arg := string-designator, otherwise error.
+#?(replace-invalid-chars 0) :signals type-error
+#?(replace-invalid-chars "+hoge+") => "43hoge43"
+#?(replace-invalid-chars #\-) => "45"
+#?(replace-invalid-chars #\.) => "."
+
+; result := string
+
+;;;; Affected By:
+; char-name's return value. Implementation dependent.
+
+;;;; Side-Effects:
+; none
+
+;;;; Notes:
+; Valid alphabet character is convert to downcase.
+#?(replace-invalid-chars "&HoGe") => "38hoge"
+
+;;;; Exceptional-Situations:
+
+(requirements-about ESCAPE-*
+		    :test string=)
+
+;;;; Description:
+; escape * character with \.
+
+#+syntax
+(ESCAPE-* arg) ; => result
+
+#?(escape-* '*hoge*) => "\\*HOGE\\*"
+;;;; Arguments and Values:
+
+; arg := string-designator, otherwise unspecified.
+#?(escape-* 0) => unspecified
+
+; result := string
+
+;;;; Affected By:
+; none
+
+;;;; Side-Effects:
+; none
+
+;;;; Notes:
+; When ARG is symbol, and its PRINTed notation is |xxx|,
+; return string has vertical bars.
+#?(escape-* '|#hoge|) => "|#hoge|"
+
+;;;; Exceptional-Situations:
+
+(requirements-about FIRST-CHAR)
+
+;;;; Description:
+
+#+syntax
+(FIRST-CHAR symbol) ; => result
+
+#?(first-char :hoge) => #\H
+#?(first-char '*hoge*) => #\*
+;;;; Arguments and Values:
+
+; symbol := symbol, otherwise errro.
+#?(first-char "not symbol") :signals type-error
+
+; result := character
+
+;;;; Affected By:
+; none
+
+;;;; Side-Effects:
+; none
+
+;;;; Notes:
+; Return character is converted to uppercase.
+#?(first-char '|hoge|) => #\H
+
+;;;; Exceptional-Situations:
+
+(requirements-about X-ALPH-PATHNAME
+		    :test equal)
+
+;;;; Description:
+
+#+syntax
+(X-ALPH-PATHNAME char) ; => result
+
+#?(x-alph-pathname #\a)
+=> ;; In ecl, literal pathname (i.e. #P"") have :version :newest.
+#.(make-pathname :name "X_Alph_a" :type "html")
+;;;; Arguments and Values:
+
+; char := character which alphabet.
+; when not character, unspecified.
+#?(x-alph-pathname "A") => unspecified
+; When character is not alphabet character, unspecified.
+#?(x-alph-pathname #\あ) => unspecified
+#?(x-alph-pathname #\*) => unspecified
+
+; result := pathname
+
+;;;; Affected By:
+; `*target-type*`
+#?(let((*target-type* "lisp"))
+    (x-alph-pathname #\b))
+=> #.(make-pathname :name "X_Alph_b"
+		    :type "lisp")
+
+;;;; Side-Effects:
+; none
+
+;;;; Notes:
+
+;;;; Exceptional-Situations:
+
+(requirements-about *X-NON-ALPH-NAMESTRING*)
+
+;;;; Description:
+; For customize.
+
+;;;; Value type is (SIMPLE-ARRAY CHARACTER *)
+#? *X-NON-ALPH-NAMESTRING* :be-the string
+
+; Initial value is "X_NonAlpha.html"
+
+;;;; Affected By:
+; none
+
+;;;; Notes:
+
+(requirements-about *TARGET-TYPE*)
+
+;;;; Description:
+; To customize `TARGET-PATH`'s behavior.
+
+;;;; Value type is (SIMPLE-ARRAY CHARACTER *)
+#? *TARGET-TYPE* :be-the string
+
+; Initial value is "html"
+
+;;;; Affected By:
+
+;;;; Notes:
+
+(requirements-about TARGET-PATH
+		    :test equal)
+
+;;;; Description:
+
+#+syntax
+(TARGET-PATH name) ; => result
+
+#?(target-path "example") => #.(make-pathname :name "example"
+					      :type "html")
+;;;; Arguments and Values:
+
+; name := string, otherwise error.
+#?(target-path :example) :signals error
+
+; result := pathname
+
+;;;; Affected By:
+; `*target-type*`
+#?(let((*target-type* "asd"))
+    (target-path "example"))
+=> #.(make-pathname :name "example"
+		    :type "asd")
+
+;;;; Side-Effects:
+; none
+
+;;;; Notes:
+
+;;;; Exceptional-Situations:
+
+(requirements-about INDEX-CHARS
+		    :test equal)
+
+;;;; Description:
+
+#+syntax
+(INDEX-CHARS symbols) ; => result
+
+#?(index-chars '(foo bar bazz hoge fuga))
+=> (#\B #\F #\H)
+;;;; Arguments and Values:
+
+; symbols := (symbol*), otherwise error.
+#?(index-chars #(foo bar bazz)) :signals type-error
+#?(index-chars '("foo" "bar" "bazz")) :signals type-error
+
+; result := (character*)
+
+;;;; Affected By:
+; none
+
+;;;; Side-Effects:
+; none
+
+;;;; Notes:
+; return list is sorted.
+#?(index-chars '(:c :b :d :a))
+=> (#\A #\B #\C #\D)
 
 ;;;; Exceptional-Situations:
 
