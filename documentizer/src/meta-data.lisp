@@ -1,18 +1,4 @@
-(defpackage :jingoh.documentizer.dsl
-  (:use :cl :jingoh.documentizer.sections :jingoh.documentizer.parse-spec)
-  (:export
-    ; slot reader
-    #:meta-data-name
-    #:meta-data-exports
-    #:meta-data-doc
-    #:meta-data-sections
-    #:meta-data-singles
-    #:meta-data-commons
-    #:meta-data-specifieds
-    ; constructor
-    #:make-meta-data
-    ))
-(in-package :jingoh.documentizer.dsl)
+(in-package :jingoh.documentizer)
 
 (defstruct(meta-data (:constructor %make-meta-data)
 		     (:copier nil)
@@ -53,3 +39,22 @@
 	:if(Common-p sec)
 	:collect sec :into commons
 	:finally(return (values singles commons))))
+
+(defun meta-datas<=system(system
+			   &optional
+			   (sys-dir(asdf:system-source-directory system)))
+  (let((spec-dir(merge-pathnames "spec/" sys-dir)))
+    (when(not(uiop:directory-exists-p spec-dir))
+      (return-from meta-datas<=system (warn "Spec file is not found.")))
+    (mapc #'asdf:load-system (asdf:system-depends-on system))
+    (let(meta-datas)
+      (let((*macroexpand-hook*
+	     (let((outer-hook *macroexpand-hook*))
+	       (lambda(expander form env)
+		 (when(typep form '(cons (eql defpackage)T))
+		   (push form meta-datas))
+		 (funcall outer-hook expander form env))))
+	   (asdf::*asdf-session* nil))
+	(asdf:load-system system :force t))
+      (let((*default-pathname-defaults* spec-dir))
+	(mapcar #'Make-meta-data meta-datas)))))

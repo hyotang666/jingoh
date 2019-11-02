@@ -167,25 +167,6 @@
 	  (progn #1#
 		 (table-printer (cdr chars)(cdr pairs)))))))) ; cdring pairs and chars.
 
-(defun meta-datas<=system(system
-			   &optional
-			   (sys-dir(asdf:system-source-directory system)))
-  (let((spec-dir(merge-pathnames "spec/" sys-dir)))
-    (when(not(uiop:directory-exists-p spec-dir))
-      (return-from meta-datas<=system (warn "Spec file is not found.")))
-    (mapc #'asdf:load-system (asdf:system-depends-on system))
-    (let(meta-datas)
-      (let((*macroexpand-hook*
-	     (let((outer-hook *macroexpand-hook*))
-	       (lambda(expander form env)
-		 (when(typep form '(cons (eql defpackage)T))
-		   (push form meta-datas))
-		 (funcall outer-hook expander form env))))
-	   (asdf::*asdf-session* nil))
-	(asdf:load-system system :force t))
-      (let((*default-pathname-defaults* spec-dir))
-	(mapcar #'Make-meta-data meta-datas)))))
-
 (defun importer(form)
   (when(probe-file(make-pathname :name (string-downcase(string(second form)))
 				 :type "lisp"
