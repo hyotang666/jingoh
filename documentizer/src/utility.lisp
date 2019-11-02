@@ -1,20 +1,4 @@
-(defpackage :jingoh.documentizer.utility(:use :cl)
-  (:export
-    #:replace-invalid-chars
-    #:escape-*
-    #:first-char
-    #:x-alph-pathname
-    #:*x-non-alph-namestring*
-    #:*target-type*
-    #:target-path
-    #:index-chars
-
-    ; context abstractions
-    #:with-doc-directory
-    #:with-open-markdown
-    #:with-output-to
-    ))
-(in-package :jingoh.documentizer.utility)
+(in-package :jingoh.documentizer)
 
 (defun replace-invalid-chars(arg)
   (loop :for c :across (string-downcase(string arg))

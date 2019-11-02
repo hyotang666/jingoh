@@ -1,6 +1,5 @@
 (defpackage :jingoh.documentizer
-  (:use :cl :jingoh.documentizer.utility
-	:jingoh.documentizer.sections :jingoh.documentizer.parse-spec)
+  (:use :cl)
   (:shadow #:import)
   (:export
     #:documentize

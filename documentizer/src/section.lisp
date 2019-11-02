@@ -1,21 +1,4 @@
-(defpackage :jingoh.documentizer.sections
-  (:use :cl)
-  (:import-from :jingoh.documentizer.utility #:Escape-*)
-  (:export
-    ; Constructor
-    #:make-single
-    #:make-common
-    ; slot readers
-    #:section-body
-    #:section-path
-    #:section-names
-    #:section-doc-type
-    ; subtype predicates
-    #:single-p
-    #:common-p
-    )
-  )
-(in-package :jingoh.documentizer.sections)
+(in-package :jingoh.documentizer)
 
 (defstruct section body path names doc-type)
 (defstruct(single (:include section)

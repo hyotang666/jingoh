@@ -1,19 +1,4 @@
-(defpackage :jingoh.documentizer.parse-spec(:use :cl :read-as-string)
-  (:import-from :jingoh.documentizer.utility
-		#:Target-path
-		#:Replace-invalid-chars)
-  (:import-from :jingoh.documentizer.sections
-		#:Make-common
-		#:Make-single
-		#:Single-p
-		#:Section-names
-		#:Section-body
-		)
-  (:export
-    ; main api
-    #:parse-spec
-    ))
-(in-package :jingoh.documentizer.parse-spec)
+(in-package :jingoh.documentizer)
 
 (defun parse-spec(pathname)
   (multiple-value-call #'engroup(sectionize(enlist pathname))))
@@ -22,7 +7,7 @@
   (with-open-file(s pathname)
     (loop :for exp = (let((read-as-string:*muffle-reader-error*
 			    T))
-		       (Read-as-string s nil nil))
+		       (read-as-string:read-as-string s nil nil))
 	  :while exp
 	  :collect exp)))
 
@@ -30,7 +15,7 @@
   (flet((section-p(elt)
 	  (and (char= #\( (char elt 0))
 	       (let*((*package*
-		       (find-package :jingoh.documentizer.parse-spec))
+		       (find-package :jingoh.documentizer))
 		     (sexp
 		       (read-from-string elt)))
 		 (when(find (car sexp)

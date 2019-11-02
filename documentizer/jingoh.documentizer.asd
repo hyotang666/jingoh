@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.documentizer
-  :version "1.1.9"
+  :version "1.1.10"
   :depends-on (
                "3bmd" ; markdown.
                "3bmd-ext-code-blocks"
@@ -9,15 +9,18 @@
                "uiop" ; utilities.
                )
   :pathname "src/"
-  :components(;; bottom utils.
-              (:file "utility")
-              (:file "section" :depends-on ("utility"))
-              ;; middle helpers depth 1.
-              (:file "parse-spec" :depends-on ("section"))
-              ;; middle helpers depth 2.
-              (:file "package" :depends-on ("utility" "section" "parse-spec"))
+  :components(;; package.
+              (:file "package")
+              ;; bottom utils.
+              (:file "utility" :depends-on ("package"))
 
+              ;; middle helpers depth 1.
+              (:file "section" :depends-on ("utility"))
+              ;; middle helpers depth 2.
+              (:file "parse-spec" :depends-on ("section" "utility"))
+              ;; middle helpers depth 3.
               (:file "meta-data" :depends-on ("package" "parse-spec" "section"))
+
               ;; main api.
               (:file "documentize" :depends-on ("package" "meta-data"))
               ;; extension.
