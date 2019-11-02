@@ -27,9 +27,3 @@
 				     :IF-EXISTS :SUPERSEDE
 				     :IF-DOES-NOT-EXIST :CREATE)
      ,@body))
-
-(defmacro with-open-markdown((name)&body body)
-  `(WITH-OUTPUT-TO((MAKE-PATHNAME :NAME ,name
-				  :TYPE "md"
-				  :DEFAULTS *DEFAULT-PATHNAME-DEFAULTS*))
-     ,@body))
