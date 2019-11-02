@@ -1,5 +1,6 @@
 (in-package :jingoh.documentizer)
 
+;;;; GITHUB-WIKI
 (defun github-wiki(system &optional(pathname (uiop:getcwd)))
   (let*((system(asdf:find-system system))
 	(*target-type* nil)

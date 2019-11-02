@@ -8,7 +8,10 @@
 (defun first-char(symbol)
   (char-upcase(char(symbol-name symbol)0)))
 
+;;;; VARIABLE for debug use.
 (defvar *meta* nil)
+
+;;;; DOCUMENTIZE
 (defun documentize(system)
   (let*((system(asdf:find-system system))
 	(sys-dir(asdf:system-source-directory system)))
