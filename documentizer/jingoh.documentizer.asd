@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.documentizer
-  :version "1.1.17"
+  :version "1.1.18"
   :depends-on (
                "3bmd" ; markdown.
                "3bmd-ext-code-blocks"

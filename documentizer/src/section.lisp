@@ -23,7 +23,7 @@
   (if *print-escape*
     (call-next-method)
     (progn 
-      (format t "# ~{~A~^, ~}~&"(mapcar #'Escape-*(Section-names obj)))
+      (format t "# ~{~A~^, ~}~&"(mapcar #'Escape-*(section-names obj)))
       (princ-section-body(section-body obj)))))
 
 (defun princ-section-body (body)
