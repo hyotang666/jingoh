@@ -1,14 +1,5 @@
 (in-package :jingoh.documentizer)
 
-(defun replace-invalid-chars(arg)
-  (loop :for c :across (string-downcase(string arg))
-	:for n :upfrom 0
-	:when (and (not(alphanumericp c))
-		   (not(char= #\. c)))
-	:collect (princ-to-string(char-code c)) :into result
-	:else :collect c :into result
-	:finally(return (uiop:reduce/strcat result))))
-
 (defun escape-*(arg)
   (flet((ensure-symbol-notation(arg)
 	  (if(uiop:string-suffix-p(prin1-to-string arg) "|")
