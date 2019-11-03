@@ -216,7 +216,9 @@
 			     (let((restart
 				    (find-restart 'jingoh.generator::rename condition)))
 			       (when restart
-				 (invoke-restart-interactively restart))))))
+				 (let((*error-output*
+					(make-broadcast-stream))) ; <--- CCL need.
+				   (invoke-restart-interactively restart)))))))
 	(ensure-name :alexandria))))
 => "new-name"
 ,:test equal
