@@ -145,33 +145,30 @@
 ;;; README-UPDATOR
 (defun readme-updator(system readme-lines)
   (lambda()
-    (format t "# ~@:(~A~) ~A~%"(asdf:coerce-name system)
-	    (or (asdf:component-version system)
-		"0.0.0"))
-    (labels((REC(lines)
-	      (unless(endp lines)
-		(BODY(car lines)(cdr lines))))
-	    (BODY(line rest)
-	      (cond
-		((uiop:string-prefix-p "## What is this?" line)
-		 (write-line line)
-		 (write-line (or (asdf:system-description system)
-				 ""))
-		 (REC(SKIP-TO "##" rest)))
-		((uiop:string-prefix-p "### License"line)
-		 (write-line line)
-		 (write-line (or (asdf:system-license system)
-				 "TODO"))
-		 (REC(SKIP-TO "##" rest)))
-		(t (write-line line)
-		   (REC rest))))
-	    (SKIP-TO(prefix rest)
-	      (nthcdr (position-if (lambda(line)
-				     (uiop:string-prefix-p prefix line))
-				   rest)
-		      rest))
-	    )
-      (REC (cdr readme-lines)))))
+    (format t "# ~@:(~A~) ~:[0.0.0~;~:*~A~]~%"
+	    (asdf:coerce-name system)
+	    (asdf:component-version system))
+    (do*((lines (cdr readme-lines)(cdr lines))
+	 (line (car lines)(car lines)))
+      ((endp lines)(force-output))
+      (flet((SKIP-TO(prefix)
+	      (setf lines
+		    (nthcdr (position-if (lambda(line)
+					   (uiop:string-prefix-p prefix line))
+					 (cdr lines))
+			    lines))))
+	(cond
+	  ((uiop:string-prefix-p "## What is this?" line)
+	   (format t "~A~%~:[~;~:*~A~]~2%"
+		   line
+		   (asdf:system-description system))
+	   (SKIP-TO "##"))
+	  ((uiop:string-prefix-p "### License" line)
+	   (format t "~A~%~:[TODO~;~:*~A~]~2%"
+		   line
+		   (asdf:system-license system))
+	   (SKIP-TO "##"))
+	  (t (write-line line)))))))
 
 ;;;; GENERATE
 ;;; SYMBOL
