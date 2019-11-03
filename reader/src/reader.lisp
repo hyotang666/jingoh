@@ -167,9 +167,18 @@
 	  (otherwise #|Do nothing, to next loop|#)))
   (values))
 
+(defun |string-line-counter|(stream character)
+  (let((string
+	 (funcall (load-time-value (get-macro-character #\" (copy-readtable nil))
+				   T)
+		  stream character)))
+    (incf *line* (count #\newline string))
+    string))
+
 (defreadtable counter
   (:merge :standard)
   (:macro-char #\newline '|line-counter|)
   (:macro-char #\; '|line-comment|)
+  (:macro-char #\" '|string-line-counter|)
   (:dispatch-macro-char #\# #\| '|block-comment|)
   )
