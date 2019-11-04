@@ -6,7 +6,10 @@
 	#'char<))
 
 (defun first-char(symbol)
-  (char-upcase(char(symbol-name symbol)0)))
+  (if(string= "" symbol)
+    (error "Could not get first character from ~S" symbol)
+    (char-upcase(char (symbol-name symbol)
+		      0))))
 
 (defmacro with-doc-directory((pathname) &body body)
   `(WITH-OUTPUT-TO(,pathname)
