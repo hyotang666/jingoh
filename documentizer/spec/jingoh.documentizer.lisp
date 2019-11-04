@@ -4,12 +4,12 @@
 		#:meta-datas<=system
 		#:meta-data
 		#:%make-meta-data
+		#:top
+		#:packages
+		#:symbol-index
+		#:about-package
 		#:make-single
 		#:make-common
-		#:%top
-		#:%packages
-		#:%symbol-index
-		#:%about-package
 		#:with-doc-directory
 		#:replace-invalid-chars
 		#:escape-*
@@ -101,11 +101,11 @@
 ,:ignore-signals warning
 ,:stream nil
 
-(requirements-about %TOP)
+(requirements-about TOP)
 
 ;;;; Description:
 ; Print intermediate markdown for top.html
-#?(%top (asdf:find-system :jingoh.documentizer.test))
+#?(top (asdf:find-system :jingoh.documentizer.test))
 :outputs
 "# jingoh.documentizer.test
 1. [PACKAGES](packages.html)
@@ -113,15 +113,15 @@
 "
 
 #+syntax
-(%TOP system) ; => result
+(TOP system) ; => result
 
 ;;;; Arguments and Values:
 
 ; system := asdf system object, otherwise error.
-#?(%top :jingoh.documentizer.test) :signals error
+#?(top :jingoh.documentizer.test) :signals error
 
 ; result := NIL
-#?(%top (asdf:find-system :jingoh.documentizer.test)) => NIL
+#?(top (asdf:find-system :jingoh.documentizer.test)) => NIL
 ,:stream NIL
 
 ;;;; Affected By:
@@ -134,27 +134,27 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about %PACKAGES)
+(requirements-about PACKAGES)
 
 ;;;; Description:
 ; accepts list of metadata, print intermediate markdown for packages html.
-#?(%packages (list (%make-meta-data :name :hoge)))
+#?(packages (list (%make-meta-data :name :hoge)))
 :outputs
 "# Packages Index
 1. [HOGE](P_HOGE.html)
 "
 
 #+syntax
-(%PACKAGES meta-datas) ; => result
+(PACKAGES meta-datas) ; => result
 
 ;;;; Arguments and Values:
 
 ; meta-datas := list which includes meta-data objects, otherwise error.
-#?(%packages (%make-meta-data :name :hoge)) :signals type-error
-#?(%packages '(:not-meta-data)) :signals type-error
+#?(packages (%make-meta-data :name :hoge)) :signals type-error
+#?(packages '(:not-meta-data)) :signals type-error
 
 ; result := NIL
-#?(%packages (list (%make-meta-data :name :hoge))) => NIL
+#?(packages (list (%make-meta-data :name :hoge))) => NIL
 ,:stream nil
 
 ;;;; Affected By:
@@ -167,11 +167,11 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about %SYMBOL-INDEX)
+(requirements-about SYMBOL-INDEX)
 
 ;;;; Description:
 ; accepts list of meta-data and system designator, print intermediate markdown symbol index html.
-#?(%symbol-index (list (%make-meta-data :specifieds '(hoge))) "system")
+#?(symbol-index (list (%make-meta-data :specifieds '(hoge))) "system")
 :outputs
 "# Alphabetical Symbol Index
 
@@ -180,20 +180,20 @@ There is 1 symbol by system.
 A | B | C | D | E | F | G | [H](X_Alph_H.html) | I | J | K | L | M | N | O | P | Q | R | S | T | U | V | W | X | Y | Z | Non-Alphabetic"
 
 #+syntax
-(%SYMBOL-INDEX meta-datas system) ; => result
+(SYMBOL-INDEX meta-datas system) ; => result
 
 ;;;; Arguments and Values:
 
 ; meta-datas := list which includes meta-data objects, otherwise error.
-#?(%symbol-index (%make-meta-data) :system) :signals error
-#?(%symbol-index '(:not-meta-data) :system) :signals error
+#?(symbol-index (%make-meta-data) :system) :signals error
+#?(symbol-index '(:not-meta-data) :system) :signals error
 
 ; system := asdf system designator, otherwise error.
-#?(%symbol-index (list (%make-meta-data)) 0)
+#?(symbol-index (list (%make-meta-data)) 0)
 :signals ASDF::FORMATTED-SYSTEM-DEFINITION-ERROR
 
 ; result := nil
-#?(%symbol-index (list (%make-meta-data :specifieds '(hoge))) "system")
+#?(symbol-index (list (%make-meta-data :specifieds '(hoge))) "system")
 => NIL
 ,:stream nil
 
@@ -207,11 +207,11 @@ A | B | C | D | E | F | G | [H](X_Alph_H.html) | I | J | K | L | M | N | O | P |
 
 ;;;; Exceptional-Situations:
 
-(requirements-about %ABOUT-PACKAGE)
+(requirements-about ABOUT-PACKAGE)
 
 ;;;; Description:
 ; accepts meta-data, print intermediate markdown for pacakge html.
-#?(%about-package(%make-meta-data :name :package-name
+#?(about-package(%make-meta-data :name :package-name
 				  :doc "package documentation"
 				  :exports '(symbols which extracted from |defpackage's| export option)
 				  :singles (list (make-single :name 'symbols
@@ -234,15 +234,15 @@ package documentation
 "
 
 #+syntax
-(%ABOUT-PACKAGE meta-data) ; => result
+(ABOUT-PACKAGE meta-data) ; => result
 
 ;;;; Arguments and Values:
 
 ; meta-data := meta-data object, otherwise error.
-#?(%about-package :not-meta-data) :signals type-error
+#?(about-package :not-meta-data) :signals type-error
 
 ; result := nil
-#?(%about-package(%make-meta-data :name :package-name
+#?(about-package(%make-meta-data :name :package-name
 				  :doc "package documentation"
 				  :exports '(symbols which extracted from |defpackage's| export option)
 				  :singles (list (make-single :name 'symbols

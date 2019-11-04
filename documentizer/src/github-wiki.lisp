@@ -18,7 +18,7 @@
     (when meta-datas
       (setf *Meta* meta-datas) ; for debug use.
       (with-open-markdown("home")
-	(%Top system))
+	(Top system))
       (packages.md meta-datas)
       (symbol-index.md meta-datas system)
       (dolist(m meta-datas)
@@ -29,15 +29,15 @@
 
 (defun symbol-index.md(meta-datas system)
   (with-open-markdown("symbols")
-    (%Symbol-index meta-datas system)))
+    (Symbol-index meta-datas system)))
 
 (defun packages.md(meta-datas)
   (with-open-markdown("packages")
-    (%Packages meta-datas)))
+    (Packages meta-datas)))
 
 (defun about-package.md(meta-data)
   (with-open-markdown((format nil "P_~A"(Meta-data-name meta-data)))
-    (%About-package meta-data)))
+    (About-package meta-data)))
 
 (defun about-symbols.md(meta-data)
   (flet((PUT(section)

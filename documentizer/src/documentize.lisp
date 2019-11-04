@@ -34,21 +34,31 @@
       (let((*default-pathname-defaults*
 	     (merge-pathnames "docs/" sys-dir)))
 	(ensure-directories-exist *default-pathname-defaults*)
-	(top system)
-	(packages meta-datas)
-	(symbol-index meta-datas system)
+	(with-doc-directory((merge-pathnames "top.html"))
+	  (top system))
+	(with-doc-directory((merge-pathnames "packages.html"))
+	  (packages meta-datas))
+	(with-doc-directory((merge-pathnames(Target-path "symbols")))
+	  (symbol-index meta-datas system))
 	(dolist(m meta-datas)
-	  (about-package m)
+	  (with-doc-directory((merge-pathnames(format nil "P_~A.html"
+						      (Meta-data-name m))))
+	    (about-package m))
 	  (about-symbols m))
 	(table meta-datas #'table-callback)
 	*default-pathname-defaults*))))
 
+;;; GENERATORS
+(declaim (ftype (function *
+			  (values null &optional))
+		top
+		packages
+		symbol-index
+		about-package
+		))
+
 ;;; TOP
 (defun top(system)
-  (with-doc-directory((merge-pathnames "top.html"))
-    (%top system)))
-
-(defun %top(system)
   (format t "# ~A~%~@[## ~A~%~]~@[~A~2%~]~{~D. [~A](~A)~&~}"
 	  (asdf:coerce-name system)
 	  (asdf:system-description system)
@@ -61,10 +71,6 @@
 
 ;;; PACKAGES
 (defun packages(meta-datas)
-  (with-doc-directory((merge-pathnames "packages.html"))
-    (%packages meta-datas)))
-
-(defun %packages(meta-datas)
   (format t "# Packages Index~%")
   (loop :for i :upfrom 1
 	:for m :in meta-datas
@@ -75,10 +81,6 @@
 
 ;;; SYMBOL-INDEX
 (defun symbol-index(meta-datas system)
-  (with-doc-directory((merge-pathnames(Target-path "symbols")))
-    (%symbol-index meta-datas system)))
-
-(defun %symbol-index (meta-datas system)
   (labels((LINKS(chars &optional(code #.(char-code #\A)) have-non-alph-p acc)
 	    (if(not(<= code #.(char-code #\Z)))
 	      (nreconc acc (or have-non-alph-p '("Non-Alphabetic")))
@@ -99,8 +101,10 @@
 				   acc))
 		      (LINKS chars (1+ code) have-non-alph-p
 			     (push (princ-to-string (code-char code))acc)))))))))
-    (let*((symbols(apply #'append (mapcar #'Meta-data-specifieds meta-datas)))
-	  (index-chars(index-chars symbols)))
+    (let*((symbols
+	    (apply #'append (mapcar #'Meta-data-specifieds meta-datas)))
+	  (index-chars
+	    (index-chars symbols)))
       (format t "# Alphabetical Symbol Index~2%There ~:[is~;are~] ~D symbol~:*~P by ~A.~2%~{~A~^ | ~}"
 	      (not(= 1(length symbols)))
 	      (length symbols)
@@ -109,11 +113,6 @@
 
 ;;; ABOUT-PACKAGE
 (defun about-package(meta-data)
-  (with-doc-directory((merge-pathnames(format nil "P_~A.html"(Meta-data-name meta-data))
-))
-    (%about-package meta-data)))
-
-(defun %about-package (meta-data)
   (format t "# ~A~%~@[## ~:*~A Concepts~%~A~%~]## ~A Dictionary~2%~{* ~A~&~}"
 	  (Meta-data-name meta-data)
 	  (Meta-data-doc meta-data)
