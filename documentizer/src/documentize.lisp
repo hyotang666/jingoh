@@ -178,6 +178,11 @@
       (setf return(table-printer chars pairs)))
     return))
 
+(declaim (ftype (function (list list)
+			  (values (cons list
+					(cons list null))
+				  &optional))
+		table-printer))
 (defun table-printer(chars pairs)
   (if(endp pairs)
     (list nil nil)
