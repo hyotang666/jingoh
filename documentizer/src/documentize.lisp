@@ -20,21 +20,25 @@
 
 ;;;; DOCUMENTIZE
 (defun documentize(system)
-  (let*((system(asdf:find-system system))
-	(sys-dir(asdf:system-source-directory system)))
-    (let((meta-datas(Meta-datas<=system system sys-dir)))
-      (when meta-datas
-	(setf *meta* meta-datas) ; for debug use.
-	(let((*default-pathname-defaults*(merge-pathnames "docs/" sys-dir)))
-	  (ensure-directories-exist *default-pathname-defaults*)
-	  (top system)
-	  (packages meta-datas)
-	  (symbol-index meta-datas system)
-	  (dolist(m meta-datas)
-	    (about-package m)
-	    (about-symbols m))
-	  (table meta-datas #'table-callback)
-	  *default-pathname-defaults*)))))
+  (let*((system
+	  (asdf:find-system system))
+	(sys-dir
+	  (asdf:system-source-directory system))
+	(meta-datas
+	  (Meta-datas<=system system sys-dir)))
+    (when meta-datas
+      (setf *meta* meta-datas) ; for debug use.
+      (let((*default-pathname-defaults*
+	     (merge-pathnames "docs/" sys-dir)))
+	(ensure-directories-exist *default-pathname-defaults*)
+	(top system)
+	(packages meta-datas)
+	(symbol-index meta-datas system)
+	(dolist(m meta-datas)
+	  (about-package m)
+	  (about-symbols m))
+	(table meta-datas #'table-callback)
+	*default-pathname-defaults*))))
 
 ;;; TOP
 (defun top(system)
