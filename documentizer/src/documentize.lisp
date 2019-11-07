@@ -160,10 +160,12 @@
 				 (format nil "[~A](~A)~%"
 					 (Escape-* name)
 					 (Section-path sec))))))
-    (let*((pairs(loop :for sec :in (apply #'append (mapcar #'Meta-data-sections meta-datas))
-		      :nconc (LINE sec) :into result
-		      :finally (return (sort result #'string< :key #'car))))
-	  (index-chars(index-chars(apply #'append (mapcar #'Meta-data-specifieds meta-datas)))))
+    (let((pairs
+	   (loop :for sec :in (apply #'append (mapcar #'Meta-data-sections meta-datas))
+		 :nconc (LINE sec) :into result
+		 :finally (return (sort result #'string< :key #'car))))
+	 (index-chars
+	   (index-chars(apply #'append (mapcar #'Meta-data-specifieds meta-datas)))))
       (labels((REC(chars pairs)
 		(unless(endp chars)
 		  (apply #'REC (funcall callback chars pairs)))))
