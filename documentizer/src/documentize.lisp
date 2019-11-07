@@ -171,6 +171,13 @@
 		  (apply #'REC (funcall callback chars pairs)))))
 	(REC index-chars pairs)))))
 
+(declaim (ftype (function (list list)
+			  (values (cons list
+					(cons list null))
+				  &optional))
+		table-callback
+		table-printer
+		))
 (defun table-callback(chars pairs)
   (let((char (car chars))
        return)
@@ -180,11 +187,6 @@
       (setf return(table-printer chars pairs)))
     return))
 
-(declaim (ftype (function (list list)
-			  (values (cons list
-					(cons list null))
-				  &optional))
-		table-printer))
 (defun table-printer(chars pairs)
   (if(endp pairs)
     (list nil nil)
