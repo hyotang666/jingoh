@@ -26,6 +26,8 @@
       (format t "# ~{~A~^, ~}~&"(mapcar #'Escape-*(section-names obj)))
       (princ-section-body(section-body obj)))))
 
+(defparameter *print-example* T)
+
 (defun princ-section-body (body)
   (do*((list body (cdr list))
        (elt (car list) (car list)))
@@ -43,16 +45,19 @@
       ((uiop:string-prefix-p "; " elt)
        (write-string elt *standard-output* :start 2))
       ((uiop:string-prefix-p "#?" elt)
-       (format t "~%```lisp~%~A~%~A ~A~%"
-	       elt
-	       (cadr list)
-	       (caddr list))
+       (when *print-example*
+	 (format t "~%```lisp~%~A~%~A ~A~%"
+		 elt
+		 (cadr list)
+		 (caddr list)))
        (loop :with ops = 0
 	     :for (key value) :on (cdddr list) :by #'cddr
 	     :while (uiop:string-prefix-p "," key)
-	     :do (format t "~A ~A~%" key value)
+	     :do (when *print-example*
+		   (format t "~A ~A~%" key value))
 	     (incf ops)
-	     :finally (format t "```~%")
+	     :finally (when *print-example*
+			(format t "```~%"))
 	     (setf list (nthcdr (+ 2 (* 2 ops))
 				list))))
       ((uiop:string-prefix-p "#+syntax" elt)

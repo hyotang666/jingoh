@@ -7,4 +7,6 @@
     #:lisp
     #:import
     #:importer
+    ;;;; Variable to control section printer.
+    #:*print-example*
     ))
