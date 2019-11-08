@@ -82,9 +82,8 @@
 		  (when(and asdf::system
 			    (not (uiop:featurep :clisp)))
 		    (asdf:load-system asdf::system)
-		    (defmethod asdf:operate :around ((asdf::o asdf:load-op)
-						     (asdf::c (eql (asdf:find-system ,name)))
-						     &key)
+		    (defmethod asdf:perform :around ((asdf::o asdf:compile-op)
+						     (asdf::c (eql (asdf:find-system ,name))))
 		      (let*((asdf::seen nil)
 			    (*default-pathname-defaults*
 			      (merge-pathnames "spec/"
