@@ -2,7 +2,7 @@
 
 ;;;; IMPORTER
 (defun importer(form &optional(*print-example* *print-example*))
-  (when(probe-file(make-pathname :name (string-downcase(string(second form)))
+  (when(probe-file(make-pathname :name (string-downcase(second form))
 				 :type "lisp"
 				 :defaults *default-pathname-defaults*))
     (let*((meta-data
