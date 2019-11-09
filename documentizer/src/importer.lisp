@@ -19,7 +19,7 @@
 		     (declare(ignore s))
 		     ,(princ-to-string s)))))))
 
-(defun lisp(system &optional(*print-example* *print-example*))
+(defun compile(system &optional(*print-example* *print-example*))
   (let*((system
 	  (restart-case(asdf:find-system system)
 	    (use-value(new)
