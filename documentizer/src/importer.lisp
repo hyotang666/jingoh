@@ -9,15 +9,7 @@
 	   (Make-meta-data form)))
       (loop :for s :in (Meta-data-sections meta-data)
 	    :append
-	    (loop :for name :in (Section-names s)
-		  :when (Section-doc-type s)
-		  :collect
-		  `(defmethod documentation
-		     ((s (eql ',(find-symbol (symbol-name name)
-					     (Meta-data-name meta-data))))
-		      (type (eql ',(Section-doc-type s))))
-		     (declare(ignore s))
-		     ,(princ-to-string s)))))))
+	    (<documentations> s (Meta-data-name meta-data))))))
 
 (defun compile(system &optional(*print-example* *print-example*))
   (let*((system
@@ -48,18 +40,21 @@
       correct)))
 
 (defun print-doc(section package)
-  (dolist(s (Section-names section))
-    (if (Section-doc-type section)
-      (print `(defmethod documentation ((s (eql (or (find-symbol ,(string s)
-								 ,package)
-						    (error "Not found ~S in ~S"
-							   ,(string s)
-							   ,package))))
-					(type (eql ',(Section-doc-type section))))
-		(declare(ignore s type))
-		,(princ-to-string section)))
-      (warn "Ignore ~S due to no doc-type specified."
-	    s))))
+  (map nil #'print (<documentations> section package)))
+
+(defun <documentations>(section package)
+  (loop :for name :in (Section-names section)
+	:if (Section-doc-type section)
+	:collect `(defmethod documentation ((s (eql (or (find-symbol ,(string name)
+								     ,package)
+							(error "Not found ~S in ~S"
+							       ,(string name)
+							       ,package))))
+					    (type (eql ',(Section-doc-type section))))
+		    (declare(ignore s type))
+		    ,(princ-to-string section))
+	:else :do (warn "Ignore ~S due to no doc-type specified."
+			name)))
 
 (defun import(system &optional(*print-example* *print-example*))
   (dolist(m (Meta-datas<=system (ensure-system system)))
