@@ -43,13 +43,14 @@
 					   (asdf:find-system (read stream))))))
       correct)))
 
-(define-condition no-doc-type(style-warning simple-condition)
-  ())
+(define-condition no-doc-type(style-warning cell-error)
+  ()
+  (:report(lambda(condition stream)
+	    (format stream "Ignore ~S doe to no doc-type specified."
+		    (cell-error-name condition)))))
 
-(defun no-doc-type(format-control &rest format-arguments)
-  (warn 'no-doc-type
-	:format-control format-control
-	:format-arguments format-arguments))
+(defun no-doc-type(name)
+  (warn 'no-doc-type :name name))
 
 (defun <documentations>(section package)
   (loop :for name :in (Section-names section)
@@ -62,8 +63,7 @@
 					    (type (eql ',(Section-doc-type section))))
 		    (declare(ignore s type))
 		    ,(princ-to-string section))
-	:else :do (no-doc-type "Ignore ~S due to no doc-type specified."
-			       name)))
+	:else :do (no-doc-type name)))
 
 ;;;; IMPORT
 (defun import(system &optional(*print-example* *print-example*))
@@ -78,5 +78,4 @@
 					      (Meta-data-name m))
 				 doc-type)
 		  (princ-to-string s))
-	    (warn "Ignore ~S due to no doc-type specified."
-		  name)))))))
+	    (no-doc-type name)))))))
