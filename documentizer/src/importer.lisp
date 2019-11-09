@@ -30,7 +30,7 @@
       (dolist(meta meta-datas)
 	(print `(in-package ,(meta-data-name meta)))
 	(dolist(s(Meta-data-sections meta))
-	  (map nil #'print (<documentation> s (Meta-data-name meta))))))))
+	  (map nil #'print (<documentations> s (Meta-data-name meta))))))))
 
 (defun ensure-system(system)
   (restart-case(asdf:find-system system)
