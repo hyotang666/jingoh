@@ -21,16 +21,7 @@
 
 (defun compile(system &optional(*print-example* *print-example*))
   (let*((system
-	  (restart-case(asdf:find-system system)
-	    (use-value(new)
-	      :report "Specify correct system name."
-	      :interactive
-	      (lambda()
-		(list (prompt-for:prompt-for T "~&>> "
-					     :by
-					     (lambda(stream)
-					       (asdf:find-system (read stream))))))
-	      new)))
+	  (ensure-system system))
 	(sys-dir
 	  (asdf:system-source-directory system))
 	(meta-datas
@@ -45,6 +36,17 @@
 	(dolist(s(Meta-data-sections meta))
 	  (print-doc s (Meta-data-name meta)))))))
 
+(defun ensure-system(system)
+  (restart-case(asdf:find-system system)
+    (use-value(correct)
+      :report "Specify correct system name."
+      :interactive
+      (lambda()
+	(list (prompt-for:prompt-for T "~&>> "
+				     :by (lambda(stream)
+					   (asdf:find-system (read stream))))))
+      correct)))
+
 (defun print-doc(section package)
   (dolist(s (Section-names section))
     (when (Section-doc-type section)
@@ -58,7 +60,7 @@
 		,(princ-to-string section))))))
 
 (defun import(system &optional(*print-example* *print-example*))
-  (dolist(m (Meta-datas<=system (asdf:find-system system)))
+  (dolist(m (Meta-datas<=system (ensure-system system)))
     (dolist(s (Meta-data-sections m))
       (dolist(name (Section-names s))
 	(setf (documentation (find-symbol (symbol-name name)
