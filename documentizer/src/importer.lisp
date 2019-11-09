@@ -1,7 +1,7 @@
 (in-package #:jingoh.documentizer)
 
 ;;;; IMPORTER
-(defun importer(form)
+(defun importer(form &optional(*print-example* *print-example*))
   (when(probe-file(make-pathname :name (string-downcase(string(second form)))
 				 :type "lisp"
 				 :defaults *default-pathname-defaults*))
@@ -19,7 +19,7 @@
 		     (declare(ignore s))
 		     ,(princ-to-string s)))))))
 
-(defun lisp(system)
+(defun lisp(system &optional(*print-example* *print-example*))
   (let*((system
 	  (asdf:find-system system))
 	(sys-dir
@@ -48,7 +48,7 @@
 		(declare(ignore s type))
 		,(princ-to-string section))))))
 
-(defun import(system)
+(defun import(system &optional(*print-example* *print-example*))
   (dolist(m (Meta-datas<=system (asdf:find-system system)))
     (dolist(s (Meta-data-sections m))
       (dolist(name (Section-names s))
