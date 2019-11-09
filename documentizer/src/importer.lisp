@@ -49,7 +49,7 @@
 
 (defun print-doc(section package)
   (dolist(s (Section-names section))
-    (when (Section-doc-type section)
+    (if (Section-doc-type section)
       (print `(defmethod documentation ((s (eql (or (find-symbol ,(string s)
 								 ,package)
 						    (error "Not found ~S in ~S"
@@ -57,7 +57,9 @@
 							   ,package))))
 					(type (eql ',(Section-doc-type section))))
 		(declare(ignore s type))
-		,(princ-to-string section))))))
+		,(princ-to-string section)))
+      (warn "Ignore ~S due to no doc-type specified."
+	    s))))
 
 (defun import(system &optional(*print-example* *print-example*))
   (dolist(m (Meta-datas<=system (ensure-system system)))
