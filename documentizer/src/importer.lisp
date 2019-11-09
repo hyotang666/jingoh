@@ -63,7 +63,12 @@
   (dolist(m (Meta-datas<=system (ensure-system system)))
     (dolist(s (Meta-data-sections m))
       (dolist(name (Section-names s))
-	(setf (documentation (find-symbol (symbol-name name)
-					  (Meta-data-name m))
-			     (Section-doc-type s))
-	      (princ-to-string s))))))
+	(let((doc-type
+	       (Section-doc-type s)))
+	  (if doc-type
+	    (setf (documentation (find-symbol (symbol-name name)
+					      (Meta-data-name m))
+				 doc-type)
+		  (princ-to-string s))
+	    (warn "Ignore ~S due to no doc-type specified."
+		  name)))))))
