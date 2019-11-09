@@ -26,7 +26,7 @@
       (dolist(meta meta-datas)
 	(print `(in-package ,(meta-data-name meta)))
 	(dolist(s(Meta-data-sections meta))
-	  (print-doc s (Meta-data-name meta)))))))
+	  (map nil #'print (<documentation> s (Meta-data-name meta))))))))
 
 (defun ensure-system(system)
   (restart-case(asdf:find-system system)
@@ -38,9 +38,6 @@
 				     :by (lambda(stream)
 					   (asdf:find-system (read stream))))))
       correct)))
-
-(defun print-doc(section package)
-  (map nil #'print (<documentations> section package)))
 
 (defun <documentations>(section package)
   (loop :for name :in (Section-names section)
