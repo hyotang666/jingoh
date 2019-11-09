@@ -46,7 +46,7 @@
 (define-condition no-doc-type(style-warning cell-error)
   ()
   (:report(lambda(condition stream)
-	    (format stream "Ignore ~S doe to no doc-type specified."
+	    (format stream "Ignore ~S due to no doc-type specified."
 		    (cell-error-name condition)))))
 
 (defun no-doc-type(name)
