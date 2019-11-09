@@ -5,11 +5,13 @@
   (when(probe-file(make-pathname :name (string-downcase(string(second form)))
 				 :type "lisp"
 				 :defaults *default-pathname-defaults*))
-    (let((meta-data
-	   (Make-meta-data form)))
-      (loop :for s :in (Meta-data-sections meta-data)
-	    :append
-	    (<documentations> s (Meta-data-name meta-data))))))
+    (let*((meta-data
+	    (Make-meta-data form))
+	  (package
+	    (Meta-data-name meta-data)))
+      (mapcan (lambda(s)
+		(<documentations> s package))
+	      (Meta-data-sections meta-data)))))
 
 (defun compile(system &optional(*print-example* *print-example*))
   (let*((system
