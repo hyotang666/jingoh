@@ -21,7 +21,16 @@
 
 (defun lisp(system &optional(*print-example* *print-example*))
   (let*((system
-	  (asdf:find-system system))
+	  (restart-case(asdf:find-system system)
+	    (use-value(new)
+	      :report "Specify correct system name."
+	      :interactive
+	      (lambda()
+		(list (prompt-for:prompt-for T "~&>> "
+					     :by
+					     (lambda(stream)
+					       (asdf:find-system (read stream))))))
+	      new)))
 	(sys-dir
 	  (asdf:system-source-directory system))
 	(meta-datas
