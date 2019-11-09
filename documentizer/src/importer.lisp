@@ -13,7 +13,9 @@
 		(<documentations> s package))
 	      (Meta-data-sections meta-data)))))
 
+;;;; COMPILE
 (defun compile(system &optional(*print-example* *print-example*))
+  "Compile spec documentation to lisp file."
   (let*((system
 	  (ensure-system system))
 	(sys-dir
@@ -55,7 +57,9 @@
 	:else :do (warn "Ignore ~S due to no doc-type specified."
 			name)))
 
+;;;; IMPORT
 (defun import(system &optional(*print-example* *print-example*))
+  "Import spec documentation to lisp image."
   (dolist(m (Meta-datas<=system (ensure-system system)))
     (dolist(s (Meta-data-sections m))
       (dolist(name (Section-names s))
