@@ -59,10 +59,10 @@
   (loop :for name :in (Section-names section)
 	:if (Section-doc-type section)
 	:collect `(defmethod documentation ((s (eql (or (find-symbol ,(string name)
-								     ,package)
-							(error "Not found ~S in ~S"
+								     ,(string package))
+							(error "Not found symbol ~S in package ~S"
 							       ,(string name)
-							       ,package))))
+							       ,(string package)))))
 					    (type (eql ',(Section-doc-type section))))
 		    (declare(ignore s type))
 		    ,(princ-to-string section))
