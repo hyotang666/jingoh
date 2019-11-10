@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.generator
-  :version "0.18.4"
+  :version "0.18.5"
   :in-order-to((test-op(test-op "jingoh.generator.test")))
   :depends-on (
                "millet" ; wrappter for implementation dependent utilities.
@@ -24,35 +24,42 @@
                (:file "dribble" :depends-on ("util"))
                ))
 
-;;; The form below is documentation importer.
-(let((system
-       (find-system "jingoh.documentizer" nil)))
-  ;; Weakly depends on.
-  (when(and system
-            (not(featurep :clisp)))
-    (load-system system)
-    (defmethod operate :around((o load-op)(c (eql(find-system "jingoh.org")))&key)
-      (let*((forms nil)
-            (*macroexpand-hook*
-              (let((outer-hook *macroexpand-hook*))
-                (lambda(expander form env)
-                  (when(typep form '(cons (eql defpackage)*))
-                    (push form forms))
-                  (funcall outer-hook expander form env))))
-            (*default-pathname-defaults*
-              (merge-pathnames "spec/"
-                               (system-source-directory c))))
-        (multiple-value-prog1(call-next-method)
-          (mapc (find-symbol "IMPORTER" "JINGOH.DOCUMENTIZER")
-                forms))))))
-
-(defmethod operate :around ((o test-op)(c (eql (find-system "jingoh.generator")))
-                            &key ((:compile-print *compile-print*))
-                            ((:compile-verbose *compile-verbose*))
-                            &allow-other-keys)
-  (call-next-method))
-
 (defmethod operate :after ((o load-op)(c (eql (find-system "jingoh.generator")))&key)
   (unless(fboundp(find-symbol "FUNCTION-INFORMATION" "CLTL2"))
     (warn "TRIVIAL-CLTL2 does not support ~A so JINGOH.GENERATOR can not provide full feature."
           (lisp-implementation-type))))
+
+;;; These forms below are added by JINGOH.GENERATOR.
+;; Ensure in ASDF for pretty printings.
+(in-package :asdf)
+;; Enable testing via (asdf:test-system "jingoh.generator").
+(defmethod component-depends-on
+           ((o test-op) (c (eql (find-system "jingoh.generator"))))
+  (append (call-next-method) '((test-op "jingoh.generator.test"))))
+;; Enable passing parameter for JINGOH:EXAMINER via ASDF:TEST-SYSTEM.
+(defmethod operate :around
+           ((o test-op) (c (eql (find-system "jingoh.generator")))
+            &rest keys
+            &key ((:compile-print *compile-print*))
+            ((:compile-verbose *compile-verbose*)) &allow-other-keys)
+  (flet ((jingoh.args (keys)
+           (loop :for (key value) :on keys :by #'cddr
+                 :when (find key '(:on-fails :subject :vivid) :test #'eq)
+                 :collect key
+                 :and
+                 :collect value :else
+                 :when (eq :jingoh.verbose key)
+                 :collect :verbose
+                 :and
+                 :collect value)))
+    (let ((args (jingoh.args keys)))
+      (declare (special args))
+      (call-next-method))))
+;; Enable importing spec documentations.
+(let ((system (find-system "jingoh.documentizer" nil)))
+  (when (and system (not (featurep :clisp)))
+    (load-system system)
+    (defmethod perform :after
+               ((o load-op) (c (eql (find-system "resignal-bind"))))
+      (dolist (c (component-children c))
+        (symbol-call :jingoh.documentizer :import* c)))))
