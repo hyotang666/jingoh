@@ -1,14 +1,5 @@
 (in-package #:jingoh.documentizer)
 
-(define-condition missing-spec-file(style-warning)
-  ((path :initarg :path :reader path))
-  (:report (lambda(condition stream)
-	     (format stream "Missing spec file. ~S"
-		     (path condition)))))
-
-(defun missing-spec-file(pathname)
-  (warn 'missing-spec-file :path pathname))
-
 ;;;; IMPORTER
 (defun importer(form &optional(*print-example* *print-example*))
   (let((pathname
@@ -16,7 +7,7 @@
 			:type "lisp"
 			:defaults *default-pathname-defaults*)))
     (if(not(probe-file pathname))
-      (missing-spec-file pathname)
+      (Missing-spec-file pathname)
       (let*((meta-data
 	      (Make-meta-data form))
 	    (package
