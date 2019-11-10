@@ -1113,8 +1113,10 @@
 :outputs "\"instead of coloring\""
 
 ;;;; Examples.
-#?(mismatch-sexp #2A() #2A((1 2)(3 4)))
-=> nil
+#?(let((*print-vivid* nil))
+    (prin1(mismatch-sexp #2A() #2A((1 2)(3 4)))))
+:outputs #.(prin1-to-string'(:DIFFERENT-DIMENSIONS :EXPECTED (2 2) :ACTUAL (0 0) #2A()))
+,:test equalp
 
 (requirements-about SYNTAX-ERROR :doc-type type)
 

@@ -238,8 +238,8 @@
 				  acc))))
 		(array (if (not(arrayp actual))
 			 (markup actual)
-			 (if(equal (array-dimensions expected)
-				   (array-dimensions actual))
+			 (if(not(equal (array-dimensions expected)
+				       (array-dimensions actual)))
 			   (markup (list :different-dimensions
 					 :expected (array-dimensions expected)
 					 :actual (array-dimensions actual)
