@@ -2,26 +2,25 @@
 
 ;;;; IMPORTER
 (defun importer(form &optional(*print-example* *print-example*))
-  (when(probe-file(make-pathname :name (string-downcase(string(second form)))
-				 :type "lisp"
-				 :defaults *default-pathname-defaults*))
-    (let((meta-data
-	   (Make-meta-data form)))
-      (loop :for s :in (Meta-data-sections meta-data)
-	    :append
-	    (loop :for name :in (Section-names s)
-		  :when (Section-doc-type s)
-		  :collect
-		  `(defmethod documentation
-		     ((s (eql ',(find-symbol (symbol-name name)
-					     (Meta-data-name meta-data))))
-		      (type (eql ',(Section-doc-type s))))
-		     (declare(ignore s))
-		     ,(princ-to-string s)))))))
+  (let((pathname
+	 (make-pathname :name (string-downcase(second form))
+			:type "lisp"
+			:defaults *default-pathname-defaults*)))
+    (if(not(probe-file pathname))
+      (Missing-spec-file pathname)
+      (let*((meta-data
+	      (Make-meta-data form))
+	    (package
+	      (Meta-data-name meta-data)))
+	(mapcan (lambda(s)
+		  (<documentations> s package))
+		(Meta-data-sections meta-data))))))
 
-(defun lisp(system &optional(*print-example* *print-example*))
+;;;; COMPILE
+(defun compile(system &optional(*print-example* *print-example*))
+  "Compile spec documentation to lisp file."
   (let*((system
-	  (asdf:find-system system))
+	  (ensure-system system))
 	(sys-dir
 	  (asdf:system-source-directory system))
 	(meta-datas
@@ -34,25 +33,53 @@
       (dolist(meta meta-datas)
 	(print `(in-package ,(meta-data-name meta)))
 	(dolist(s(Meta-data-sections meta))
-	  (print-doc s (Meta-data-name meta)))))))
+	  (map nil #'print (<documentations> s (Meta-data-name meta))))))))
 
-(defun print-doc(section package)
-  (dolist(s (Section-names section))
-    (when (Section-doc-type section)
-      (print `(defmethod documentation ((s (eql (or (find-symbol ,(string s)
-								 ,package)
-						    (error "Not found ~S in ~S"
-							   ,(string s)
-							   ,package))))
-					(type (eql ',(Section-doc-type section))))
-		(declare(ignore s type))
-		,(princ-to-string section))))))
+(defun ensure-system(system)
+  (restart-case(asdf:find-system system)
+    (use-value(correct)
+      :report "Specify correct system name."
+      :interactive
+      (lambda()
+	(list (prompt-for:prompt-for T "~&>> "
+				     :by (lambda(stream)
+					   (asdf:find-system (read stream))))))
+      correct)))
 
+(define-condition no-doc-type(style-warning)
+  ((name :initarg :name :reader name))
+  (:report(lambda(condition stream)
+	    (format stream "Ignore ~S due to no doc-type specified."
+		    (name condition)))))
+
+(defun no-doc-type(name)
+  (warn 'no-doc-type :name name))
+
+(defun <documentations>(section package)
+  (loop :for name :in (Section-names section)
+	:if (Section-doc-type section)
+	:collect
+	`(defmethod documentation ((s (eql (or (find-symbol ,(string name)
+							    ,(string package))
+					       (error "Not found symbol ~S in package ~S"
+						      ,(string name)
+						      ,(string package)))))
+				   (type (eql ',(Section-doc-type section))))
+	   (declare(ignore s type))
+	   ,(princ-to-string section))
+	:else :do (no-doc-type name)))
+
+;;;; IMPORT
 (defun import(system &optional(*print-example* *print-example*))
-  (dolist(m (Meta-datas<=system (asdf:find-system system)))
+  "Import spec documentation to lisp image."
+  (dolist(m (Meta-datas<=system (ensure-system system)))
     (dolist(s (Meta-data-sections m))
       (dolist(name (Section-names s))
-	(setf (documentation (find-symbol (symbol-name name)
-					  (Meta-data-name m))
-			     (Section-doc-type s))
-	      (princ-to-string s))))))
+	(let((doc-type
+	       (Section-doc-type s)))
+	  (if doc-type
+	    (setf (documentation (find-symbol (symbol-name name)
+					      (Meta-data-name m))
+				 doc-type)
+		  (princ-to-string s))
+	    (no-doc-type name)))))))

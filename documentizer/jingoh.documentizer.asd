@@ -1,12 +1,14 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.documentizer
-  :version "2.1.0"
+  :version "3.8.1"
   :depends-on (
                "3bmd" ; markdown.
                "3bmd-ext-code-blocks"
                "read-as-string" ; s-expression string reader.
                "uiop" ; utilities.
+               "prompt-for" ; Type safe user input.
+               "null-package" ; Safe S expression reader.
                )
   :pathname "src/"
   :components(;; package.

@@ -1,10 +1,9 @@
 (defpackage :jingoh.documentizer
   (:use :cl)
-  (:shadow #:import)
+  (:shadow #:import #:compile)
   (:export
     #:documentize
     #:github-wiki
-    #:lisp
     #:import
     #:importer
     ;;;; Variable to control section printer.

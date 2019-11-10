@@ -1,5 +1,14 @@
 (in-package :jingoh.documentizer)
 
+(define-condition missing-spec-file(style-warning)
+  ((path :initarg :path :reader path))
+  (:report (lambda(condition stream)
+	     (format stream "Missing spec file. ~S"
+		     (path condition)))))
+
+(defun missing-spec-file(pathname)
+  (warn 'missing-spec-file :path pathname))
+
 (defstruct(meta-data (:constructor %make-meta-data)
 		     (:copier nil)
 		     (:predicate nil))
@@ -45,7 +54,7 @@
 			   (sys-dir(asdf:system-source-directory system)))
   (let((spec-dir(merge-pathnames "spec/" sys-dir)))
     (when(not(uiop:directory-exists-p spec-dir))
-      (return-from meta-datas<=system (warn "Spec file is not found.")))
+      (return-from meta-datas<=system (missing-spec-file spec-dir)))
     (mapc #'asdf:load-system (asdf:system-depends-on system))
     (let(meta-datas)
       (let((*macroexpand-hook*

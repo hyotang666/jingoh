@@ -1,6 +1,7 @@
 (in-package :jingoh.documentizer)
 
-(defstruct section body path names doc-type)
+(defstruct (section (:predicate nil))
+  body path names doc-type)
 (defstruct(single (:include section)
 		  (:constructor make-single (&key body path name doc-type
 						  &aux(names (list name))))))
