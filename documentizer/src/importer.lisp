@@ -58,14 +58,15 @@
 (defun <documentations>(section package)
   (loop :for name :in (Section-names section)
 	:if (Section-doc-type section)
-	:collect `(defmethod documentation ((s (eql (or (find-symbol ,(string name)
-								     ,(string package))
-							(error "Not found symbol ~S in package ~S"
-							       ,(string name)
-							       ,(string package)))))
-					    (type (eql ',(Section-doc-type section))))
-		    (declare(ignore s type))
-		    ,(princ-to-string section))
+	:collect
+	`(defmethod documentation ((s (eql (or (find-symbol ,(string name)
+							    ,(string package))
+					       (error "Not found symbol ~S in package ~S"
+						      ,(string name)
+						      ,(string package)))))
+				   (type (eql ',(Section-doc-type section))))
+	   (declare(ignore s type))
+	   ,(princ-to-string section))
 	:else :do (no-doc-type name)))
 
 ;;;; IMPORT
