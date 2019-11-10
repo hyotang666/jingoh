@@ -1112,6 +1112,10 @@
     (prin1 (mismatch-sexp "foo" "bar")))
 :outputs "\"instead of coloring\""
 
+;;;; Examples.
+#?(mismatch-sexp #2A() #2A((1 2)(3 4)))
+=> nil
+
 (requirements-about SYNTAX-ERROR :doc-type type)
 
 ;;;; Description:
@@ -1129,3 +1133,4 @@
 ; [READER] simple-condition-format-arguments
 
 ;;;; Notes:
+
