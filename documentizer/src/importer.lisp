@@ -1,21 +1,5 @@
 (in-package #:jingoh.documentizer)
 
-;;;; IMPORTER
-(defun importer(form &optional(*print-example* *print-example*))
-  (let((pathname
-	 (make-pathname :name (string-downcase(second form))
-			:type "lisp"
-			:defaults *default-pathname-defaults*)))
-    (if(not(probe-file pathname))
-      (Missing-spec-file pathname)
-      (let*((meta-data
-	      (Make-meta-data form))
-	    (package
-	      (Meta-data-name meta-data)))
-	(mapcan (lambda(s)
-		  (<documentations> s package))
-		(Meta-data-sections meta-data))))))
-
 ;;;; COMPILE
 (defun compile(system &optional(*print-example* *print-example*))
   "Compile spec documentation to lisp file."
@@ -83,3 +67,51 @@
 				 doc-type)
 		  (princ-to-string s))
 	    (no-doc-type name)))))))
+
+;;;; IMPORT*
+(defun import*(component)
+  (let((package
+	 *package*)
+       (outer-hook
+	 *macroexpand-hook*))
+    (flet((hook(expander form env)
+	    (typecase form
+	      ((cons (eql in-package)
+		     *)
+	       (eval (funcall outer-hook expander form env)))
+	      ((not(cons (eql defpackage)
+			 *))
+	       (funcall outer-hook expander form env))
+	      (otherwise
+		(let*((meta-data
+			(Make-meta-data form))
+		      (package
+			(Meta-data-name meta-data)))
+		  (dolist(s(Meta-data-sections meta-data))
+		    (dolist(name (Section-names s))
+		      (let((doc-type
+			     (Section-doc-type s)))
+			(if(not doc-type)
+			  (no-doc-type name)
+			  (setf (documentation
+				  (or (find-symbol (symbol-name name)
+						   package)
+				      (error "Not found symbol ~S in package ~S"
+					     (string name)
+					     (string package)))
+				  doc-type)
+				(princ-to-string s)))))))))))
+      (unwind-protect
+	(with-open-file(s (asdf:component-pathname component))
+	  (do*((tag
+		 '#:tag)
+	       (*default-pathname-defaults*
+		 (merge-pathnames "spec/"(asdf::component-parent-pathname component)))
+	       (*macroexpand-hook*
+		 #'hook)
+	       (exp
+		 (read s nil tag)
+		 (read s nil tag)))
+	    ((eq exp tag))
+	    (macroexpand exp)))
+	(setq *package* package)))))
