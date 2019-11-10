@@ -45,7 +45,8 @@
 	       (with-input-from-string(s elt)
 		 (null-package:read-with-null-package s))))
 	 (when(find (car sexp)
-		    '(requirements-about common-requirements-about))
+		    '(requirements-about common-requirements-about)
+		    :test #'string=)
 	   sexp))))
 
 (defun replace-invalid-chars(arg)
