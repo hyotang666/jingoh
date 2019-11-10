@@ -84,8 +84,7 @@
 		    (asdf:load-system asdf::system)
 		    (defmethod asdf:perform :around ((asdf::o asdf:compile-op)
 						     (asdf::c (eql (asdf:find-system ,name))))
-		      (let*((asdf::seen nil)
-			    (*default-pathname-defaults*
+		      (let*((*default-pathname-defaults*
 			      (merge-pathnames "spec/"
 					       (asdf:system-source-directory asdf::c)))
 			    (*macroexpand-hook*
@@ -94,16 +93,12 @@
 				  (if(not(typep asdf::form '(cons (eql defpackage)*)))
 				    (funcall asdf::outer-hook asdf::expander
 					     asdf::form asdf::env)
-				    (if(find (cadr asdf::form)asdf::seen
-					     :test #'string=)
-				      (funcall asdf::outer-hook asdf::expander
-					       asdf::form asdf::env)
-				      (progn (push (cadr asdf::form) asdf::seen)
-					     `(progn ,asdf::form
-						     ,@(uiop:symbol-call
-							 :JINGOH.DOCUMENTIZER
-							 :IMPORTER
-							 asdf::form)))))))))
+				    `(progn ,(funcall asdf::outer-hook asdf::expander
+						      asdf::form asdf::env)
+					    ,@(uiop:symbol-call
+						:JINGOH.DOCUMENTIZER
+						:IMPORTER
+						asdf::form)))))))
 			(call-next-method))))))))))
 
 ;;; TEST-ASD
