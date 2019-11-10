@@ -77,29 +77,15 @@
 		      (declare(special asdf::args))
 		      (call-next-method))))
 		";; Enable importing spec documentations."
-		(let((asdf::system
-		       (asdf:find-system "jingoh.documentizer" nil)))
-		  (when(and asdf::system
-			    (not (uiop:featurep :clisp)))
+		(let ((asdf::system
+			(asdf:find-system "jingoh.documentizer" nil)))
+		  (when (and asdf::system (not (uiop:featurep :clisp)))
 		    (asdf:load-system asdf::system)
-		    (defmethod asdf:perform :around ((asdf::o asdf:compile-op)
-						     (asdf::c (eql (asdf:find-system ,name))))
-		      (let*((*default-pathname-defaults*
-			      (merge-pathnames "spec/"
-					       (asdf:system-source-directory asdf::c)))
-			    (*macroexpand-hook*
-			      (let((asdf::outer-hook *macroexpand-hook*))
-				(lambda(asdf::expander asdf::form asdf::env)
-				  (if(not(typep asdf::form '(cons (eql defpackage)*)))
-				    (funcall asdf::outer-hook asdf::expander
-					     asdf::form asdf::env)
-				    `(progn ,(funcall asdf::outer-hook asdf::expander
-						      asdf::form asdf::env)
-					    ,@(uiop:symbol-call
-						:JINGOH.DOCUMENTIZER
-						:IMPORTER
-						asdf::form)))))))
-			(call-next-method))))))))))
+		    (defmethod asdf:perform :after
+		      ((asdf::o asdf:load-op)
+		       (asdf::c (eql (asdf:find-system "resignal-bind"))))
+		      (dolist(asdf::c(asdf:component-children asdf::c))
+			(uiop:symbol-call :jingoh.documentizer :import* asdf::c))))))))))
 
 ;;; TEST-ASD
 (defun test-asd-generator(system forms)
