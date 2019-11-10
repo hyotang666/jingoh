@@ -1,17 +1,29 @@
 (in-package #:jingoh.documentizer)
 
+(define-condition missing-spec-file(style-warning)
+  ((path :initarg :path :reader path))
+  (:report (lambda(condition stream)
+	     (format stream "Missing spec file. ~S"
+		     (path condition)))))
+
+(defun missing-spec-file(pathname)
+  (warn 'missing-spec-file :path pathname))
+
 ;;;; IMPORTER
 (defun importer(form &optional(*print-example* *print-example*))
-  (when(probe-file(make-pathname :name (string-downcase(second form))
-				 :type "lisp"
-				 :defaults *default-pathname-defaults*))
-    (let*((meta-data
-	    (Make-meta-data form))
-	  (package
-	    (Meta-data-name meta-data)))
-      (mapcan (lambda(s)
-		(<documentations> s package))
-	      (Meta-data-sections meta-data)))))
+  (let((pathname
+	 (make-pathname :name (string-downcase(second form))
+			:type "lisp"
+			:defaults *default-pathname-defaults*)))
+    (if(not(probe-file pathname))
+      (missing-spec-file pathname)
+      (let*((meta-data
+	      (Make-meta-data form))
+	    (package
+	      (Meta-data-name meta-data)))
+	(mapcan (lambda(s)
+		  (<documentations> s package))
+		(Meta-data-sections meta-data))))))
 
 ;;;; COMPILE
 (defun compile(system &optional(*print-example* *print-example*))
