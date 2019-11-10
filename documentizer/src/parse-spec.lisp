@@ -41,12 +41,13 @@
   (and (char= #\( (char elt 0))
        (let*((*package*
 	       (find-package :jingoh.documentizer))
+	     (null-package:*only-junk-p*
+	       T)
 	     (sexp
 	       (with-input-from-string(s elt)
 		 (null-package:read-with-null-package s))))
 	 (when(find (car sexp)
-		    '(requirements-about common-requirements-about)
-		    :test #'string=)
+		    '(requirements-about common-requirements-about))
 	   sexp))))
 
 (defun replace-invalid-chars(arg)
