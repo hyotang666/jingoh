@@ -5,7 +5,6 @@
     #:documentize
     #:github-wiki
     #:import
-    #:import*
     ;;;; Variable to control section printer.
     #:*print-example*
     ))
