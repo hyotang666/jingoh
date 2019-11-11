@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.reader
-  :version "2.2.1"
+  :version "2.2.2"
   :description "Dispatch macro for jingoh"
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "CONCEPTS.md"))
@@ -44,5 +44,4 @@
     (load-system system)
     (defmethod perform :after
                ((o load-op) (c (eql (find-system "resignal-bind"))))
-      (dolist (c (component-children c))
-        (symbol-call :jingoh.documentizer :import* c)))))
+      (symbol-call :jingoh.documentizer :import c))))

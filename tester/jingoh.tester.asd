@@ -2,7 +2,7 @@
 (in-package :asdf)
 (defsystem :jingoh.tester
   :description "Jingoh's requirement's tester."
-  :version "1.1.4"
+  :version "1.1.5"
   :long-description #.(uiop:read-file-string (merge-pathnames *load-pathname*
                                                               "CONCEPTS.md"))
   :depends-on (
@@ -63,5 +63,4 @@
     (load-system system)
     (defmethod perform :after
                ((o load-op) (c (eql (find-system "resignal-bind"))))
-      (dolist (c (component-children c))
-        (symbol-call :jingoh.documentizer :import* c)))))
+      (symbol-call :jingoh.documentizer :import c))))

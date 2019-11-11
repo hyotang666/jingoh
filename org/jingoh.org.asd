@@ -2,7 +2,7 @@
 (in-package :asdf)
 
 (defsystem :jingoh.org
-  :version "0.1.9"
+  :version "0.1.10"
   :description "Jingoh's background database system"
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "CONCEPTS.md"))
@@ -55,5 +55,4 @@
     (load-system system)
     (defmethod perform :after
                ((o load-op) (c (eql (find-system "resignal-bind"))))
-      (dolist (c (component-children c))
-        (symbol-call :jingoh.documentizer :import* c)))))
+      (symbol-call :jingoh.documentizer :import c))))
