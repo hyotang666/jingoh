@@ -84,8 +84,7 @@
 		    (defmethod asdf:perform :after
 		      ((asdf::o asdf:load-op)
 		       (asdf::c (eql (asdf:find-system "resignal-bind"))))
-		      (dolist(asdf::c(asdf:component-children asdf::c))
-			(uiop:symbol-call :jingoh.documentizer :import* asdf::c))))))))))
+		      (uiop:symbol-call :jingoh.documentizer :import asdf::c)))))))))
 
 ;;; TEST-ASD
 (defun test-asd-generator(system forms)
