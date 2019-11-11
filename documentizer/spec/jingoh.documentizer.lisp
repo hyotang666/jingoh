@@ -1,5 +1,5 @@
 (defpackage :jingoh.documentizer.spec
-  (:shadowing-import-from :jingoh.documentizer #:import)
+  (:shadowing-import-from :jingoh.documentizer #:import #:compile)
   (:import-from :jingoh.documentizer
 		#:meta-datas<=system
 		#:meta-data
