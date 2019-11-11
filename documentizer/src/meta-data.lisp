@@ -55,15 +55,37 @@
   (let((spec-dir(merge-pathnames "spec/" sys-dir)))
     (when(not(uiop:directory-exists-p spec-dir))
       (return-from meta-datas<=system (missing-spec-file spec-dir)))
-    (mapc #'asdf:load-system (asdf:system-depends-on system))
-    (let(meta-datas)
-      (let((*macroexpand-hook*
-	     (let((outer-hook *macroexpand-hook*))
-	       (lambda(expander form env)
-		 (when(typep form '(cons (eql defpackage)T))
-		   (push form meta-datas))
-		 (funcall outer-hook expander form env))))
-	   (asdf::*asdf-session* nil))
-	(asdf:load-system system :force t))
-      (let((*default-pathname-defaults* spec-dir))
-	(mapcar #'make-meta-data meta-datas)))))
+    (let((*default-pathname-defaults* spec-dir))
+      (mapcar #'make-meta-data (defpackage-forms<-system system)))))
+
+(defun defpackage-forms<-system(system)
+  (unless(asdf:component-loaded-p system)
+    (asdf:load-system system))
+  (let((package
+	 *package*))
+    (unwind-protect
+      (uiop:while-collecting(acc)
+	(dolist(component(asdf:component-children system))
+	  (with-open-file(s (asdf:component-pathname component))
+	    (do*((tag
+		   '#:tag)
+		 (hook
+		   *macroexpand-hook*)
+		 (*macroexpand-hook*
+		   (lambda(expander form env)
+		     (typecase form
+		       ((cons (eql in-package)
+			      *)
+			(eval (funcall hook expander form env)))
+		       ((not (cons (eql defpackage)
+				   *))
+			(funcall hook expander form env))
+		       (otherwise ; defpackage form.
+			 (acc form)
+			 (funcall hook expander form env)))))
+		 (exp
+		   #0=(read s nil tag)
+		   #0#))
+	      ((eq exp tag))
+	      (macroexpand exp)))))
+      (setq *package* package))))
