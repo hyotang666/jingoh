@@ -1,6 +1,10 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem "jingoh.parallel"
+  :version "0.0.0"
+  :author "SATO Shinichi"
+  :license "MIT"
+  :description "Jingoh extension: Parallel testing."
   :depends-on
   (
    "lparallel"

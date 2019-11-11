@@ -2,7 +2,9 @@
 (in-package :asdf)
 (defsystem :jingoh.reader
   :version "2.2.2"
-  :description "Dispatch macro for jingoh"
+  :author "SATO Shinichi"
+  :license "MIT"
+  :description "Jingoh module to provide reader macro."
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "CONCEPTS.md"))
   :depends-on (

@@ -1,8 +1,10 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.tester
-  :description "Jingoh's requirement's tester."
+  :description "Jingoh module for issue objects and interface for jingoh.org."
   :version "1.1.5"
+  :author "SATO Shinichi"
+  :license "MIT"
   :long-description #.(uiop:read-file-string (merge-pathnames *load-pathname*
                                                               "CONCEPTS.md"))
   :depends-on (

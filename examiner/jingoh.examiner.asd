@@ -2,7 +2,9 @@
 (in-package :asdf)
 (defsystem :jingoh.examiner
   :version "0.0.11"
-  :description "Jingoh's printing issues feature."
+  :author "SATO Shinichi"
+  :license "MIT"
+  :description "Jingoh module for test running and control/config output."
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "CONCEPTS.md"))
   :depends-on (

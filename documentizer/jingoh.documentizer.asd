@@ -2,6 +2,9 @@
 (in-package :asdf)
 (defsystem :jingoh.documentizer
   :version "6.0.0"
+  :author "SATO Shinichi"
+  :license "MIT"
+  :description "Jingoh extension: Import/Convert specification documentation."
   :depends-on (
                "3bmd" ; markdown.
                "3bmd-ext-code-blocks"

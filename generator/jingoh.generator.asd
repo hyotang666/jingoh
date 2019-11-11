@@ -2,6 +2,9 @@
 (in-package :asdf)
 (defsystem :jingoh.generator
   :version "0.18.7"
+  :author "SATO Shinichi"
+  :license "MIT"
+  :description "Jingoh extension: Project skelton and test template generator."
   :in-order-to((test-op(test-op "jingoh.generator.test")))
   :depends-on (
                "millet" ; wrappter for implementation dependent utilities.

@@ -4,6 +4,8 @@
 (defsystem :jingoh.org
   :version "0.1.10"
   :description "Jingoh's background database system"
+  :author "SATO Shinichi"
+  :license "MIT"
   :long-description #.(uiop:read-file-string
                         (uiop:subpathname *load-pathname* "CONCEPTS.md"))
   :pathname "src/"
