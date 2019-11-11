@@ -25,10 +25,10 @@
       :report "Specify correct system name."
       :interactive
       (lambda()
-	(list (prompt-for:prompt-for T "~&>> "
-				     :by (lambda(stream)
-					   (asdf:find-system (read stream))))))
-      correct)))
+	(format *query-io* "~&>> ")
+	(force-output *query-io*)
+	(list (read *query-io*)))
+      (ensure-system correct))))
 
 (define-condition no-doc-type(style-warning)
   ((name :initarg :name :reader name))
