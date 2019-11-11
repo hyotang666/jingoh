@@ -52,11 +52,11 @@
 (defun meta-datas<=system(system
 			   &optional
 			   (sys-dir(asdf:system-source-directory system)))
-  (let((spec-dir(merge-pathnames "spec/" sys-dir)))
-    (when(not(uiop:directory-exists-p spec-dir))
-      (return-from meta-datas<=system (missing-spec-file spec-dir)))
-    (let((*default-pathname-defaults* spec-dir))
-      (mapcar #'make-meta-data (defpackage-forms<-system system)))))
+  (let((*default-pathname-defaults*
+	 (let((spec-dir(merge-pathnames "spec/" sys-dir)))
+	   (or (uiop:directory-exists-p spec-dir)
+	       (return-from meta-datas<=system (missing-spec-file spec-dir))))))
+    (mapcar #'make-meta-data (defpackage-forms<-system system))))
 
 (defun defpackage-forms<-system(system)
   (unless(asdf:component-loaded-p system)
