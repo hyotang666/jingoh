@@ -2,7 +2,7 @@
 (in-package :asdf)
 (defsystem :jingoh.tester
   :description "Jingoh's requirement's tester."
-  :version "1.1.3"
+  :version "1.1.4"
   :long-description #.(uiop:read-file-string (merge-pathnames *load-pathname*
                                                               "CONCEPTS.md"))
   :depends-on (

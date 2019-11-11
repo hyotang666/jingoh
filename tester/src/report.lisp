@@ -40,6 +40,7 @@
       (princ(regex-replace issue string)stream))))
 
 (defmethod print-object((issue unsatisfied-clause)stream)
+  (declare(ignore stream))
   (if (not *print-vivid*)
     (call-next-method)
     (progn (when(typep (issue-form issue)
