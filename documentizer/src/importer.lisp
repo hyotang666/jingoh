@@ -62,8 +62,11 @@
 	(let((doc-type
 	       (Section-doc-type s)))
 	  (if doc-type
-	    (setf (documentation (find-symbol (symbol-name name)
-					      (Meta-data-name m))
+	    (setf (documentation (or (find-symbol (symbol-name name)
+						  (Meta-data-name m))
+				     (error "Not found symbol ~A in package ~A"
+					    name
+					    (Meta-data-name m)))
 				 doc-type)
 		  (princ-to-string s))
 	    (no-doc-type name)))))))
