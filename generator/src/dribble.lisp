@@ -131,11 +131,13 @@
 
 (defmethod spec-of((d (eql :values)) form result)
   (if(some #'unreadable-objectp result)
-    (format *spec-output* "~%#?~S~%:multiple-value-satisfies~%~S"
-	    form
-	    `(lambda,(loop :for i :upfrom 1 :to (length result)
-			   :collect (intern(format nil "RESULT~D" i)))
-	       :TODO))
+    (if(y-or-n-p "~{~S~%~}Expected values?"result)
+      (format *spec-output* "~%#?~S~%:multiple-value-satisfies~%~S"
+	      form
+	      `(lambda,(loop :for i :upfrom 1 :to (length result)
+			     :collect (intern(format nil "RESULT~D" i)))
+		 :TODO))
+      (error 'unexpected-behavior))
     (format *spec-output* "~%#?~S~%:values ~S"
 	    form
 	    (if(y-or-n-p "~{~S~%~}Expected values?" result)
