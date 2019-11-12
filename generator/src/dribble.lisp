@@ -64,22 +64,19 @@
   (let*((condition)
 	(result)
 	(output
-	  (restart-bind((append-spec
-			  (lambda()
-			    (signal 'append-spec
-				    :format-control "~%#?~S :signals ~S"
-				    :format-arguments (list form (type-of condition)))
-			    (return-from dribble-eval (values)))
-			  :report-function
-			  (lambda(s)
-			    (format s "Append spec, returning to dribble."))))
-	    (handler-bind((condition
-			    (lambda(c)
-			      (setq condition c))))
-	      (with-output-to-string(s)
-		(let((*standard-output*
-		       (make-broadcast-stream *standard-output* s)))
-		  (setq result (multiple-value-list(eval form)))))))))
+	  (restart-case(handler-bind((condition
+				       (lambda(c)
+					 (setq condition c))))
+			 (with-output-to-string(s)
+			   (let((*standard-output*
+				  (make-broadcast-stream *standard-output* s)))
+			     (setq result (multiple-value-list(eval form))))))
+	    (append-spec()
+	      :report "Append spec, returning to dribble."
+	      (signal 'append-spec
+		      :format-control "~%#?~S :signals ~S"
+		      :format-arguments (list form (type-of condition)))
+	      (return-from dribble-eval (values))))))
     (shiftf +++ ++ + form)
     (shiftf *** ** * (car result))
     (shiftf /// // / result)
