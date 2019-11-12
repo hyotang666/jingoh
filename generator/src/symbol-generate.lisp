@@ -312,7 +312,8 @@
 
 (defun specialized-lambda-lists(symbol)
   (loop :for method :in (closer-mop:generic-function-methods(symbol-function symbol))
-	:collect (cons symbol (specialized-lambda-list method))))
+	:for qualifiers := (method-qualifiers method)
+	:collect `(,symbol ,@qualifiers ,@(specialized-lambda-list method))))
 
 (defun specialized-lambda-list(method)
   (labels((REC(specializers lambda-lists &optional acc)
