@@ -28,25 +28,32 @@
 
 ;;; README
 (defun readme-generator(system-name)
-  (lambda()
-    (format t "# ~A ~A~%~
-	    ## What is this?~2%~
-	    ### Current lisp world~2%~
-	    ### Issues~2%~
-	    ### Proposal~2%~
-	    ## Usage~2%~
-	    ## From developer~2%~
-	    ### Product's goal~2%~
-	    ### License~2%~
-	    ### Developed with~2%~
-	    ### Tested with~2%~
-	    ## Installation~2%"
-	    system-name
-	    (let((system
-		   (asdf:find-system system-name nil)))
+  (let((system
+	 (asdf:find-system system-name nil)))
+    (lambda()
+      (format t "# ~@:(~A~) ~A~%~
+	      ## What is this?~%~
+	      ~@[~A~]~%~
+	      ### Current lisp world~2%~
+	      ### Issues~2%~
+	      ### Proposal~2%~
+	      ## Usage~2%~
+	      ## From developer~2%~
+	      ### Product's goal~2%~
+	      ### License~%~
+	      ~@[~A~]~%~
+	      ### Developed with~2%~
+	      ### Tested with~2%~
+	      ## Installation~2%"
+	      system-name
 	      (or (and system
 		       (asdf:system-version system))
-		  "0.0.0")))))
+		  "0.0.0")
+	      (and system
+		   (asdf:system-description system))
+	      (and system
+		   (asdf:system-license system))
+	      ))))
 
 ;;; METHOD-EXTENSION
 (defun method-extension-appender(name)
