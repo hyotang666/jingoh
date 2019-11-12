@@ -97,6 +97,9 @@
 	  (spec-of :default form (list* condition output result)))))
     (values-list result)))
 
+(define-condition unexpected-behavior(error)
+  ())
+
 ;;; SPEC-OF methods
 (defmethod spec-of((d (eql :condition))form condition)
   (when (and (typep condition 'warning)
@@ -111,14 +114,24 @@
 	    form
 	    (if(y-or-n-p "Expected output?")
 	      output
-	      (read-expected)))))
+	      (restart-case(error 'unexpected-behavior)
+		(use-value(expected)
+		  :report "Specify expected output"
+		  :interactive (lambda()
+				 (list(read-expected)))
+		  expected))))))
 
 (defmethod spec-of((d (eql :expansion)) form result)
   (format *spec-output* "~%#?~S :expanded-to ~S"
 	  (cadr form)
 	  (if(y-or-n-p "~S~%Expected expansion?"result)
 	    result
-	    (prompt-for:prompt-for t "Input expected form. >> "))))
+	    (restart-case(error 'unexpected-behavior)
+	      (use-value(expected)
+		:report "Specify expected expression."
+		:interactive (lambda()
+			       (list (prompt-for:prompt-for t "Input expected form. >> ")))
+		expected)))))
 
 (defmethod spec-of((d (eql :values)) form result)
   (if(some #'unreadable-objectp result)
@@ -131,14 +144,26 @@
 	    form
 	    (if(y-or-n-p "~{~S~%~}Expected values?" result)
 	      result
-	      (prompt-for:prompt-for 'list "Input expected values. >> ")))))
+	      (restart-case(error 'unexpected-behavior)
+		(use-value(expected)
+		  :report "Specify expected values as list."
+		  :interactive (lambda()
+				 (list(prompt-for:prompt-for
+					'list
+					"Input expected values. >> ")))
+		  expected))))))
 
 (defmethod spec-of((d (eql :unreadable))form result)
   (format *spec-output* "~%#?~S :be-the ~S"
 	  form
 	  (if(y-or-n-p "Expected type? ~S" result)
 	    (type-of result)
-	    (prompt-for:prompt-for t "Input expected type. >> "))))
+	    (restart-case(error 'unexpected-behavior)
+	      (use-value(expected)
+		:report "Specify expected type."
+		:interactive (lambda()
+			       (list (prompt-for:prompt-for t "Input expected type. >> ")))
+		expected)))))
 
 (defmethod spec-of((d (eql :default))form args)
   (destructuring-bind(condition output result)args
@@ -146,7 +171,14 @@
 	    form
 	    (if(y-or-n-p "~S~%Expected result?"result)
 	      result
-	      (prompt-for:prompt-for t "Input expected result. >> "))
+	      (restart-case(error 'unexpected-behavior)
+		(use-value(expected)
+		  :report "Specify expected value."
+		  :interactive (lambda()
+				 (list (prompt-for:prompt-for
+					 t
+					 "Input expected result. >> ")))
+		  expected)))
 	    (when (typep condition 'warning)
 	      ", :ignore-signals warning")
 	    (unless(equal "" output)
