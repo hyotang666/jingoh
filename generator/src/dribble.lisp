@@ -162,7 +162,7 @@
 (defmethod spec-of((d (eql :unreadable))form result)
   (format *spec-output* "~%#?~S :be-the ~S"
 	  form
-	  (if(y-or-n-p "Expected type? ~S" result)
+	  (if(y-or-n-p "~S~%Is it expected return type?" (type-of result))
 	    (type-of result)
 	    (restart-case(error 'unexpected-behavior)
 	      (use-value(expected)
