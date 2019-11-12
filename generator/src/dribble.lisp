@@ -31,17 +31,9 @@
       (restart-case(multiple-value-call #'dribble-print
 		     (funcall *spec-append-hook*
 			      (lambda()
-				(handler-bind((append-spec #'append-spec))
-				  (dribble-eval (dribble-read))))))
+				(dribble-eval (dribble-read)))))
 	(dribble()
 	  :report "Return to dribble.")))))
-
-(define-condition append-spec(simple-condition)
-  ())
-
-(defun append-spec(condition)
-  (princ condition *spec-output*)
-  (force-output *spec-output*))
 
 (defun dribble-read(&optional (*standard-input* *query-io*))
   (let((*standard-output*
@@ -72,9 +64,8 @@
 			     (setq result (multiple-value-list(eval form))))))
 	    (append-spec()
 	      :report "Append spec, returning to dribble."
-	      (signal 'append-spec
-		      :format-control "~%#?~S :signals ~S"
-		      :format-arguments (list form (type-of condition)))
+	      (format *spec-output* "~%#?~S :signals ~S"
+		      form (type-of condition))
 	      (return-from dribble-eval (values))))))
     (shiftf +++ ++ + form)
     (shiftf *** ** * (car result))
