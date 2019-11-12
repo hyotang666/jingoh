@@ -40,9 +40,8 @@
   ())
 
 (defun append-spec(condition)
-  (when(find-restart 'append-spec condition)
-    (princ condition *spec-output*)
-    (force-output *spec-output*)))
+  (princ condition *spec-output*)
+  (force-output *spec-output*))
 
 (defun dribble-read(&optional (*standard-input* *query-io*))
   (let((*standard-output*
