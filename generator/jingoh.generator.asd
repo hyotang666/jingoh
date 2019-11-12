@@ -3,7 +3,7 @@
 (unless(uiop:version<= "3.3.3" (asdf:asdf-version))
   (error "JINGOH.GENERATOR require ASDF/3.3.3 or later."))
 (defsystem :jingoh.generator
-  :version "0.20.2"
+  :version "0.20.3"
   :author "SATO Shinichi"
   :license "MIT"
   :description "Jingoh extension: Project skelton and test template generator."
@@ -26,8 +26,7 @@
                (:file "symbol-generate" :depends-on ("package"))
 
                (:file "generate" :depends-on ("symbol-generate"))
-
-               (:file "dribble" :depends-on ("generate" "util"))
+               (:file "dribble" :depends-on ("symbol-generate" "util"))
                ))
 
 (defmethod operate :after ((o load-op)(c (eql (find-system "jingoh.generator")))&key)

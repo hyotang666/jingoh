@@ -84,7 +84,9 @@
       ((find form '(+++ ++ + *** ** * /// // /)
 	     :test #'equal)) ; do nothing
       ((eq :G form)
-       (generate (prompt-for:prompt-for 'symbol "~&>> "))
+       (let((symbol
+	      (prompt-for:prompt-for 'symbol "~&>> ")))
+	 (symbol-generate symbol (symbol-package symbol)))
        (setq result nil))
       (T
 	(spec-of :condition form condition)
