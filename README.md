@@ -16,17 +16,34 @@ Idealy, both specification and test should be managed in one place.
 In concept above, test is specification, so readability prior than writability.
 Author may need writability.
 Unfortunately, author is few, but the third persons.
+For syntax details, see [SYNTAX.md](SYNTAX.md).
 
 ### Including specification template (i.e. as test template).
 TDD begginer may not understand what should be written as test.
 Thanks to CLHS, we know what should be written as specification.
+For details, see [generator/README.md](generator/README.md).
+
+### Including dribble for REPL driven development.
+Most CLer will do REPL driven development.
+Writting tiny codes, loading it to lisp environment, then checking it inside REPL.
+If find something unexpected behavior, fixing codes, reloading it and so on.
+For such users, jingoh provides special dribble repl.
+Your interactions with REPL are automatically send spec file.
+For details, see [generator/README.md](generator/README.md).
 
 ### Including from-spec(i.e. test)-file-to-HTML converter.
 Managing both test and specification at one place allows you to never write documentation, since it is already written.
 You can say "See spec/test file.", but we provide little bit prittier to html comverter.
+For details, see [documentizer/README.md](documentizer/README.md).
 
 ### Including from-spec(i.e. test)-file-to-github-wiki converter.
 Additionaly, we provide to github-wiki converter.
+For details, see [documentizer/README.md](documentizer/README.md).
+
+### Including from-spec(i.e. test)-file-to-lisp-documentation importer.
+Additionaly, we provide lisp documentation importer.
+You can refer spec documentation via CL:DOCUMENTATION.
+For details, see [documentizer/README.md](documentizer/README.md).
 
 ### Customizable issue printer.
 What is the best issue report?
@@ -107,7 +124,25 @@ Let's say your-system has function like below.
 To add specification of ADDER to your spec file, evaluate like below.
 
 ```lisp
-(jingoh.generatoer:generate 'your-system::adder)
+(jingoh.generator:dribble :your-system)
+
+DRIBBLE>
+```
+Now, you are in the dribble repl.
+To append spec file with template, input :g.
+
+```lisp
+DRIBBLE> :g
+
+>>
+```
+
+Input function name.
+
+```
+>> adder
+
+DRIBBLE>
 ```
 Jingoh appends spec file with template like below.
 
@@ -137,7 +172,91 @@ Jingoh appends spec file with template like below.
 ```
 This template is designed to be same with hyper-spec.
 
-Then, writing specs.
+Different from ordinary repl, dribble repl ask you each result are expected.
+
+```lisp
+DRRIBLE> (adder 1)
+
+FUNCTION
+Is it expected return type? (y or n)
+```
+
+If yes, spec file are appended.
+
+```lisp
+Is it expected return type? (y or n) y
+
+#<CLOSURE (LAMBDA (X) :IN ADDER) {12345}>
+DRIBBLE>
+```
+
+Ok, try to next test.
+
+```lisp
+DRIBBLE> (adder :not-number)
+
+FUNCTION
+Is it expected return type? (y or n)
+```
+
+Let's say you want to specify signaling an error in this case.
+FUNCTION is not expected return type.
+
+When you choice NO, it invokes ordinary deubgger.
+
+```lisp
+Is it expected return type? (y or n) n
+
+debugger invoked on a UNEXPECTED-BEHAVIOR in thread
+#<THREAD ....>:
+
+restarts (invokable by number or by possibly-abbreviated name):
+  0: [USE-VALUE] Specify expected type.
+  1: [DRIBBLE  ] Return to dribble.
+  2: [ABORT    ] Exit debugger, returning to top level.
+```
+
+This is ordinary debugger, so you can do anything in debugger, editting, reloading, etc.
+
+Let's modify source like below.
+
+```lisp
+(defun adder(num)
+  "Make adder function."
+  (check-type num number)
+  (lambda(x)
+    (+ x num)))
+```
+
+After modifying and reloading your system in the debugger, select restart `DRIBBLE` to return dribble repl.
+
+```lisp
+DRIBBLE> (adder :not-number)
+
+debugger invoded on a SIMPLE-TYPE-ERROR in thread
+#<THREAD ...>:
+
+restarts (invokable by number or by possibly-abbreviated name):
+  0: [STORE-VALUE] Supply a new value for NUM.
+  1: [APPEND-SPEC] Append spec, returning to dribble.
+  2: [DRIBBLE    ] Return to dribble.
+  3: [ABORT      ] Exit debugger, returning to top level.
+```
+
+Ok, signaling an error is expected behavior.
+Let's choice restart `APPEND-SPEC`.
+
+To exit dribble repl, input :q.
+
+```lisp
+DRIBBLE> :q
+
+*
+```
+
+After dribble session, edit the spec file to move test code in the right place.
+
+After editting, spec file may like below.
 To write comment, use markdown syntax with semicolon escape.
 To know completed syntax, see [SYNTAX.md](SYNTAX.md).
 One-sentence-some-examples style is recommended.
@@ -147,10 +266,10 @@ One-sentence-some-examples style is recommended.
 
 ;;;; Description:
 ; Make adder function.
-#?(adder 1) :be-the function
+#?(ADDER 1) :be-the FUNCTION
 
 ; Apply number to returned function, such function return added value.
-#?(funcall(adder 1)2) => 3
+#?(FUNCALL(ADDER 1)2) => 3
 
 #+syntax
 (ADDER num) ; => result
@@ -158,7 +277,7 @@ One-sentence-some-examples style is recommended.
 ;;;; Arguments and Values:
 
 ; num := number which is acceptable for `CL:+`, otherwise error
-#?(adder nil) :signals error
+#?(ADDER :NOT-NUMBER) :signals SIMPLE-TYPE-ERROR
 
 ; result := function as `(FUNCTION(NUMBER)NUMBER)`
 
@@ -178,20 +297,6 @@ One-sentence-some-examples style is recommended.
 
 ```lisp
 (asdf:test-system :your-system)
-```
-
-![failed example](./img/fail.png)
-
-### Modifying.
-In the example above, test is failed because `ADDER` does not check argument type.
-So, modify source like below.
-
-```lisp
-(defun adder(num)
-  "Make adder function."
-  (check-type num number)
-  (lambda(x)
-    (+ x num)))
 ```
 
 ![passed example](./img/pass.png)
