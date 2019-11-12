@@ -85,8 +85,10 @@
 	     :test #'equal)) ; do nothing
       ((eq :G form)
        (let((symbol
-	      (prompt-for:prompt-for 'symbol "~&>> ")))
-	 (symbol-generate symbol (symbol-package symbol)))
+	      (prompt-for:prompt-for 'symbol "~&>> "))
+	    (*standard-output*
+	      *spec-output*))
+	 (Symbol-generate symbol (symbol-package symbol)))
        (setq result nil))
       (T
 	(spec-of :condition form condition)
