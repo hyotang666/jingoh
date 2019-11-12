@@ -318,4 +318,4 @@
 	       (if (or existp
 		       lines)
 		 (readme-updator system lines)
-		 (readme-generator system)))))
+		 (readme-generator (asdf:coerce-name system))))))
