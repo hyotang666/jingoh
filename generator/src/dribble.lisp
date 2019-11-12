@@ -109,7 +109,7 @@
   (unless(equal "" output)
     (format *spec-output* "~%#?~S :outputs ~S"
 	    form
-	    (if(y-or-n-p "Expected output? ~S" output)
+	    (if(y-or-n-p "Expected output?")
 	      output
 	      (read-expected)))))
 
