@@ -161,4 +161,5 @@
 
 (defun dribble-print(&rest values)
   (map nil #'print values)
+  (force-output)
   (values))
