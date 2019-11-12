@@ -83,18 +83,23 @@
     (shiftf +++ ++ + form)
     (shiftf *** ** * (car result))
     (shiftf /// // / result)
-    (unless(find form '(+++ ++ + *** ** * /// // /)
-		 :test #'equal)
-      (spec-of :condition form condition)
-      (spec-of :output form output)
-      (if(cdr result) ; multiple-value.
-	(if(typep form '(cons (member macroexpand-1 macroexpand)
-			      *))
-	  (spec-of :expansion form (car result))
-	  (spec-of :values form result))
-	(if(unreadable-objectp (car result))
-	  (spec-of :unreadable form (car result))
-	  (spec-of :default form (list* condition output result)))))
+    (cond
+      ((find form '(+++ ++ + *** ** * /// // /)
+	     :test #'equal)) ; do nothing
+      ((eq :G form)
+       (generate (prompt-for:prompt-for 'symbol "~&>> "))
+       (setq result nil))
+      (T
+	(spec-of :condition form condition)
+	(spec-of :output form output)
+	(if(cdr result) ; multiple-value.
+	  (if(typep form '(cons (member macroexpand-1 macroexpand)
+				*))
+	    (spec-of :expansion form (car result))
+	    (spec-of :values form result))
+	  (if(unreadable-objectp (car result))
+	    (spec-of :unreadable form (car result))
+	    (spec-of :default form (list* condition output result))))))
     (values-list result)))
 
 (define-condition unexpected-behavior(error)
