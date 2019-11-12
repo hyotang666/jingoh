@@ -87,7 +87,7 @@
 			      *))
 	  (format *spec-output* "~%#?~S :expanded-to ~S"
 		  (cadr form)
-		  (if(y-or-n-p "Expected expansion? ~S"(car result))
+		  (if(y-or-n-p "~S~%Expected expansion?"(car result))
 		    (car result)
 		    (prompt-for:prompt-for t "Input expected form. >> ")))
 	  (if(some #'unreadable-objectp result)
@@ -98,7 +98,7 @@
 		       :TODO))
 	    (format *spec-output* "~%#?~S~%:values ~S"
 		    form
-		    (if(y-or-n-p "Expected values? ~S" result)
+		    (if(y-or-n-p "~{~S~%~}Expected values?" result)
 		      result
 		      (prompt-for:prompt-for 'list "Input expected values. >> ")))))
 	(if(unreadable-objectp (car result))
@@ -109,7 +109,7 @@
 		    (prompt-for:prompt-for t "Input expected type. >> ")))
 	  (format *spec-output* "~%#?~S => ~S~@[~%~A~]~@[~%~A~]"
 		  form
-		  (if(y-or-n-p "Expected result? ~S"(car result))
+		  (if(y-or-n-p "~S~%Expected result?"(car result))
 		    (car result)
 		    (prompt-for:prompt-for t "Input expected result. >> "))
 		  (when (typep condition 'warning)
