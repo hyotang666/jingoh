@@ -51,6 +51,11 @@
     (force-output)
     (read)))
 
+(defgeneric spec-of(dispatcher form result))
+(defmethod spec-of :around(a b c)
+  (the (values null &optional)
+       (call-next-method)))
+
 (defun dribble-eval(form)
   (when(or (eq :q form)
 	   (and (listp form)
@@ -80,33 +85,15 @@
     (shiftf /// // / result)
     (unless(find form '(+++ ++ + *** ** * /// // /)
 		 :test #'equal)
-      (spec-of-warns form condition)
-      (spec-of-output form output)
+      (spec-of :condition form condition)
+      (spec-of :output form output)
       (if(cdr result) ; multiple-value.
 	(if(typep form '(cons (eql macroexpand-1)
 			      *))
-	  (format *spec-output* "~%#?~S :expanded-to ~S"
-		  (cadr form)
-		  (if(y-or-n-p "~S~%Expected expansion?"(car result))
-		    (car result)
-		    (prompt-for:prompt-for t "Input expected form. >> ")))
-	  (if(some #'unreadable-objectp result)
-	    (format *spec-output* "~%#?~S~%:multiple-value-satisfies~%~S"
-		    form
-		    `(lambda,(loop :for i :upfrom 1 :to (length result)
-				   :collect (intern(format nil "RESULT~D" i)))
-		       :TODO))
-	    (format *spec-output* "~%#?~S~%:values ~S"
-		    form
-		    (if(y-or-n-p "~{~S~%~}Expected values?" result)
-		      result
-		      (prompt-for:prompt-for 'list "Input expected values. >> ")))))
+	  (spec-of :expansion form (car result))
+	  (spec-of :values form result))
 	(if(unreadable-objectp (car result))
-	  (format *spec-output* "~%#?~S :be-the ~S"
-		  form
-		  (if(y-or-n-p "Expected type? ~S" (car result))
-		    (type-of (car result))
-		    (prompt-for:prompt-for t "Input expected type. >> ")))
+	  (spec-of :unreadable form (car result))
 	  (format *spec-output* "~%#?~S => ~S~@[~%~A~]~@[~%~A~]"
 		  form
 		  (if(y-or-n-p "~S~%Expected result?"(car result))
@@ -116,23 +103,50 @@
 		    ", :ignore-signals warning")
 		  (unless(equal "" output)
 		    ", :stream nil")))))
-    (force-output)
     (values-list result)))
 
-(defun spec-of-warns(form condition)
+;;; SPEC-OF methods
+(defmethod spec-of((d (eql :condition))form condition)
   (when (and (typep condition 'warning)
 	     (y-or-n-p "Expected signals? ~S" condition))
     (format *spec-output* "~%#?~S :signals ~S"
 	    form
 	    (type-of condition))))
 
-(defun spec-of-output(form output)
+(defmethod spec-of((d (eql :output))form output)
   (unless(equal "" output)
     (format *spec-output* "~%#?~S :outputs ~S"
 	    form
 	    (if(y-or-n-p "Expected output? ~S" output)
 	      output
 	      (read-expected)))))
+
+(defmethod spec-of((d (eql :expansion)) form result)
+  (format *spec-output* "~%#?~S :expanded-to ~S"
+	  (cadr form)
+	  (if(y-or-n-p "~S~%Expected expansion?"result)
+	    result
+	    (prompt-for:prompt-for t "Input expected form. >> "))))
+
+(defmethod spec-of((d (eql :values)) form result)
+  (if(some #'unreadable-objectp result)
+    (format *spec-output* "~%#?~S~%:multiple-value-satisfies~%~S"
+	    form
+	    `(lambda,(loop :for i :upfrom 1 :to (length result)
+			   :collect (intern(format nil "RESULT~D" i)))
+	       :TODO))
+    (format *spec-output* "~%#?~S~%:values ~S"
+	    form
+	    (if(y-or-n-p "~{~S~%~}Expected values?" result)
+	      result
+	      (prompt-for:prompt-for 'list "Input expected values. >> ")))))
+
+(defmethod spec-of((d (eql :unreadable))form result)
+  (format *spec-output* "~%#?~S :be-the ~S"
+	  form
+	  (if(y-or-n-p "Expected type? ~S" result)
+	    (type-of result)
+	    (prompt-for:prompt-for t "Input expected type. >> "))))
 
 (defun unreadable-objectp(object)
   (uiop:string-prefix-p "#<" (prin1-to-string object)))
