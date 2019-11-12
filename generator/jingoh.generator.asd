@@ -3,10 +3,10 @@
 (unless(uiop:version<= "3.3.3" (asdf:asdf-version))
   (error "JINGOH.GENERATOR require ASDF/3.3.3 or later."))
 (defsystem :jingoh.generator
-  :version "0.21.3"
+  :version "0.21.4"
   :author "SATO Shinichi"
   :license "MIT"
-  :description "Jingoh extension: Project skelton and test template generator."
+  :description "Jingoh extension: Project skelton and test template generator and more."
   :in-order-to((test-op(test-op "jingoh.generator.test")))
   :depends-on (
                "millet" ; wrappter for implementation dependent utilities.
