@@ -144,8 +144,8 @@
   (destructuring-bind(condition output result)args
     (format *spec-output* "~%#?~S => ~S~@[~%~A~]~@[~%~A~]"
 	    form
-	    (if(y-or-n-p "~S~%Expected result?"(car result))
-	      (car result)
+	    (if(y-or-n-p "~S~%Expected result?"result)
+	      result
 	      (prompt-for:prompt-for t "Input expected result. >> "))
 	    (when (typep condition 'warning)
 	      ", :ignore-signals warning")
