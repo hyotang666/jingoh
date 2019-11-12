@@ -165,7 +165,7 @@
 
 (defmethod spec-of((d (eql :default))form args)
   (destructuring-bind(condition output result)args
-    (format *spec-output* "~%#?~S => ~S~@[~%~A~]~@[~%~A~]"
+    (format *spec-output* "~%#?~S => ~S~@[~%~A~]~@[~%~A~]~@[~%~A~]"
 	    form
 	    (if(y-or-n-p "~S~%Expected result?"result)
 	      result
@@ -177,6 +177,8 @@
 					 t
 					 "Input expected result. >> ")))
 		  expected)))
+	    (unless (typep result '(or symbol character integer))
+	      ", :test equal")
 	    (when (typep condition 'warning)
 	      ", :ignore-signals warning")
 	    (unless(equal "" output)
