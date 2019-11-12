@@ -94,15 +94,7 @@
 	  (spec-of :values form result))
 	(if(unreadable-objectp (car result))
 	  (spec-of :unreadable form (car result))
-	  (format *spec-output* "~%#?~S => ~S~@[~%~A~]~@[~%~A~]"
-		  form
-		  (if(y-or-n-p "~S~%Expected result?"(car result))
-		    (car result)
-		    (prompt-for:prompt-for t "Input expected result. >> "))
-		  (when (typep condition 'warning)
-		    ", :ignore-signals warning")
-		  (unless(equal "" output)
-		    ", :stream nil")))))
+	  (spec-of :default form (list* condition output result)))))
     (values-list result)))
 
 ;;; SPEC-OF methods
@@ -147,6 +139,18 @@
 	  (if(y-or-n-p "Expected type? ~S" result)
 	    (type-of result)
 	    (prompt-for:prompt-for t "Input expected type. >> "))))
+
+(defmethod spec-of((d (eql :default))form args)
+  (destructuring-bind(condition output result)args
+    (format *spec-output* "~%#?~S => ~S~@[~%~A~]~@[~%~A~]"
+	    form
+	    (if(y-or-n-p "~S~%Expected result?"(car result))
+	      (car result)
+	      (prompt-for:prompt-for t "Input expected result. >> "))
+	    (when (typep condition 'warning)
+	      ", :ignore-signals warning")
+	    (unless(equal "" output)
+	      ", :stream nil"))))
 
 (defun unreadable-objectp(object)
   (uiop:string-prefix-p "#<" (prin1-to-string object)))

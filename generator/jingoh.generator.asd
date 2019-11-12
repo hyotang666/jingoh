@@ -3,7 +3,7 @@
 (unless(uiop:version<= "3.3.3" (asdf:asdf-version))
   (error "JINGOH.GENERATOR require ASDF/3.3.3 or later."))
 (defsystem :jingoh.generator
-  :version "0.19.2"
+  :version "0.19.3"
   :author "SATO Shinichi"
   :license "MIT"
   :description "Jingoh extension: Project skelton and test template generator."
