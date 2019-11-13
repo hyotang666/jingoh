@@ -33,7 +33,7 @@ Jingoh extension: Project skelton and test template generator and more.
 (jingoh.generator:generate 'something)
 ```
 
-### For REPL Driven Development.
+## For REPL Driven Development.
 
 ```lisp
 (jingoh.generator:dribble :your-system-name)
@@ -77,7 +77,7 @@ Or relaxing signaled condition or return value type.
 *NOTE* If return value is not type of (or symbol integer character), :test option is generated with EQUAL,
 even if EQUAL could not test it (e.g. array).
 
-#### UNREADABLE OBJECT
+### UNREADABLE OBJECT
 When return value is unreadable object, expected type is asked.
 
 ```lisp
@@ -87,7 +87,7 @@ FUNCTION
 Is it expected return type? (y or n)
 ```
 
-#### OUTPUT
+### OUTPUT
 When output is occur, it is asked.
 
 ```lisp
@@ -105,7 +105,7 @@ Expected output? (y or n) y
 Expected result? (y or n)
 ```
 
-#### VALUES
+### VALUES
 When multiple values are returned, it is asked.
 
 ```lisp
@@ -134,7 +134,7 @@ DRIBBLE> (values #'car #'cdr)
 ; (LAMBDA (RESULT1 RESULT2) :TODO)
 ```
 
-#### WARNING
+### WARNING
 If warning is signaled, it is asked.
 
 ```lisp
@@ -153,7 +153,7 @@ NIL
 Expected result? (y or n)
 ```
 
-#### ERROR
+### ERROR
 If debugger is invoked, you can choice restart APPEND-SPEC if it is expected behavior.
 
 ```lisp
@@ -168,7 +168,7 @@ restarts (invokable by number or by possibly-abbreviated name):
   2: [ABORT      ] Exit debugger, returning to top level.
 ```
 
-#### MACRO EXPANSION.
+### MACRO EXPANSION.
 If test form is MACROEXPNAD-1 or MACROEXPAND, test code use :expanded-to keyword.
 
 ```lisp
@@ -183,6 +183,20 @@ If you choice YES, test code like below is generated.
 ```lisp
 #?:DEMO :expanded-to :DEMO
 ```
+
+### Restrictions
+Dribble could not generate syntax below.
+If you want, you should write it manualy.
+
+* :satisfies
+* :output-satisfies
+* :equivalents
+* :invokes-debugger
+
+Additionaly, could not generate some options like :test :before :after :around etc.
+
+### SPECIAL COMMAND
+Dribble repl has some special commands.
 
 #### To quit.
 
@@ -210,16 +224,22 @@ DRIBBLE> :g
 DRIBBLE>
 ```
 
-#### Restrictions
-Dribble could not generate syntax below.
-If you want, you should write it manualy.
+#### To refer help.
 
-* :satisfies
-* :output-satisfies
-* :equivalents
-* :invokes-debugger
+```lisp
+DRIBBLE> ?
+```
 
-Additionaly, could not generate some options like :test :before :after :around etc.
+#### EXTEND SPECIAL COMMANDS.
+You can add special command like :Q, :G above with using DEFINE-SPECIAL-COMMAND.
+
+```bnf
+(define-special-command command description &body body)
+```
+
+Return value is discarded.
+
+In special command, output to `*SPEC-OUTPUT*` is send to spec file.
 
 ## From developer
 
