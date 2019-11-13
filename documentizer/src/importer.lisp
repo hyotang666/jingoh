@@ -54,6 +54,8 @@
 	:else :do (no-doc-type name)))
 
 ;;;; IMPORT
+(defvar *import-hook* 'importer)
+
 (defun import(system &optional(*print-example* *print-example*))
   "Import spec documentation to lisp image."
   (dolist(m (Meta-datas<=system (ensure-system system)))
@@ -62,13 +64,15 @@
 	(let((doc-type
 	       (Section-doc-type s)))
 	  (if doc-type
-	    (setf (documentation (or (find-symbol (symbol-name name)
-						  (Meta-data-name m))
-				     (error "Not found symbol ~A in package ~A"
-					    name
-					    (Meta-data-name m)))
-				 doc-type)
-		  (princ-to-string s))
+	    (funcall *import-hook*
+		     (uiop:find-symbol* (symbol-name name)
+					(Meta-data-name m))
+		     doc-type
+		     s)
 	    (no-doc-type name)))))))
+
+(defun importer(symbol doc-type section)
+  (setf (documentation symbol doc-type)
+	(princ-to-string section)))
 
 (pushnew 'no-doc-type uiop:*uninteresting-conditions*)
