@@ -4,7 +4,10 @@
   (:export
     #:generate
     #:add-method-extension
+
     #:dribble
+    #:define-special-command
+    #:*spec-output*
     ))
 (in-package :jingoh.generator)
 
