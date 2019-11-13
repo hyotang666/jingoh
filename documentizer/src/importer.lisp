@@ -70,3 +70,5 @@
 				 doc-type)
 		  (princ-to-string s))
 	    (no-doc-type name)))))))
+
+(pushnew 'no-doc-type uiop:*uninteresting-conditions*)
