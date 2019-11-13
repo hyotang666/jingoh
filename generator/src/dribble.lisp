@@ -48,11 +48,45 @@
   (the (values null &optional)
        (call-next-method)))
 
+(defvar *special-commands*(make-hash-table))
+
+(defun get-special-command(form)
+  (cdr (gethash form *special-commands*)))
+
+(defmacro define-special-command (command description &body body)
+  `(progn (setf (gethash ',command *special-commands*)
+		(cons ,description (lambda(),@body)))
+	  ',command))
+
+(define-special-command :q "Quit dribble repl, returning to top level."
+			(throw 'quit (values)))
+
+(define-special-command :g "Generate specified symbol templates."
+			(let((symbol
+			       (prompt-for:prompt-for 'symbol "~&>> "))
+			     (*standard-output*
+			       *spec-output*))
+			  (Symbol-generate symbol (symbol-package symbol))))
+
+(defun print-descriptions()
+  (let((max
+	 (loop :for key :being :each :hash-key :of *special-commands*
+	       :maximize (length(prin1-to-string key)))))
+    (loop :for (description . nil) :being :each :hash-value :of *special-commands*
+	  :using (:hash-key command)
+	  :do (format t "~%[~VS] :~A" max command description))))
+
 (defun dribble-eval(form)
-  (when(or (eq :q form)
-	   (and (listp form)
-		(string= 'dribble (car form))))
+  (when(and (listp form)
+	    (string= 'dribble (car form)))
     (throw 'quit (values)))
+  (when(or (and (string= "?" form)
+		(progn (print-descriptions)
+		       T))
+	   (and (get-special-command form)
+		(progn (funcall(get-special-command form))
+		       T)))
+    (return-from dribble-eval(values)))
   (let*((condition)
 	(result)
 	(output
@@ -74,13 +108,6 @@
     (cond
       ((find form '(+++ ++ + *** ** * /// // /)
 	     :test #'equal)) ; do nothing
-      ((eq :G form)
-       (let((symbol
-	      (prompt-for:prompt-for 'symbol "~&>> "))
-	    (*standard-output*
-	      *spec-output*))
-	 (Symbol-generate symbol (symbol-package symbol)))
-       (setq result nil))
       (T
 	(spec-of :condition form condition)
 	(spec-of :output form output)
