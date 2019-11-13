@@ -115,19 +115,24 @@
 
 ;;;; Description:
 ; Print symbol template.
-#?(symbol-generate 'symbol-generate :jingoh.generator)
-:outputs "(requirements-about SYMBOL-GENERATE :doc-type function)
+#?(defun dummy(arg)
+    "This documentation shall be embed."
+    arg)
+=> DUMMY
+,:before (fmakunbound 'dummy)
+
+#?(symbol-generate 'dummy :jingoh.generator.spec)
+:outputs "(requirements-about DUMMY :doc-type function)
 
 ;;;; Description:
+; This documentation shall be embed.
 
 #+syntax
-(SYMBOL-GENERATE symbol package) ; => result
+(DUMMY arg) ; => result
 
 ;;;; Arguments and Values:
 
-; symbol := 
-
-; package := 
+; arg := 
 
 ; result := 
 
