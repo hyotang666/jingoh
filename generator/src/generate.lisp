@@ -91,7 +91,8 @@
 		    (defmethod asdf:perform :after
 		      ((asdf::o asdf:load-op)
 		       (asdf::c (eql (asdf:find-system ,name))))
-		      (uiop:symbol-call :jingoh.documentizer :import asdf::c)))))))))
+		      (uiop:with-muffled-conditions(uiop:*uninteresting-conditions*)
+			(uiop:symbol-call :jingoh.documentizer :import asdf::c))))))))))
 
 ;;; TEST-ASD
 (defun test-asd-generator(system forms)
