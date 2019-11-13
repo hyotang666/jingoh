@@ -90,7 +90,7 @@
 		    (asdf:load-system asdf::system)
 		    (defmethod asdf:perform :after
 		      ((asdf::o asdf:load-op)
-		       (asdf::c (eql (asdf:find-system "resignal-bind"))))
+		       (asdf::c (eql (asdf:find-system ,name))))
 		      (uiop:symbol-call :jingoh.documentizer :import asdf::c)))))))))
 
 ;;; TEST-ASD
