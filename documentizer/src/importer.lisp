@@ -33,7 +33,7 @@
 (define-condition no-doc-type(style-warning)
   ((name :initarg :name :reader name))
   (:report(lambda(condition stream)
-	    (format stream "Ignore ~A due to no doc-type specified."
+	    (format stream "No doc type for ~A."
 		    (name condition)))))
 
 (defun no-doc-type(name)
