@@ -44,6 +44,7 @@
 
 (defgeneric spec-of(dispatcher form result))
 (defmethod spec-of :around(a b c)
+  (declare(ignore a b c))
   (the (values null &optional)
        (call-next-method)))
 
