@@ -65,5 +65,5 @@
   (when (and system (not (featurep :clisp)))
     (load-system system)
     (defmethod perform :after
-               ((o load-op) (c (eql (find-system "resignal-bind"))))
+               ((o load-op) (c (eql (find-system "jingoh.generator"))))
       (symbol-call :jingoh.documentizer :import c))))
