@@ -2,11 +2,11 @@
 (in-package :asdf)
 (defsystem :jingoh.tester
   :description "Jingoh module for issue objects and interface for jingoh.org."
-  :version "1.1.5"
+  :version "1.1.6"
   :author "SATO Shinichi"
   :license "MIT"
-  :long-description #.(uiop:read-file-string (merge-pathnames *load-pathname*
-                                                              "CONCEPTS.md"))
+  :long-description #.(uiop:read-file-string (merge-pathnames "CONCEPTS.md"
+                                                              *load-pathname*))
   :depends-on (
                "jingoh.org" ; database.
                "millet" ; Wrapper for implementation dependent utilities.
