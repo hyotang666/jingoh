@@ -36,9 +36,9 @@
 (defun expand-tab(line)
   (when (and line
 	     *tab-expand*)
-    (values (ppcre:regex-replace #\tab
-				 line
-				 (make-string *tab-expand* :initial-element #\space)))))
+    (values (ppcre:regex-replace-all #\tab
+				     line
+				     (make-string *tab-expand* :initial-element #\space)))))
 
 (defun princ-section-body (body)
   (do*((list body (cdr list))
