@@ -23,7 +23,7 @@
       (symbol-index.md meta-datas system)
       (dolist(m meta-datas)
 	(about-package.md m)
-	(about-symbols.md m))
+	(About-symbols m #'section-callback.md))
       (Table meta-datas #'table-callback.md)
       *default-pathname-defaults*)))
 
@@ -39,14 +39,9 @@
   (with-open-markdown((format nil "P_~A"(Meta-data-name meta-data)))
     (About-package meta-data)))
 
-(defun about-symbols.md(meta-data)
-  (flet((PUT(section)
-	  (with-open-markdown((namestring(Section-path section)))
-	    (princ section))))
-    (dolist(section(Meta-data-singles meta-data))
-      (PUT section))
-    (dolist(section(Meta-data-commons meta-data))
-      (PUT section))))
+(defun section-callback.md(section)
+  (with-open-markdown((namestring(Section-path section)))
+    (princ section)))
 
 (defun table-callback.md(chars pairs)
   (let((char (car chars))
