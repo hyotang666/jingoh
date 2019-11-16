@@ -44,7 +44,7 @@
 	  (with-doc-directory((merge-pathnames(format nil "P_~A.html"
 						      (Meta-data-name m))))
 	    (about-package m))
-	  (about-symbols m))
+	  (about-symbols m #'section-callback))
 	(table meta-datas #'table-callback)
 	*default-pathname-defaults*))))
 
@@ -143,14 +143,18 @@
 	    (REC (Meta-data-exports meta-data)))))
 
 ;;; ABOUT-SYMBOLS
-(defun about-symbols(meta-data)
-  (flet((PUT(section)
-	  (with-doc-directory((merge-pathnames(Section-path section)))
-	    (princ section))))
-    (dolist(section(Meta-data-singles meta-data))
-      (PUT section))
-    (dolist(section(Meta-data-commons meta-data))
-      (PUT section))))
+(defun about-symbols(meta-data &optional(callback #'section-printer))
+  (dolist(section(Meta-data-singles meta-data))
+    (funcall callback section))
+  (dolist(section(Meta-data-commons meta-data))
+    (funcall callback section)))
+
+(defun section-printer(section)
+  (princ section))
+
+(defun section-callback(section)
+  (with-doc-directory((merge-pathnames(Section-path section)))
+    (princ section)))
 
 ;;; TABLE
 (defun table(meta-datas &optional(callback #'table-printer))
