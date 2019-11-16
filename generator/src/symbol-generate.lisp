@@ -35,7 +35,7 @@
 	  ~A~%~
 	  ;;;; Value type is ~A~%~
 	  ;#? ~A :be-the ???~2%~
-	  ; Initial value is ~S~2%~
+	  ; Initial value is `~S`~2%~
 	  ;;;; Affected By:~2%~
 	  ;;;; Notes:~2%"
 	  symbol
