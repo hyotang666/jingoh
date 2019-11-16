@@ -143,14 +143,11 @@
 	    (REC (Meta-data-exports meta-data)))))
 
 ;;; ABOUT-SYMBOLS
-(defun about-symbols(meta-data &optional(callback #'section-printer))
+(defun about-symbols(meta-data &optional(callback #'princ))
   (dolist(section(Meta-data-singles meta-data))
     (funcall callback section))
   (dolist(section(Meta-data-commons meta-data))
     (funcall callback section)))
-
-(defun section-printer(section)
-  (princ section))
 
 (defun section-callback(section)
   (with-doc-directory((merge-pathnames(Section-path section)))
