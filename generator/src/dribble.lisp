@@ -113,7 +113,7 @@
 	(spec-of :condition form condition)
 	(spec-of :output form output)
 	(if(cdr result) ; multiple-value.
-	  (if(typep form '(cons (member macroexpand-1 macroexpand)
+	  (if(typep form '(cons (eql macroexpand-1)
 				*))
 	    (spec-of :expansion form (car result))
 	    (spec-of :values form result))
