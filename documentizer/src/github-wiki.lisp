@@ -19,25 +19,16 @@
       (setf *Meta* meta-datas) ; for debug use.
       (with-open-markdown("home")
 	(Top system))
-      (packages.md meta-datas)
-      (symbol-index.md meta-datas system)
+      (with-open-markdown("packages")
+	(Packages meta-datas))
+      (with-open-markdown("symbols")
+	(Symbol-index meta-datas system))
       (dolist(m meta-datas)
-	(about-package.md m)
+	(with-open-markdown((format nil "P_~A"(Meta-data-name m)))
+	  (About-package m))
 	(About-symbols m #'section-callback.md))
       (Table meta-datas #'table-callback.md)
       *default-pathname-defaults*)))
-
-(defun symbol-index.md(meta-datas system)
-  (with-open-markdown("symbols")
-    (Symbol-index meta-datas system)))
-
-(defun packages.md(meta-datas)
-  (with-open-markdown("packages")
-    (Packages meta-datas)))
-
-(defun about-package.md(meta-data)
-  (with-open-markdown((format nil "P_~A"(Meta-data-name meta-data)))
-    (About-package meta-data)))
 
 (defun section-callback.md(section)
   (with-open-markdown((namestring(Section-path section)))
