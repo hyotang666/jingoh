@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.documentizer
-  :version "6.5.0"
+  :version "6.5.1"
   :author "SATO Shinichi"
   :license "MIT"
   :description "Jingoh extension: Import/Convert specification documentation."
@@ -11,6 +11,7 @@
                "read-as-string" ; s-expression string reader.
                "uiop" ; utilities.
                "null-package" ; Safe S expression reader.
+               "cl-ppcre" ; regex.
                )
   :pathname "src/"
   :components(;; package.
