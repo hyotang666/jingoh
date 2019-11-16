@@ -29,9 +29,20 @@
 
 (defparameter *print-example* T)
 
+(declaim(type (or null (integer 0 *))
+	      *tab-expand*))
+(defparameter *tab-expand* 8)
+
+(defun expand-tab(line)
+  (when (and line
+	     *tab-expand*)
+    (values (ppcre:regex-replace #\tab
+				 line
+				 (make-string *tab-expand* :initial-element #\space)))))
+
 (defun princ-section-body (body)
   (do*((list body (cdr list))
-       (elt (car list) (car list)))
+       (elt #0=(expand-tab(car list)) #0#))
     ((endp list)(force-output))
     (cond
       ((uiop:string-prefix-p ";;;; " elt)
