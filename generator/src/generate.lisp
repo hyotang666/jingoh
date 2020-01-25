@@ -203,7 +203,7 @@
 							     "src/"))
 	       (cl-source-file-generator system-name))
     (ql:register-local-projects)
-    (generate (asdf:find-system system))))
+    (generate (asdf:find-system system-name))))
 
 (defun ensure-name(system)
   (let((name
