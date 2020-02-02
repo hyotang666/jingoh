@@ -245,9 +245,12 @@
 	  (uiop:while-collecting(acc)
 	    (mapc (lambda(sym var)
 		    (acc (list sym
-			       (cl-unification:find-variable-value var
-								   environment
-								   nil))))
+                               (let((value
+                                      (cl-unification:find-variable-value var
+                                                                          environment
+                                                                          nil)))
+                                 (when value
+                                   (write-to-string value :pretty nil))))))
 		  lambda-vars
 		  variables)
 	    (let((return
@@ -289,7 +292,8 @@
 		     optionalp
 		     (1+ num)
 		     (cons (list "rest values"
-				 (car rest))
+				 (write-to-string (car rest)
+                                                  :pretty nil))
 			   acc)))
 	      (&allow-other-keys
 		(do-return acc))
@@ -298,7 +302,7 @@
 		     optionalp
 		     (1+ num)
 		     (cons (list (format nil "~@[~A ~]result ~D" optionalp num)
-				 spec)
+                                 (write-to-string spec :pretty nil))
 			   acc))))))
     (rec (cdr values))))
 
