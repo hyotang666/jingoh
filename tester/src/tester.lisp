@@ -1,573 +1,554 @@
 (in-package :jingoh.tester)
 
-(defun requirement-form(requirement)
-  (apply #'make-requirement requirement))
+(defun requirement-form (requirement) (apply #'make-requirement requirement))
 
-(defun check(requirement)
-  (macrolet((with-internal-issue-handling(form)
-	      `(handler-case,form
-		 (error(c)
-		   (lambda()
-		     (list (make-instance
-			     'jingoh-internal-issue
-			     :actual :skipped
-			     :message (princ-to-string c)
-			     :form (car requirement)
-			     :expected :do-test
-			     :line (getf (cdr requirement):line))))))))
-    (funcall (with-internal-issue-handling
-	       (coerce (with-internal-issue-handling
-			 (requirement-form requirement))
-		       'function)))))
+(defun check (requirement)
+  (macrolet ((with-internal-issue-handling (form)
+               `(handler-case ,form
+                  (error (c)
+                    (lambda ()
+                      (list
+                        (make-instance 'jingoh-internal-issue
+                                       :actual :skipped
+                                       :message (princ-to-string c)
+                                       :form (car requirement)
+                                       :expected :do-test
+                                       :line (getf (cdr requirement)
+                                                   :line))))))))
+    (funcall
+      (with-internal-issue-handling
+       (coerce (with-internal-issue-handling (requirement-form requirement))
+               'function)))))
 
-(defmacro defspec(&whole whole &body body)
-  (check-bnf:check-bnf(:whole whole)
+(defmacro defspec (&whole whole &body body)
+  (check-bnf:check-bnf (:whole whole)
     ((body (test-form dispatch-key expected option*))
      (test-form check-bnf:expression)
-     (dispatch-key (member => :be-the :satisfies :outputs :values
-			   :multiple-value-satisfies :output-satisfies
-			   :expanded-to :equivalents :signals :invokes-debugger))
+     (dispatch-key
+      (member =>
+              :be-the :satisfies
+              :outputs :values
+              :multiple-value-satisfies :output-satisfies
+              :expanded-to :equivalents
+              :signals :invokes-debugger))
      (expected check-bnf:expression)
      (option* option-key check-bnf:expression)
-     (option-key (member :timeout :line :around :before :after :stream
-			 :with-restarts :ignore-signals :lazy :test :doc-type :as))))
-    `(EVAL-WHEN(:LOAD-TOPLEVEL :EXECUTE)
-     ,@(unless(getf(cdddr body):lazy '#:does-not-exist)
-	 `(,(canonicalize (car body)(cdddr body))))
-     ,@(mapcar (lambda(subject)
-		 `(ADD-REQUIREMENT ',subject
-				   ',(let((as
-					    (getf (org-options *org*) :as)))
-				       (if as
-					 (append (list(subst subject as (car body)))
-						 (cdr body)
-						 (org-options *org*))
-					 (append body (org-options *org*))))))
-	       (org-current-subjects *org*))
-     (ORG-CURRENT-SUBJECTS *ORG*)))
+     (option-key
+      (member
+       :timeout :line
+       :around :before
+       :after :stream
+       :with-restarts :ignore-signals
+       :lazy :test
+       :doc-type :as))))
+  `(eval-when (:load-toplevel :execute)
+     ,@(unless (getf (cdddr body) :lazy '#:does-not-exist)
+         `(,(canonicalize (car body) (cdddr body))))
+     ,@(mapcar
+         (lambda (subject)
+           `(add-requirement ',subject
+                             ',(let ((as (getf (org-options *org*) :as)))
+                                 (if as
+                                     (append
+                                       (list (subst subject as (car body)))
+                                       (cdr body) (org-options *org*))
+                                     (append body (org-options *org*))))))
+         (org-current-subjects *org*))
+     (org-current-subjects *org*)))
 
-(defmacro ? (&body body)
-  `(check ',body))
+(defmacro ? (&body body) `(check ',body))
 
-(define-condition unsatisfied(error)
+(define-condition unsatisfied (error)
   ((test-form :initarg :test-form :reader test-form)
    (args :initform nil :initarg :args :reader args)))
 
 (defmacro & (&body body)
-  `(PROGN ,@(mapcar (lambda(form)
-		      (if(typep form '(cons (satisfies function-designator-p)T))
-			(let((vars
-			       (loop :repeat (length (cdr form))
-				     :collect (gensym))))
-			  `(LET,(mapcar #'list vars (cdr form))
-			     (ASSERT(,(car form),@vars)()
-			       'UNSATISFIED :TEST-FORM ',form
-			       :ARGS (LIST ,@vars))))
-			`(ASSERT,form()
-			   'UNSATISFIED :TEST-FORM ',form)))
-		    body)
-       T))
+  `(progn
+    ,@(mapcar
+        (lambda (form)
+          (if (typep form '(cons (satisfies function-designator-p) t))
+              (let ((vars
+                     (loop :repeat (length (cdr form))
+                           :collect (gensym))))
+                `(let ,(mapcar #'list vars (cdr form))
+                   (assert (,(car form) ,@vars) nil 'unsatisfied :test-form
+                           ',form :args (list ,@vars))))
+              `(assert ,form nil 'unsatisfied :test-form ',form)))
+        body)
+    t))
 
-(defgeneric make-requirement(form key expected &rest params))
+(defgeneric make-requirement
+    (form key expected &rest params))
 
-(defun the-push-instance-form (place type test-form expected actual line
-				     &rest options)
-  `(PUSH (MAKE-INSTANCE ',type
-			:FORM ,test-form
-			:EXPECTED ',expected
-			:ACTUAL ,actual
-			:LINE ,line
-			,@options)
-	 ,place))
+(defun the-push-instance-form
+       (place type test-form expected actual line &rest options)
+  `(push
+    (make-instance ',type :form ,test-form :expected ',expected :actual ,actual
+                   :line ,line ,@options)
+    ,place))
 
-(defun the-standard-handling-form(result parameters test-form expected &rest body)
-  (alexandria:with-unique-names(output)
-    `(LAMBDA()
-       (LET(,result
-	     (,output ""))
-	 (HANDLER-CASE (SETF ,output
-			     (WITH-OUTPUT-TO-STRING(*STANDARD-OUTPUT*)
-			       (with-integrated-output-stream(*standard-output*)
-				 ,@(if(ignore-signals 'warning parameters)
-				     `((handler-bind
-					 ((,(getf parameters :ignore-signals)
-					    (lambda(condition)
-					      (when(find-restart
-						     ',(getf parameters :ignore-signals))
-						(muffle-warning condition)))))
-					 ,@body))
-				     body))))
-	   ,@(unless(ignore-signals 'warning parameters)
-	       `((WARNING(CONDITION)
-		   ,(the-push-instance-form result
-					    'WARNING-WAS-SIGNALED
-					    `',test-form
-					    expected
-					    'CONDITION
-					    (getf parameters :line)
-					    :message
-					    `(PRINC-TO-STRING CONDITION)))))
-	   ,@(unless(ignore-signals 'error parameters)
-	       `((ERROR(CONDITION)
-		   ,(the-push-instance-form result
-					    'ERROR-WAS-SIGNALED
-					    `',test-form
-					    expected
-					    'CONDITION
-					    (getf parameters :line)
-					    :message
-					    `(PRINC-TO-STRING CONDITION))))))
-	 (UNLESS(STRING= "" ,output)
-	   ,(the-push-instance-form result
-				    'UNEXPECTED-OUTPUT
-				    `',test-form
-				    ""
-				    output
-				    (getf parameters :line)))
-	 ,result))))
+(defun the-standard-handling-form
+       (result parameters test-form expected &rest body)
+  (alexandria:with-unique-names (output)
+    `(lambda ()
+       (let (,result (,output ""))
+         (handler-case
+             (setf ,output
+                     (with-output-to-string (*standard-output*)
+                       (with-integrated-output-stream (*standard-output*)
+                         ,@(if (ignore-signals 'warning parameters)
+                               `((handler-bind ((,(getf parameters
+                                                        :ignore-signals)
+                                                 (lambda (condition)
+                                                   (when (find-restart
+                                                           ',(getf parameters
+                                                                   :ignore-signals))
+                                                     (muffle-warning
+                                                       condition)))))
+                                   ,@body))
+                               body))))
+           ,@(unless (ignore-signals 'warning parameters)
+               `((warning (condition)
+                  ,(the-push-instance-form result 'warning-was-signaled
+                                           `',test-form expected 'condition
+                                           (getf parameters :line)
+                                           :message `(princ-to-string
+                                                       condition)))))
+           ,@(unless (ignore-signals 'error parameters)
+               `((error (condition)
+                        ,(the-push-instance-form result 'error-was-signaled
+                                                 `',test-form expected
+                                                 'condition
+                                                 (getf parameters :line)
+                                                 :message `(princ-to-string
+                                                             condition))))))
+         (unless (string= "" ,output)
+           ,(the-push-instance-form result 'unexpected-output `',test-form ""
+                                    output (getf parameters :line)))
+         ,result))))
 
-(defmethod make-requirement(test-form (key(eql '=>)) expected
-				      &rest parameters)
-  (declare(ignore key))
-  (alexandria:with-unique-names(actual result)
-    (let((test
-	   (encallable(getf parameters :test #'eql)))
-	 (form
-	   (canonicalize test-form parameters)))
+(defmethod make-requirement
+           (test-form (key (eql '=>)) expected &rest parameters)
+  (declare (ignore key))
+  (alexandria:with-unique-names (actual result)
+    (let ((test (encallable (getf parameters :test #'eql)))
+          (form (canonicalize test-form parameters)))
       (the-standard-handling-form result parameters test-form expected
-        `(LET((,actual ,form))
-	   (UNLESS(,test ,actual ',expected)
-	     ,(the-push-instance-form result
-				      'TEST-ISSUE
-				      `',test-form
-				      expected
-				      actual
-				      (getf parameters :line)
-				      :test
-				      `',test)))))))
+                                  `(let ((,actual ,form))
+                                     (unless (,test ,actual ',expected)
+                                       ,(the-push-instance-form result
+                                                                'test-issue
+                                                                `',test-form
+                                                                expected actual
+                                                                (getf
+                                                                  parameters
+                                                                  :line)
+                                                                :test `',test)))))))
 
-(defmethod make-requirement(test-form (key(eql :signals)) expected
-				      &rest parameters)
-  (declare(ignore key))
-  (alexandria:with-unique-names(actual result end output)
-    (let((form
-	   (canonicalize test-form parameters)) )
-      (labels((may-bind(type)
-		(unless(or (subtypep type expected)
-			   (subtypep type (getf parameters :ignore-signals)))
-		  `((,type(LAMBDA(CONDITION)
-			    ,(the-push-instance-form
-			       result
-			       (intern(format nil "~A-WAS-SIGNALED"type))
-			       `',test-form
-			       expected
-			       'CONDITION
-			       (getf parameters :line)
-			       :MESSAGE
-			       `(PRINC-TO-STRING CONDITION))
-			    ,(ecase type
-			       (WARNING `(WHEN(FIND-RESTART 'MUFFLE-WARNING
-							    CONDITION)
-					   (MUFFLE-WARNING CONDITION)))
-			       (ERROR `(go ,end))))))))
-	      (restart-checker()
-		`(LAMBDA(CONDITION)
-		   (DECLARE(IGNORABLE CONDITION))
-		   ,@(let((restarts
-			    (getf parameters :with-restarts)))
-		       (when restarts
-			 `((LET((,actual
-				  (MAPCAR #'FIND-RESTART
-					  ',(uiop:ensure-list restarts))))
-			     (WHEN(SOME #'NULL ,actual)
-			       ,(the-push-instance-form
-				  result
-				  'MISSING-RESTARTS
-				  `',test-form
-				  restarts
-				  `(MAPCAR #'RESTART-NAME (COMPUTE-RESTARTS CONDITION))
-				  (getf parameters :line)))))))
-		   (GO ,end)))
-	      )
-	`(LAMBDA()
-	   (PROG(,result ,actual (,output ""))
-	     (HANDLER-BIND((,expected ,(restart-checker))
-			   ,@(may-bind 'warning)
-			   ,@(may-bind 'error))
-	       (SETF ,output
-		     (WITH-OUTPUT-TO-STRING(*STANDARD-OUTPUT*)
-		       (with-integrated-output-stream(*standard-output*)
-			 (LET((*ERROR-OUTPUT*
-				(MAKE-BROADCAST-STREAM)))
-			   (SETF ,actual (with-compilation-unit(:override t)
-					   (FUNCALL (COERCE '(LAMBDA(),form)
-							    'FUNCTION))))))))
-	       ,(the-push-instance-form result
-					'UNEXPECTED-SUCCESS
-					`',test-form
-					expected
-					actual
-					(getf parameters :line)))
-	     ,end
-	     (WHEN(AND ,output (NOT(STRING= "" ,output)))
-	       ,(the-push-instance-form result
-					'UNEXPECTED-OUTPUT
-					`',test-form
-					""
-					output
-					(getf parameters :line)))
-	     (RETURN ,result)))))))
+(defmethod make-requirement
+           (test-form (key (eql :signals)) expected &rest parameters)
+  (declare (ignore key))
+  (alexandria:with-unique-names (actual result end output)
+    (let ((form (canonicalize test-form parameters)))
+      (labels ((may-bind (type)
+                 (unless (or (subtypep type expected)
+                             (subtypep type (getf parameters :ignore-signals)))
+                   `((,type
+                      (lambda (condition)
+                        ,(the-push-instance-form result
+                                                 (intern
+                                                   (format nil
+                                                           "~A-WAS-SIGNALED"
+                                                           type))
+                                                 `',test-form expected
+                                                 'condition
+                                                 (getf parameters :line)
+                                                 :message `(princ-to-string
+                                                             condition))
+                        ,(ecase type
+                           (warning
+                            `(when (find-restart 'muffle-warning condition)
+                               (muffle-warning condition)))
+                           (error `(go ,end))))))))
+               (restart-checker ()
+                 `(lambda (condition)
+                    (declare (ignorable condition))
+                    ,@(let ((restarts (getf parameters :with-restarts)))
+                        (when restarts
+                          `((let ((,actual
+                                   (mapcar #'find-restart
+                                           ',(uiop:ensure-list restarts))))
+                              (when (some #'null ,actual)
+                                ,(the-push-instance-form result
+                                                         'missing-restarts
+                                                         `',test-form restarts
+                                                         `(mapcar
+                                                            #'restart-name
+                                                            (compute-restarts
+                                                              condition))
+                                                         (getf parameters
+                                                               :line)))))))
+                    (go ,end))))
+        `(lambda ()
+           (prog (,result ,actual (,output ""))
+             (handler-bind ((,expected ,(restart-checker))
+                            ,@(may-bind 'warning) ,@(may-bind 'error))
+               (setf ,output
+                       (with-output-to-string (*standard-output*)
+                         (with-integrated-output-stream (*standard-output*)
+                           (let ((*error-output* (make-broadcast-stream)))
+                             (setf ,actual
+                                     (with-compilation-unit (:override t)
+                                       (funcall
+                                         (coerce '(lambda () ,form)
+                                                 'function))))))))
+               ,(the-push-instance-form result 'unexpected-success `',test-form
+                                        expected actual
+                                        (getf parameters :line)))
+            ,end
+             (when (and ,output (not (string= "" ,output)))
+               ,(the-push-instance-form result 'unexpected-output `',test-form
+                                        "" output (getf parameters :line)))
+             (return ,result)))))))
 
-(defmethod make-requirement(test-form (key (eql :invokes-debugger))
-				      (expected null)
-				      &rest parameters)
-  (declare(ignore key expected))
-  (alexandria:with-unique-names(result output end temp)
-    (let((form(canonicalize test-form parameters)))
-      `(LAMBDA()
-	 (PROG(*DEBUGGER-HOOK* ,result (,output "") ,temp)
-	   ;; In order to make tag visible from hook,
-	   ;; we need to set hook in body.
-	   (FLET((HOOK(CONDITION FUNCTION)
-		   (DECLARE(IGNORE FUNCTION))
-		   (WHEN(EQ CONDITION ,temp)
-		     ,(the-push-instance-form result
-					      'DEBUGGER-WAS-INVOKED
-					      `',test-form
-					      NIL
-					      'CONDITION
-					      (getf parameters :line)
-					      :MESSAGE
-					      `(PRINC-TO-STRING CONDITION)))
-		   (GO ,end))
-		 (HANDLER(CONDITION)
-		   (IF(FIND-RESTART 'MUFFLE-WARNING CONDITION)
-		     (PROGN ,@(unless(ignore-signals 'warning parameters)
-				`(,(the-push-instance-form
-				     result
-				     'WARNING-WAS-SIGNALED
-				     `',test-form
-				     NIL
-				     'CONDITION
-				     (getf parameters :line)
-				     :MESSAGE
-				     `(PRINC-TO-STRING CONDITION))))
-			    (MUFFLE-WARNING CONDITION))
-		     (SETF ,temp CONDITION)))
-		 )
-	     (SETF *DEBUGGER-HOOK*
-		   #'HOOK
-		   ,output
-		   (WITH-OUTPUT-TO-STRING(*STANDARD-OUTPUT*)
-		     (with-integrated-output-stream(*standard-output*)
-		       (HANDLER-BIND((WARNING #'HANDLER))
-			 ,form)))))
-	   (WHEN(AND ,output
-		     (NOT(STRING= "" ,output)))
-	     ,(the-push-instance-form result
-				      'UNEXPECTED-OUTPUT
-				      `',test-form
-				      ""
-				      output
-				      (getf parameters :line)))
-	   ,end
-	   (RETURN ,result))))))
+(defmethod make-requirement
+           (test-form (key (eql :invokes-debugger)) (expected null)
+            &rest parameters)
+  (declare (ignore key expected))
+  (alexandria:with-unique-names (result output end temp)
+    (let ((form (canonicalize test-form parameters)))
+      `(lambda ()
+         (prog (*debugger-hook* ,result (,output "") ,temp)
+           ;; In order to make tag visible from hook,
+           ;; we need to set hook in body.
+           (flet ((hook (condition function)
+                    (declare (ignore function))
+                    (when (eq condition ,temp)
+                      ,(the-push-instance-form result 'debugger-was-invoked
+                                               `',test-form nil 'condition
+                                               (getf parameters :line)
+                                               :message `(princ-to-string
+                                                           condition)))
+                    (go ,end))
+                  (handler (condition)
+                    (if (find-restart 'muffle-warning condition)
+                        (progn
+                         ,@(unless (ignore-signals 'warning parameters)
+                             `(,(the-push-instance-form result
+                                                        'warning-was-signaled
+                                                        `',test-form nil
+                                                        'condition
+                                                        (getf parameters :line)
+                                                        :message `(princ-to-string
+                                                                    condition))))
+                         (muffle-warning condition))
+                        (setf ,temp condition))))
+             (setf *debugger-hook* #'hook
+                   ,output
+                     (with-output-to-string (*standard-output*)
+                       (with-integrated-output-stream (*standard-output*)
+                         (handler-bind ((warning #'handler))
+                           ,form)))))
+           (when (and ,output (not (string= "" ,output)))
+             ,(the-push-instance-form result 'unexpected-output `',test-form ""
+                                      output (getf parameters :line)))
+          ,end
+           (return ,result))))))
 
-(defmethod make-requirement(test-form (key (eql :invokes-debugger))
-				      (expected (eql 'not))
-				      &rest parameters)
-  (apply #'make-requirement test-form key NIL parameters))
+(defmethod make-requirement
+           (test-form (key (eql :invokes-debugger)) (expected (eql 'not))
+            &rest parameters)
+  (apply #'make-requirement test-form key nil parameters))
 
-(defmethod make-requirement(test-form (key(eql :invokes-debugger))
-				      expected &rest parameters)
-  (declare(ignore key))
-  (alexandria:with-unique-names(actual result output end)
-    (let((form
-	   (canonicalize test-form parameters))
-	 (test
-	   (getf parameters :test)))
-      `(LAMBDA()
-	 (PROG(*DEBUGGER-HOOK* ,actual ,result (,output ""))
-	   ;; In order to make tag visible from hook,
-	   ;; we need to set hook in body.
-	   (FLET((HOOK(CONDITION FUNCTION)
-		   (DECLARE(IGNORE FUNCTION))
-		   ,@(when test
-		       `((HANDLER-CASE(UNLESS (,(encallable test)CONDITION)
-					      ,(the-push-instance-form
-						 result
-						 'TEST-ISSUE
-						 `',test-form
-						 T
-						 NIL
-						 (getf parameters :line)
-						 :test
-						 `',test))
-			   (UNSATISFIED(CONDITION)
-			     ,(the-push-instance-form result
-						      'UNSATISFIED-CLAUSE
-						      `(TEST-FORM CONDITION)
-						      T
-						      NIL
-						      (getf parameters :line)
-						      :ARGS `(ARGS CONDITION))))))
-		   (IF(TYPEP CONDITION ',expected)
-		     ,(let((restarts
-			     (getf parameters :with-restarts)))
-			(when restarts
-			  `(LET((,actual
-				  (MAPCAR #'FIND-RESTART
-					  ',(uiop:ensure-list restarts))))
-			     (WHEN(SOME #'NULL ,actual)
-			       ,(the-push-instance-form
-				  result
-				  'MISSING-RESTARTS
-				  `',test-form
-				  restarts
-				  `(MAPCAR #'RESTART-NAME (COMPUTE-RESTARTS CONDITION))
-				  (getf parameters :line))))))
-		     ,(the-push-instance-form result
-					      'UNMATCH-CONDITION
-					      `',test-form
-					      expected
-					      'CONDITION
-					      (getf parameters :line)
-					      :MESSAGE
-					      `(PRINC-TO-STRING CONDITION)))
-		   (GO ,end))
-		 (HANDLER(CONDITION)
-		   (WHEN(FIND-RESTART 'MUFFLE-WARNING CONDITION)
-		     ,@(unless(ignore-signals 'warning parameters)
-			 `(,(the-push-instance-form result
-						    'WARNING-WAS-SIGNALED
-						    `',test-form
-						    expected
-						    'CONDITION
-						    (getf parameters :line)
-						    :MESSAGE
-						    `(PRINC-TO-STRING CONDITION))))
-		     (MUFFLE-WARNING CONDITION)))
-		 )
-	     (SETF *DEBUGGER-HOOK* #'HOOK
-		   ,output (WITH-OUTPUT-TO-STRING(*STANDARD-OUTPUT*)
-			     (with-integrated-output-stream(*standard-output*)
-			       (SETF ,actual(HANDLER-BIND((WARNING #'HANDLER))
-					      ,form))))))
-	   ,(the-push-instance-form result
-				    'UNEXPECTED-SUCCESS
-				    `',test-form
-				    expected
-				    actual
-				    (getf parameters :line))
-	   (WHEN(AND ,output (NOT(STRING= "" ,output)))
-	     ,(the-push-instance-form result
-				      'UNEXPECTED-OUTPUT
-				      `',test-form
-				      ""
-				      output
-				      (getf parameters :line)))
-	   ,end
-	   (RETURN ,result))))))
+(defmethod make-requirement
+           (test-form (key (eql :invokes-debugger)) expected &rest parameters)
+  (declare (ignore key))
+  (alexandria:with-unique-names (actual result output end)
+    (let ((form (canonicalize test-form parameters))
+          (test (getf parameters :test)))
+      `(lambda ()
+         (prog (*debugger-hook* ,actual ,result (,output ""))
+           ;; In order to make tag visible from hook,
+           ;; we need to set hook in body.
+           (flet ((hook (condition function)
+                    (declare (ignore function))
+                    ,@(when test
+                        `((handler-case
+                              (unless (,(encallable test) condition)
+                                ,(the-push-instance-form result 'test-issue
+                                                         `',test-form t nil
+                                                         (getf parameters
+                                                               :line)
+                                                         :test `',test))
+                            (unsatisfied (condition)
+                              ,(the-push-instance-form result
+                                                       'unsatisfied-clause
+                                                       `(test-form condition) t
+                                                       nil
+                                                       (getf parameters :line)
+                                                       :args `(args
+                                                                condition))))))
+                    (if (typep condition ',expected)
+                        ,(let ((restarts (getf parameters :with-restarts)))
+                           (when restarts
+                             `(let ((,actual
+                                     (mapcar #'find-restart
+                                             ',(uiop:ensure-list restarts))))
+                                (when (some #'null ,actual)
+                                  ,(the-push-instance-form result
+                                                           'missing-restarts
+                                                           `',test-form
+                                                           restarts
+                                                           `(mapcar
+                                                              #'restart-name
+                                                              (compute-restarts
+                                                                condition))
+                                                           (getf parameters
+                                                                 :line))))))
+                        ,(the-push-instance-form result 'unmatch-condition
+                                                 `',test-form expected
+                                                 'condition
+                                                 (getf parameters :line)
+                                                 :message `(princ-to-string
+                                                             condition)))
+                    (go ,end))
+                  (handler (condition)
+                    (when (find-restart 'muffle-warning condition)
+                      ,@(unless (ignore-signals 'warning parameters)
+                          `(,(the-push-instance-form result
+                                                     'warning-was-signaled
+                                                     `',test-form expected
+                                                     'condition
+                                                     (getf parameters :line)
+                                                     :message `(princ-to-string
+                                                                 condition))))
+                      (muffle-warning condition))))
+             (setf *debugger-hook* #'hook
+                   ,output
+                     (with-output-to-string (*standard-output*)
+                       (with-integrated-output-stream (*standard-output*)
+                         (setf ,actual
+                                 (handler-bind ((warning #'handler))
+                                   ,form))))))
+          ,(the-push-instance-form result 'unexpected-success `',test-form
+                                   expected actual (getf parameters :line))
+           (when (and ,output (not (string= "" ,output)))
+             ,(the-push-instance-form result 'unexpected-output `',test-form ""
+                                      output (getf parameters :line)))
+          ,end
+           (return ,result))))))
 
-(defmethod make-requirement(test-form (key(eql :values))expected
-				      &rest parameters)
-  (declare(ignore key))
-  (alexandria:with-unique-names(actual result)
-    (let((test
-	   (encallable(getf parameters :test #'equal)))
-	 (form
-	   (canonicalize test-form parameters)))
+(defmethod make-requirement
+           (test-form (key (eql :values)) expected &rest parameters)
+  (declare (ignore key))
+  (alexandria:with-unique-names (actual result)
+    (let ((test (encallable (getf parameters :test #'equal)))
+          (form (canonicalize test-form parameters)))
       (the-standard-handling-form result parameters test-form expected
-	 `(LET((,actual
-		 (MULTIPLE-VALUE-LIST ,form)))
-	    (UNLESS(,test ,actual ',expected)
-	      ,(the-push-instance-form result
-				       'ISSUE-OF-MULTIPLE-VALUES
-				       `',test-form
-				       expected
-				       actual
-				       (getf parameters :line)
-				       :TEST `',test)))))))
+                                  `(let ((,actual (multiple-value-list ,form)))
+                                     (unless (,test ,actual ',expected)
+                                       ,(the-push-instance-form result
+                                                                'issue-of-multiple-values
+                                                                `',test-form
+                                                                expected actual
+                                                                (getf
+                                                                  parameters
+                                                                  :line)
+                                                                :test `',test)))))))
 
-(defmethod make-requirement(test-form (key(eql :outputs)) expected
-				      &rest parameters)
-  (declare(ignore key))
-  (alexandria:with-unique-names(actual result)
-    (let((test
-	   (encallable(getf parameters :test #'string=)))
-	 (form
-	   (canonicalize test-form parameters)))
+(defmethod make-requirement
+           (test-form (key (eql :outputs)) expected &rest parameters)
+  (declare (ignore key))
+  (alexandria:with-unique-names (actual result)
+    (let ((test (encallable (getf parameters :test #'string=)))
+          (form (canonicalize test-form parameters)))
       (the-standard-handling-form result parameters test-form expected
-        `(LET((,actual
-		(WITH-OUTPUT-TO-STRING(,(getf parameters :stream '*standard-output*))
-		  ,form)))
-	   (UNLESS(,test ,expected ,actual)
-	     ,(the-push-instance-form result
-				      'WRONG-FORMAT
-				      `',test-form
-				      expected
-				      actual
-				      (getf parameters :line)
-				      :TEST `',test)))))))
+                                  `(let ((,actual
+                                          (with-output-to-string
+                                              (,(getf parameters
+                                                      :stream '*standard-output*))
+                                            ,form)))
+                                     (unless (,test ,expected ,actual)
+                                       ,(the-push-instance-form result
+                                                                'wrong-format
+                                                                `',test-form
+                                                                expected actual
+                                                                (getf
+                                                                  parameters
+                                                                  :line)
+                                                                :test `',test)))))))
 
-(defmethod make-requirement(test-form(key(eql :satisfies))expected
-			     &rest parameters)
-  (declare(ignore key))
-  (let((actual
-	 (gensym"ACTUAL"))
-       (test
-	 (encallable expected))
-       (form
-	 (canonicalize test-form parameters))
-       (result
-	 (gensym "RESULT")))
+(defmethod make-requirement
+           (test-form (key (eql :satisfies)) expected &rest parameters)
+  (declare (ignore key))
+  (let ((actual (gensym "ACTUAL"))
+        (test (encallable expected))
+        (form (canonicalize test-form parameters))
+        (result (gensym "RESULT")))
     (the-standard-handling-form result parameters test-form expected
-      `(LET((,actual ,form))
-	 (HANDLER-CASE(UNLESS(,test ,actual)
-			,(the-push-instance-form result
-						 'ISSUE
-						 `',test-form
-						 `(SATISFIES ,test)
-						 NIL
-						 (getf parameters :line)))
-	   (UNSATISFIED(CONDITION)
-	     ,(the-push-instance-form result
-				      'UNSATISFIED-CLAUSE
-				      `(TEST-FORM CONDITION)
-				      T
-				      NIL
-				      (getf parameters :line)
-				      :ARGS `(ARGS CONDITION))))))))
+                                `(let ((,actual ,form))
+                                   (handler-case
+                                       (unless (,test ,actual)
+                                         ,(the-push-instance-form result 'issue
+                                                                  `',test-form
+                                                                  `(satisfies
+                                                                    ,test)
+                                                                  nil
+                                                                  (getf
+                                                                    parameters
+                                                                    :line)))
+                                     (unsatisfied (condition)
+                                       ,(the-push-instance-form result
+                                                                'unsatisfied-clause
+                                                                `(test-form
+                                                                   condition)
+                                                                t nil
+                                                                (getf
+                                                                  parameters
+                                                                  :line)
+                                                                :args `(args
+                                                                         condition))))))))
 
-(defmethod no-applicable-method((gf(eql #'make-requirement))&rest args)
-  (error'syntax-error
-    :format-control "~S: Key must one of ~S but ~S~%~S"
-    :format-arguments (list '?
-			    (reserved-keywords gf)
-			    (second args)
-			    (cons '? args))))
+(defmethod no-applicable-method ((gf (eql #'make-requirement)) &rest args)
+  (error 'syntax-error
+         :format-control "~S: Key must one of ~S but ~S~%~S"
+         :format-arguments (list '? (reserved-keywords gf) (second args)
+                                 (cons '? args))))
 
-(defmethod make-requirement(test-form (key(eql '=>))
-				      (expected(eql 'unspecified))
-				      &rest parameters)
-  (declare(ignore test-form key expected parameters))
-  '(LAMBDA()NIL))
+(defmethod make-requirement
+           (test-form (key (eql '=>)) (expected (eql 'unspecified))
+            &rest parameters)
+  (declare (ignore test-form key expected parameters))
+  '(lambda () nil))
 
-(defmethod make-requirement(test-form(key(eql '=>))
-			     (expected(eql 'implementation-dependent))
-			     &rest parameters)
-  (declare(ignore key))
-  (let((result(gensym "RESULT")))
+(defmethod make-requirement
+           (test-form (key (eql '=>))
+            (expected (eql 'implementation-dependent))
+            &rest parameters)
+  (declare (ignore key))
+  (let ((result (gensym "RESULT")))
     (the-standard-handling-form result parameters test-form expected
-      (canonicalize test-form parameters))))
+                                (canonicalize test-form parameters))))
 
-(defmethod make-requirement(test-form(key(eql :multiple-value-satisfies))
-			     expected &rest parameters)
-  (declare(ignore key))
-  (let((actual
-	 (gensym "ACTUAL"))
-       (test
-	 (encallable expected t))
-       (form
-	 (canonicalize test-form parameters))
-       (result
-	 (gensym"RESULT")))
+(defmethod make-requirement
+           (test-form (key (eql :multiple-value-satisfies)) expected
+            &rest parameters)
+  (declare (ignore key))
+  (let ((actual (gensym "ACTUAL"))
+        (test (encallable expected t))
+        (form (canonicalize test-form parameters))
+        (result (gensym "RESULT")))
     (the-standard-handling-form result parameters test-form expected
-      `(LET((,actual
-	      (MULTIPLE-VALUE-LIST ,form)))
-	 (HANDLER-CASE(UNLESS(APPLY ,test ,actual)
-			,(the-push-instance-form result
-						 'ISSUE-OF-MULTIPLE-VALUES
-						 `',test-form
-						 expected
-						 actual
-						 (getf parameters :line)))
-	   (UNSATISFIED(CONDITION)
-	     ,(the-push-instance-form result
-				      'UNSATISFIED-CLAUSE
-				      `(TEST-FORM CONDITION)
-				      T
-				      NIL
-				      (getf parameters :line)
-				      :ARGS `(ARGS CONDITION))))))))
+                                `(let ((,actual (multiple-value-list ,form)))
+                                   (handler-case
+                                       (unless (apply ,test ,actual)
+                                         ,(the-push-instance-form result
+                                                                  'issue-of-multiple-values
+                                                                  `',test-form
+                                                                  expected
+                                                                  actual
+                                                                  (getf
+                                                                    parameters
+                                                                    :line)))
+                                     (unsatisfied (condition)
+                                       ,(the-push-instance-form result
+                                                                'unsatisfied-clause
+                                                                `(test-form
+                                                                   condition)
+                                                                t nil
+                                                                (getf
+                                                                  parameters
+                                                                  :line)
+                                                                :args `(args
+                                                                         condition))))))))
 
-(defmethod make-requirement(test-form(key(eql :be-the))
-			     expected &rest parameters)
-  (declare(ignore key))
-  (let((form
-	 (canonicalize test-form parameters)))
-    (alexandria:with-unique-names(actual result)
+(defmethod make-requirement
+           (test-form (key (eql :be-the)) expected &rest parameters)
+  (declare (ignore key))
+  (let ((form (canonicalize test-form parameters)))
+    (alexandria:with-unique-names (actual result)
       (the-standard-handling-form result parameters test-form expected
-        `(LET((,actual ,form))
-	   (UNLESS(TYPEP ,actual ',expected)
-	     ,(the-push-instance-form result
-				      'ISSUE
-				      `',test-form
-				      expected
-				      `(LIST 'THE (type-of ,actual) ,actual)
-				      (getf parameters :line))))))))
+                                  `(let ((,actual ,form))
+                                     (unless (typep ,actual ',expected)
+                                       ,(the-push-instance-form result 'issue
+                                                                `',test-form
+                                                                expected
+                                                                `(list 'the
+                                                                       (type-of
+                                                                         ,actual)
+                                                                       ,actual)
+                                                                (getf
+                                                                  parameters
+                                                                  :line))))))))
 
-(defmethod make-requirement(test-form(key(eql :equivalents))
-			     expected &rest parameters)
-  (declare(ignore key))
-  (let((form1
-	 (canonicalize test-form parameters))
-       (form2
-	 (canonicalize expected parameters))
-       (test
-	 (encallable(getf parameters :test #'eql))))
-    (alexandria:with-unique-names(actual1 actual2 result)
+(defmethod make-requirement
+           (test-form (key (eql :equivalents)) expected &rest parameters)
+  (declare (ignore key))
+  (let ((form1 (canonicalize test-form parameters))
+        (form2 (canonicalize expected parameters))
+        (test (encallable (getf parameters :test #'eql))))
+    (alexandria:with-unique-names (actual1 actual2 result)
       (the-standard-handling-form result parameters test-form expected
-      `(LET((,actual1 ,form1)
-	    (,actual2 ,form2))
-	 (UNLESS(,test ,actual1 ,actual2)
-	   ,(the-push-instance-form result
-				    'ISSUE
-				    `(LIST ',test ',test-form ',expected)
-				    T
-				    `(LIST ',test ,actual1 ,actual2)
-				    (getf parameters :line))))))))
+                                  `(let ((,actual1 ,form1) (,actual2 ,form2))
+                                     (unless (,test ,actual1 ,actual2)
+                                       ,(the-push-instance-form result 'issue
+                                                                `(list ',test
+                                                                       ',test-form
+                                                                       ',expected)
+                                                                t
+                                                                `(list ',test
+                                                                       ,actual1
+                                                                       ,actual2)
+                                                                (getf
+                                                                  parameters
+                                                                  :line))))))))
 
-
-(defmethod make-requirement(test-form(key (eql :expanded-to))
-			     expected &rest parameters)
-  (declare(ignore key))
-  (alexandria:with-unique-names(result actual)
+(defmethod make-requirement
+           (test-form (key (eql :expanded-to)) expected &rest parameters)
+  (declare (ignore key))
+  (alexandria:with-unique-names (result actual)
     (the-standard-handling-form result parameters test-form expected
-      `(LET((,actual
-	      (MACROEXPAND-1 ',(copy-tree test-form))))
-	 (UNLESS(SEXP= ,actual ',expected)
-	   ,(the-push-instance-form result
-				    'ISSUE
-				    `',test-form
-				    expected
-				    actual
-				    (getf parameters :line)))))))
+                                `(let ((,actual
+                                        (macroexpand-1
+                                          ',(copy-tree test-form))))
+                                   (unless (sexp= ,actual ',expected)
+                                     ,(the-push-instance-form result 'issue
+                                                              `',test-form
+                                                              expected actual
+                                                              (getf parameters
+                                                                    :line)))))))
 
-(defmethod make-requirement(test-form (key(eql :output-satisfies)) expected
-				      &rest parameters)
-  (declare(ignore key))
-  (alexandria:with-unique-names(actual result)
-    (let((test
-	   (encallable expected))
-	 (form
-	   (canonicalize test-form parameters)))
+(defmethod make-requirement
+           (test-form (key (eql :output-satisfies)) expected &rest parameters)
+  (declare (ignore key))
+  (alexandria:with-unique-names (actual result)
+    (let ((test (encallable expected))
+          (form (canonicalize test-form parameters)))
       (the-standard-handling-form result parameters test-form expected
-        `(LET((,actual
-		(WITH-OUTPUT-TO-STRING(,(getf parameters :stream '*standard-output*))
-		  ,form)))
-	   (HANDLER-CASE(UNLESS(,test ,actual)
-			  ,(the-push-instance-form result
-						   'ISSUE
-						   `',test-form
-						   `(SATISFIES ,test)
-						   NIL
-						   (getf parameters :line)))
-	     (UNSATISFIED(CONDITION)
-	       ,(the-push-instance-form result
-					'UNSATISFIED-CLAUSE
-					`(TEST-FORM CONDITION)
-					T
-					NIL
-					(getf parameters :line)
-					:ARGS `(ARGS CONDITION)))))))))
+                                  `(let ((,actual
+                                          (with-output-to-string
+                                              (,(getf parameters
+                                                      :stream '*standard-output*))
+                                            ,form)))
+                                     (handler-case
+                                         (unless (,test ,actual)
+                                           ,(the-push-instance-form result
+                                                                    'issue
+                                                                    `',test-form
+                                                                    `(satisfies
+                                                                      ,test)
+                                                                    nil
+                                                                    (getf
+                                                                      parameters
+                                                                      :line)))
+                                       (unsatisfied (condition)
+                                         ,(the-push-instance-form result
+                                                                  'unsatisfied-clause
+                                                                  `(test-form
+                                                                     condition)
+                                                                  t nil
+                                                                  (getf
+                                                                    parameters
+                                                                    :line)
+                                                                  :args `(args
+                                                                           condition)))))))))

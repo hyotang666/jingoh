@@ -1,113 +1,125 @@
 (in-package :jingoh.org)
 
-(defun the-nil-subject-procedure(org var body return)
-  ; iterate all requirements
-  (let((s(gensym "S"))
-       (sub?(cadr var)))
-    `(LOOP :FOR ,s :ACROSS (!(ORG-SPECIFICATIONS ,org))
-	   ,@(when sub?
-	       `(:for ,sub? = (SPEC-SUBJECT ,s)))
-	   :DO (MAP NIL (LAMBDA(,(car var)),@body)(SPEC-REQUIREMENTS ,s))
-	   :FINALLY(RETURN (LET(,@var)
-			     (DECLARE(IGNORABLE ,@var))
-			     ,return)))))
+(defun the-nil-subject-procedure (org var body return)
+  ;; iterate all requirements
+  (let ((s (gensym "S")) (sub? (cadr var)))
+    `(loop :for ,s :across (! (org-specifications ,org))
+                ,@(when sub?
+                    `(:for ,sub? = (spec-subject ,s)))
+           :do (map nil (lambda (,(car var)) ,@body) (spec-requirements ,s))
+           :finally (return
+                     (let (,@var)
+                       (declare (ignorable ,@var))
+                       ,return)))))
 
-(defun the-subject-procedure(var body gname org return)
-  (alexandria:with-unique-names(specifications subject)
-    `(LET((,specifications(!(ORG-SPECIFICATIONS ,org))))
-       (DOLIST(,(or (cadr var)subject)(UIOP:ENSURE-LIST ,gname)
-		(LET(,(car var))
-		  (DECLARE(IGNORABLE ,(car var)))
-		  ,return))
-	 (MAP NIL (LAMBDA(,(car var)),@body)
-	      (SPEC-REQUIREMENTS(?!(FIND ,(or (cadr var)subject)
-					 ,specifications
-					 :KEY #'SPEC-SUBJECT))))))))
+(defun the-subject-procedure (var body gname org return)
+  (alexandria:with-unique-names (specifications subject)
+    `(let ((,specifications (! (org-specifications ,org))))
+       (dolist
+           (,(or (cadr var) subject) (uiop:ensure-list ,gname)
+                                     (let (,(car var))
+                                       (declare (ignorable ,(car var)))
+                                       ,return))
+         (map nil (lambda (,(car var)) ,@body)
+              (spec-requirements
+                (?!
+                 (find ,(or (cadr var) subject) ,specifications
+                       :key #'spec-subject))))))))
 
-(defmacro do-requirements(&whole whole
-				 (var &optional(subject-designator T)
-				      (org '*org*)
-				      return-form)
-				 &body body)
-  (check-bnf:check-bnf(:whole whole)
+(defmacro do-requirements
+          (&whole whole
+           (var &optional (subject-designator t) (org '*org*) return-form)
+           &body body)
+  (check-bnf:check-bnf (:whole whole)
     ((var (or symbol subject-spec))
      (subject-spec (symbol symbol)))
     ((subject-designator symbol))
     ((org check-bnf:expression))
     ((return-form check-bnf:expression)))
   (setf var (uiop:ensure-list var))
-  (let((gname(gensym "NAME")))
-    `(MACROLET((?!(form)
-		 `(OR ,form
-		      (ERROR'MISSING-SUBJECT :API 'DO-REQUIREMENTS
-					     :DATUM ,',gname)))
-	       (!(form)
-		 `(RESIGNAL-BIND((TYPE-ERROR()'NOT-ORG :API 'DO-REQUIREMENTS))
-		    ,FORM)))
-       (LET((,gname ,subject-designator))
-	 (CASE,gname
-	   ((NIL),(the-nil-subject-procedure org var body return-form))
-	   ((T),(the-subject-procedure var body `(SETF ,gname (ORG-CURRENT-SUBJECTS *ORG*)) org return-form))
-	   (OTHERWISE,(the-subject-procedure var body gname org return-form)))))))
+  (let ((gname (gensym "NAME")))
+    `(macrolet ((?! (form)
+                  `(or ,form
+                       (error 'missing-subject
+                              :api 'do-requirements
+                              :datum ,',gname)))
+                (! (form)
+                  `(resignal-bind ((type-error () 'not-org
+                                     :api 'do-requirements))
+                     ,form)))
+       (let ((,gname ,subject-designator))
+         (case ,gname
+           ((nil) ,(the-nil-subject-procedure org var body return-form))
+           ((t)
+            ,(the-subject-procedure var body
+                                    `(setf ,gname (org-current-subjects *org*))
+                                    org return-form))
+           (otherwise
+            ,(the-subject-procedure var body gname org return-form)))))))
 
-(define-compiler-macro do-requirements(&whole whole (var &optional(subject-designator T)(org '*org*) return)&body body)
+(define-compiler-macro do-requirements
+    (&whole whole (var &optional (subject-designator t) (org '*org*) return)
+     &body body)
   (setf var (uiop:ensure-list var))
-  (if(not(constantp subject-designator))
-    whole
-    `(MACROLET((?!(form)
-		 `(OR ,form
-		      (ERROR'MISSING-SUBJECT :API 'DO-REQUIREMENTS
-					     :DATUM ,',subject-designator)))
-	       (!(form)
-		 `(RESIGNAL-BIND((TYPE-ERROR()'NOT-ORG :API 'DO-REQUIREMENTS))
-		    ,FORM)))
-       ,(case subject-designator
-	  ((NIL)(the-nil-subject-procedure org var body return))
-	  ((T)(the-subject-procedure var body '(ORG-CURRENT-SUBJECTS *ORG*) org return))
-	  (otherwise
-	    (the-subject-procedure var body subject-designator org return))))))
+  (if (not (constantp subject-designator))
+      whole
+      `(macrolet ((?! (form)
+                    `(or ,form
+                         (error 'missing-subject
+                                :api 'do-requirements
+                                :datum ,',subject-designator)))
+                  (! (form)
+                    `(resignal-bind ((type-error () 'not-org
+                                       :api 'do-requirements))
+                       ,form)))
+         ,(case subject-designator
+            ((nil) (the-nil-subject-procedure org var body return))
+            ((t)
+             (the-subject-procedure var body '(org-current-subjects *org*) org
+                                    return))
+            (otherwise
+             (the-subject-procedure var body subject-designator org return))))))
 
-(macrolet((!(n form)
-	    `(RESIGNAL-BIND((ERROR()'NOT-ORG
-			      :DATUM ORG
-			      :EXPECTED-TYPE 'ORG
-			      :API ',(nth n '(MAP-REQUIREMENTS ADD-REQUIREMENT ORG-REQUIREMENTS-COUNT))))
-	       ,form))
-	  (?!(form)
-	    `(OR ,form
-		 (ERROR 'MISSING-SUBJECT :API 'map-requirements :DATUM SUB))))
-
-  (defun map-requirements(function &optional(subject T)(org *org*))
-    (flet((s-reqs(sub)
-	    (spec-requirements(?!(find sub(! 0 (org-specifications org))
-				       :key #'spec-subject)))))
+(macrolet ((! (n form)
+             `(resignal-bind ((error () 'not-org
+                                :datum org
+                                :expected-type 'org
+                                :api
+                                ',(nth n
+                                       '(map-requirements add-requirement
+                                                          org-requirements-count))))
+                ,form))
+           (?! (form)
+             `(or ,form
+                  (error 'missing-subject :api 'map-requirements :datum sub))))
+  (defun map-requirements (function &optional (subject t) (org *org*))
+    (flet ((s-reqs (sub)
+             (spec-requirements
+               (?!
+                 (find sub (! 0 (org-specifications org))
+                       :key #'spec-subject)))))
       (case subject
-	((NIL) ; all subject.
-	 (loop :for spec :across (! 0(org-specifications org))
-	       :nconc(map 'list function (spec-requirements spec))))
-	((T) ; current subject
-	 (loop :for sub :in (org-current-subjects *org*)
-	       :nconc (map 'list function(s-reqs sub))))
-	(otherwise
-	  (map 'list function(s-reqs subject))))))
-
-  (defun add-requirement(subject requirement &optional(org *org*))
+        ((nil) ; all subject.
+         (loop :for spec :across (! 0 (org-specifications org))
+               :nconc (map 'list function (spec-requirements spec))))
+        ((t) ; current subject
+         (loop :for sub :in (org-current-subjects *org*)
+               :nconc (map 'list function (s-reqs sub))))
+        (otherwise (map 'list function (s-reqs subject))))))
+  (defun add-requirement (subject requirement &optional (org *org*))
     (check-type subject symbol)
-    (let((spec (find subject (! 1 (org-specifications org))
-				    :key #'spec-subject)))
+    (let ((spec
+           (find subject (! 1 (org-specifications org)) :key #'spec-subject)))
       (if spec
-	(vector-push-extend requirement (spec-requirements spec))
-	(vector-push-extend (spec subject requirement)
-			    (org-specifications org))))
+          (vector-push-extend requirement (spec-requirements spec))
+          (vector-push-extend (spec subject requirement)
+                              (org-specifications org))))
     requirement)
+  (defun org-requirements-count (org)
+    (loop :for s :across (! 2 (org-specifications org))
+          :sum (length (spec-requirements s))))) ; end of macrolet
 
-  (defun org-requirements-count(org)
-    (loop :for s :across (! 2(org-specifications org))
-	  :sum (length (spec-requirements s))))
-
-  ) ; end of macrolet
-
-(defun find-subject(subject &optional(org *org*))
+(defun find-subject (subject &optional (org *org*))
   (loop :for s :across (org-specifications org)
-	:when (eq subject (spec-subject s))
-	:return s))
+        :when (eq subject (spec-subject s))
+          :return s))

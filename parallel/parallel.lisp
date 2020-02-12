@@ -1,64 +1,72 @@
 (defpackage #:jingoh.parallel
   (:use #:common-lisp #:resignal-bind #:jingoh.org #:jingoh.examiner)
   (:import-from :cl-cpus #:get-number-of-processors)
-  (:import-from :lparallel #:pmap #:psome #:Pmapcan #:Premove
-		#:make-kernel #:*kernel*)
+  (:import-from :lparallel
+                #:pmap
+                #:psome
+                #:pmapcan
+                #:premove
+                #:make-kernel
+                #:*kernel*)
   (:import-from :jingoh.tester #:check #:*print-vivid*)
-  (:import-from :jingoh.org #:Spec-requirements #:Spec-subject)
-  (:import-from :jingoh.examiner #:print-dot #:Print-summary #:Break-on-finish)
-  (:export
-    ;;;; main api
-    #:pexamine
-    ))
+  (:import-from :jingoh.org #:spec-requirements #:spec-subject)
+  (:import-from :jingoh.examiner #:print-dot #:print-summary #:break-on-finish)
+  (:export ;;;; main api
+           #:pexamine))
+
 (in-package #:jingoh.parallel)
 
-(defun pexamine(org &key subject ((:verbose *Verbose*)*Verbose*)
-		    ((:vivid *Print-vivid*)*Print-vivid*)
-		    (cores (Get-number-of-processors)))
-  (prog*((*Org*(Resignal-bind((Missing-org()'Missing-org :api 'examine))
-		 (Find-org org)))
-	 (*package*(Org-package *org*))
-	 (*print-circle* T)
-	 (*Kernel*(Make-kernel cores)))
-    (setf *Issues* (Resignal-bind((Missing-subject()
-				    'Missing-subject :api 'examine))
-		     (if(find *On-fails* '(:error :stop):test #'eq)
-		       (xxx-on-fails subject)
-		       (print-progress subject))))
-    (Print-summary *Issues*)
-    (when(or (<= 1 *Verbose*)
-	     (eq :stop *On-fails*))
-      (mapc #'print *Issues*)))
+(defun pexamine
+       (org
+        &key subject ((:verbose *verbose*) *verbose*)
+        ((:vivid *print-vivid*) *print-vivid*)
+        (cores (get-number-of-processors)))
+  (prog* ((*org*
+           (resignal-bind:resignal-bind ((missing-org () 'missing-org
+                                           :api 'examine))
+             (find-org org)))
+          (*package* (org-package *org*)) (*print-circle* t)
+          (*kernel* (make-kernel cores)))
+    (setf *issues*
+            (resignal-bind:resignal-bind ((missing-subject () 'missing-subject
+                                            :api 'examine))
+              (if (find *on-fails* '(:error :stop) :test #'eq)
+                  (xxx-on-fails subject)
+                  (print-progress subject))))
+    (print-summary *issues*)
+    (when (or (<= 1 *verbose*) (eq :stop *on-fails*))
+      (mapc #'print *issues*)))
   (terpri)
-  (when *Break-on-finish*
-    (Break-on-finish *Issues*))
-  )
+  (when *break-on-finish*
+    (break-on-finish *issues*)))
 
-(macrolet((?!(form)
-	    `(OR ,form
-		 (ERROR'MISSING-SUBJECT :API 'PARALLEL-CHECK
-					:DATUM subject))))
-  (defun appropriate-specs(subject)
-    (let((specs(Org-specifications *Org*)))
+(macrolet ((?! (form)
+             `(or ,form
+                  (error 'missing-subject
+                         :api 'parallel-check
+                         :datum subject))))
+  (defun appropriate-specs (subject)
+    (let ((specs (org-specifications *org*)))
       (case subject
-	((nil) specs) ; all
-	((T)(loop :for sub :in (Org-current-subjects *Org*) ; current
-		  :collect (find sub specs :key #'Spec-subject)))
-	(otherwise (list(?!(find subject specs :key #'Spec-subject))))))))
+        ((nil) specs) ; all
+        ((t)
+         (loop :for sub :in (org-current-subjects *org*) ; current
+               :collect (find sub specs :key #'spec-subject)))
+        (otherwise (list (?! (find subject specs :key #'spec-subject))))))))
 
-(defun print-progress(subject)
-  (Pmapcan (lambda(spec)
-	     (let*((result(Pmap 'list #'Check (Spec-requirements spec)))
-		   (subject(Spec-subject spec))
-		   (lock(bt:make-lock(symbol-name subject))))
-	       (when(<= 2 *verbose*)
-		 (bt:with-lock-held(lock)
-		   (format t "~&~S"subject)
-		   (mapc #'Print-dot result)))
-	       (Premove nil result)))
-	   (appropriate-specs subject)))
+(defun print-progress (subject)
+  (pmapcan
+    (lambda (spec)
+      (let* ((result (pmap 'list #'check (spec-requirements spec)))
+             (subject (spec-subject spec))
+             (lock (bt:make-lock (symbol-name subject))))
+        (when (<= 2 *verbose*)
+          (bt:with-lock-held (lock)
+            (format t "~&~S" subject)
+            (mapc #'print-dot result)))
+        (premove nil result)))
+    (appropriate-specs subject)))
 
-(defun xxx-on-fails(subject)
-  (Psome (lambda(spec)
-	   (Psome #'Check (Spec-requirements spec)))
-	 (appropriate-specs subject)))
+(defun xxx-on-fails (subject)
+  (psome (lambda (spec) (psome #'check (spec-requirements spec)))
+         (appropriate-specs subject)))
