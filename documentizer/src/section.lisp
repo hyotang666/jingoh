@@ -1,6 +1,6 @@
 (in-package :jingoh.documentizer)
 
-(defstruct (section (:predicate nil)) body path names doc-type)
+(defstruct (section (:predicate nil)) body path names (doc-type :unbound))
 
 (defstruct
     (single (:include section)

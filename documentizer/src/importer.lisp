@@ -35,7 +35,10 @@
 
 (defun <documentations> (section package)
   (loop :for name :in (section-names section)
-        :if (section-doc-type section)
+        :for doc-type = (section-doc-type section)
+        :if (eq :unbound doc-type)
+          :do (no-doc-type name)
+        :else :if doc-type
           :collect `(defmethod documentation
                                (
                                 (s
@@ -45,11 +48,9 @@
                                        (error
                                          "Not found symbol ~S in package ~S"
                                          ,(string name) ,(string package)))))
-                                (type (eql ',(section-doc-type section))))
+                                (type (eql ',doc-type)))
                       (declare (ignore s type))
-                      ,(princ-to-string section))
-        :else
-          :do (no-doc-type name)))
+                      ,(princ-to-string section))))
 
 ;;;; IMPORT
 
@@ -61,12 +62,13 @@
     (dolist (s (meta-data-sections m))
       (dolist (name (section-names s))
         (let ((doc-type (section-doc-type s)))
-          (if doc-type
-              (funcall *import-hook*
-                       (uiop:find-symbol* (symbol-name name)
-                                          (meta-data-name m))
-                       doc-type s)
-              (no-doc-type name)))))))
+          (case doc-type
+            ((nil) #| Do nothing |#)
+            (:unbound (no-doc-type name))
+            (otherwise
+             (funcall *import-hook*
+                      (uiop:find-symbol* (symbol-name name) (meta-data-name m))
+                      doc-type s))))))))
 
 (defun importer (symbol doc-type section)
   (setf (documentation symbol doc-type) (princ-to-string section)))

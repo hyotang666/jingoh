@@ -23,13 +23,13 @@
                  :collect (make-common
                            :names (cadr section)
                            :alias alias
-                           :doc-type (getf section :doc-type)
+                           :doc-type (getf section :doc-type :unbound)
                            :path (target-path (symbol-name (gensym "C_")))
                            :body body) :into commons
                :else
                  :collect (make-single
                            :name (cadr section)
-                           :doc-type (getf section :doc-type)
+                           :doc-type (getf section :doc-type :unbound)
                            :path (target-path
                                    (format nil "S_~A"
                                            (replace-invalid-chars
