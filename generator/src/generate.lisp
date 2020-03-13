@@ -230,8 +230,42 @@
                              (list (read-line *query-io*)))
             (ensure-name name))))))
 
+;;; LOCAL-PROJECT-DIRECTORY
+
+(defun find-asd (pathname)
+  (uiop:collect-sub*directories pathname #'uiop:directory-exists-p
+                                #'uiop:directory-exists-p
+                                (lambda (directory)
+                                  (let ((files
+                                         (uiop:directory-files directory
+                                                               "*.asd")))
+                                    (when files
+                                      (return-from find-asd files))))))
+
+(defun parse-registry (source-registry)
+  (mapcan
+    (lambda (directive)
+      (when (typep directive '(cons (member :directory :tree) *))
+        (list (uiop:resolve-location (cadr directive)))))
+    (cdr source-registry)))
+
+(defun default-source-registry-directories ()
+  (mapcan (lambda (symbol) (parse-registry (funcall symbol)))
+          asdf:*default-source-registries*))
+
+(defun asdf-default-source-registries-directories ()
+  (loop :for directory :in (default-source-registry-directories)
+        :when (find-asd directory)
+          :collect directory))
+
 (defun local-project-directory ()
-  (let ((directories ql:*local-project-directories*))
+  (let ((directories
+         (append (asdf-default-source-registries-directories)
+                 ql:*local-project-directories*
+                 (when (find-package :roswell)
+                   (symbol-value
+                     (uiop:find-symbol* "*LOCAL-PROJECT-DIRECTORIES*"
+                                        :roswell))))))
     (if (null (cdr directories))
         (car directories)
         (progn
