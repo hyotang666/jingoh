@@ -258,6 +258,8 @@
         :when (find-asd directory)
           :collect directory))
 
+(define-condition some-repository (simple-error) ())
+
 (defun local-project-directory ()
   (let ((directories
          (append (asdf-default-source-registries-directories)
@@ -266,16 +268,43 @@
                    (symbol-value
                      (uiop:find-symbol* "*LOCAL-PROJECT-DIRECTORIES*"
                                         :roswell))))))
-    (if (null (cdr directories))
+    (if (typep directories '(cons * null))
         (car directories)
-        (progn
-         (loop :for d :in directories
-               :for i :upfrom 0
-               :do (format *query-io* "~%~3D: ~S" i d))
-         (nth
-           (prompt-for:prompt-for `(mod ,(length directories))
-                                  "~%Which directory do you use?~%Please type number >> ")
-           directories)))))
+        (restart-case (error
+                        (if directories
+                            'some-repository
+                            'simple-error)
+                        :format-control "Could not determine to configure.")
+          (select (index)
+              :report "Select directory from knwon list."
+              :test (lambda (condition) (typep condition 'some-repository))
+              :interactive (lambda ()
+                             (loop :for d :in directories
+                                   :for i :upfrom 0
+                                   :do (format *query-io* "~%~3D: ~S" i d))
+                             (list
+                               (prompt-for:prompt-for
+                                 `(mod ,(length directories))
+                                 "~%Which directory do you use?~%Please type number >> ")))
+            (nth index directories))
+          (use-value (directory)
+              :report "Specify directory."
+              :interactive (lambda ()
+                             (let* ((input
+                                     (prompt-for:prompt-for 'string
+                                                            "Specify >> "
+                                                            :by #'read-line))
+                                    (exists? (uiop:directory-exists-p input)))
+                               (list
+                                 (or exists?
+                                     (restart-case (error
+                                                     "Directory does not exist.")
+                                       (make ()
+                                           :report "Make directory then continue."
+                                         (ensure-directories-exist
+                                           (uiop:ensure-directory-pathname
+                                             input))))))))
+            directory)))))
 
 ;;; SYSTEM
 
