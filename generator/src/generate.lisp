@@ -211,6 +211,8 @@
                (uiop:subpathname *default-pathname-defaults* "src/"))
       (cl-source-file-generator system-name))
     (ql:register-local-projects)
+    (when (find-package :roswell)
+      (uiop:symbol-call :roswell.util "LOCAL-PROJECT-BUILD-HASH" :rebuild t))
     (generate (asdf:find-system system-name))))
 
 (defun ensure-name (system)
