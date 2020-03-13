@@ -329,8 +329,9 @@
       (add-method-extension system))
     (generate 'test-asd :system system :forms forms :path test-asd-path)
     (dolist (form forms) (generate form :append append)))
-  #+quicklisp
-  (ql:register-local-projects))
+  (ql:register-local-projects)
+  (when (find-package :roswell)
+    (uiop:symbol-call :roswell.util "LOCAL-PROJECT-BUILD-HASH" :rebuild t)))
 
 (defun add-method-extension (system)
   (let ((system (asdf:find-system system)))
