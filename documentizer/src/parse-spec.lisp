@@ -1,7 +1,8 @@
 (in-package :jingoh.documentizer)
 
 (defun parse-spec (pathname)
-  (multiple-value-call #'engroup (sectionize (enlist pathname))))
+  (when (probe-file pathname)
+    (multiple-value-call #'engroup (sectionize (enlist pathname)))))
 
 (defun enlist (pathname)
   (with-open-file (s pathname)
