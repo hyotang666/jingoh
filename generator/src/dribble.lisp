@@ -179,7 +179,7 @@
       (condition output result)
       args
     (format *spec-output* "~%#?~S => ~S~@[~%~A~]~@[~%~A~]~@[~%~A~]" form
-            (if (y-or-n-p "~S~%Expected result?" result)
+            (if (y-or-n-p "~S~%Expected return value?" result)
                 result
                 (restart-case (error 'unexpected-behavior)
                   (use-value (expected)
