@@ -126,7 +126,10 @@
                   (use-value (expected)
                       :report "Specify expected output"
                       :interactive (lambda () (list (read-expected)))
-                    expected))))
+                    expected)
+                  (ignore ()
+                      :report "Ignore about outputs."
+                    (return-from spec-of nil)))))
     (force-output *spec-output*)))
 
 (defmethod spec-of ((d (eql :expansion)) form result)
