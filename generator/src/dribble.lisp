@@ -89,7 +89,7 @@
                               (setq result
                                       (multiple-value-list (eval form))))))
             (append-spec ()
-                :report "Append spec, returning to dribble."
+                :report "This is expected behavior, returning to dribble."
               (format *spec-output* "~%#?~S :signals ~S" form
                       (type-of condition))
               (return-from dribble-eval (values))))))
