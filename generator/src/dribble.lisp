@@ -114,7 +114,8 @@
 (defmethod spec-of ((d (eql :condition)) form condition)
   (when (and (typep condition 'warning)
              (y-or-n-p "Expected signals? ~S" condition))
-    (format *spec-output* "~%#?~S :signals ~S" form (type-of condition))))
+    (format *spec-output* "~%#?~S :signals ~S" form (type-of condition))
+    (force-output *spec-output*)))
 
 (defmethod spec-of ((d (eql :output)) form output)
   (unless (equal "" output)
@@ -125,7 +126,8 @@
                   (use-value (expected)
                       :report "Specify expected output"
                       :interactive (lambda () (list (read-expected)))
-                    expected))))))
+                    expected))))
+    (force-output *spec-output*)))
 
 (defmethod spec-of ((d (eql :expansion)) form result)
   (format *spec-output* "~%#?~S :expanded-to ~S" (cadr form)
@@ -138,7 +140,8 @@
                                    (list
                                      (prompt-for:prompt-for t
                                                             "Input expected form. >> ")))
-                  expected)))))
+                  expected))))
+  (force-output *spec-output*))
 
 (defmethod spec-of ((d (eql :values)) form result)
   (if (some #'unreadable-objectp result)
@@ -159,7 +162,8 @@
                                        (list
                                          (prompt-for:prompt-for 'list
                                                                 "Input expected values. >> ")))
-                      expected))))))
+                      expected)))))
+  (force-output *spec-output*))
 
 (defmethod spec-of ((d (eql :unreadable)) form result)
   (format *spec-output* "~%#?~S :be-the ~S" form
@@ -172,7 +176,8 @@
                                    (list
                                      (prompt-for:prompt-for t
                                                             "Input expected type. >> ")))
-                  expected)))))
+                  expected))))
+  (force-output *spec-output*))
 
 (defmethod spec-of ((d (eql :default)) form args)
   (destructuring-bind
@@ -194,7 +199,8 @@
             (when (typep condition 'warning)
               ", :ignore-signals warning")
             (unless (equal "" output)
-              ", :stream nil"))))
+              ", :stream nil")))
+  (force-output *spec-output*))
 
 (defun unreadable-objectp (object)
   (uiop:string-prefix-p "#<" (prin1-to-string object)))
