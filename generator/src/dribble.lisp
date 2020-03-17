@@ -86,8 +86,8 @@
                           (with-output-to-string (s)
                             (let ((*standard-output*
                                    (make-broadcast-stream *standard-output* s)))
-                              (setq result
-                                      (multiple-value-list (eval form))))))
+                              (setq result (multiple-value-list (eval form)))
+                              (force-output))))
             (append-spec ()
                 :report "This is expected behavior, returning to dribble."
               (format *spec-output* "~%#?~S :signals ~S" form
