@@ -316,7 +316,7 @@
           (let ((outer-hook *macroexpand-hook*))
             (lambda (expander form env)
               (when (typep form '(cons (eql defpackage) *))
-                (push form forms))
+                (pushnew form forms :key #'second :test #'string=))
               (funcall outer-hook expander form env))))
          (*default-pathname-defaults* (spec-directory system))
          (test-asd-path (path-of (test-name system) "asd")))
