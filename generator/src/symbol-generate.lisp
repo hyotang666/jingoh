@@ -85,7 +85,7 @@
 	    ; Combining.~%~
 	    ; Predicating.~2%~
 	    ;;;; Compound Type Specifier Syntax:~2%~
-	    ~@[#+syntax~%(~(~A~) ~{~(~A~)~^ ~})~]~2%~
+	    ~@[#+syntax~%(~(~A~)~{ ~(~A~)~})~]~2%~
 	    ;;;; Compound Type Specifier Arguments:~2%~
 	    ~@[~{; ~(~A~) := ~%~}~]~%"
             symbol (comentize (documentation symbol 'type)) symbol lambda-list
