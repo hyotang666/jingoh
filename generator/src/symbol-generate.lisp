@@ -28,26 +28,33 @@
           (uiop:split-string (or string "") :separator '(#\Newline))))
 
 (defun |variable| (symbol)
-  (format t "(requirements-about ~A :doc-type variable)~2%~
-	  ;;;; Description:~%~
-	  ~A~%~
-	  ;;;; Value type is ~A~%~
-	  ;#? ~A :be-the ???~2%~
-	  ; Initial value is `~S`~2%~
-	  ;;;; Affected By:~2%~
-	  ;;;; Notes:~2%"
-          symbol (comentize (documentation symbol 'variable))
-          (cond
-           ((when (fboundp 'cltl2:variable-information)
-              (cdr
-                (assoc 'type
-                       (nth-value 2 (cltl2:variable-information symbol))))))
-           ((boundp symbol) (type-of (symbol-value symbol)))
-           (t :unbound))
-          symbol
-          (if (boundp symbol)
-              (symbol-value symbol)
-              :unbound)))
+  (if (constantp symbol)
+      (format t "(requirements-about ~A :doc-type variable)~2%~
+                 ;;;; Constant value := ~S~%~
+                 ;;;; Description:~%~
+                 ~A~2%"
+              symbol (symbol-value symbol)
+              (comentize (documentation symbol 'variable)))
+      (format t "(requirements-about ~A :doc-type variable)~2%~
+	         ;;;; Description:~%~
+	         ~A~%~
+	         ;;;; Value type is ~A~%~
+	         ;#? ~A :be-the ???~2%~
+	         ; Initial value is `~S`~2%~
+	         ;;;; Affected By:~2%~
+	         ;;;; Notes:~2%"
+              symbol (comentize (documentation symbol 'variable))
+              (cond
+               ((when (fboundp 'cltl2:variable-information)
+                  (cdr
+                    (assoc 'type
+                           (nth-value 2 (cltl2:variable-information symbol))))))
+               ((boundp symbol) (type-of (symbol-value symbol)))
+               (t :unbound))
+              symbol
+              (if (boundp symbol)
+                  (symbol-value symbol)
+                  :unbound))))
 
 (defun |symbol-macro| (symbol)
   (format t "(requirements-about ~A)~2%~
