@@ -92,7 +92,7 @@
             (lambda-fiddle:extract-all-lambda-vars lambda-list))))
 
 (defun class-template (type symbol)
-  (let ((class (find-class symbol)))
+  (let ((class (c2mop:ensure-finalized (find-class symbol))))
     (format t "(requirements-about ~A :doc-type ~A)~2%~
 	    ;;;; Description:~%~
 	    ~A~&~
