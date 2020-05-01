@@ -120,7 +120,7 @@
 (defun applicables (class)
   (labels ((rec (classes &optional acc)
              (if (endp classes)
-                 acc
+                 (delete-duplicates acc :from-end t :key #'car)
                  (body (car classes) (cdr classes) acc)))
            (body (class rest acc)
              (rec (append rest (closer-mop:class-direct-superclasses class))
