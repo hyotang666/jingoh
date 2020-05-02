@@ -99,12 +99,7 @@
                          ,@(if (ignore-signals 'warning parameters)
                                `((handler-bind ((,(getf parameters
                                                         :ignore-signals)
-                                                 (lambda (condition)
-                                                   (when (find-restart
-                                                           ',(getf parameters
-                                                                   :ignore-signals))
-                                                     (muffle-warning
-                                                       condition)))))
+                                                 #'muffle-warning))
                                    ,@body))
                                body))))
            ,@(unless (ignore-signals 'warning parameters)
