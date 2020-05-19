@@ -4,9 +4,9 @@
 
 #| main apis for light users. |#
 
-(requirements-about DEFORG :around (let((jingoh.org::*orgs*(make-hash-table)))
-				     (call-body))
-		    :doc-type function)
+(requirements-about DEFORG :around (let ((jingoh.org::*orgs* (make-hash-table)))
+                                     (call-body))
+                    :doc-type function)
 ;;;; Description:
 ; Define new ORGanization object for your system.
 #?(deforg :demo) :be-the ORG
@@ -32,22 +32,22 @@
 ; DEFORG does not affect current org.
 ; It is same like CL:DEFPACKAGE.
 #?(progn (deforg :demo)
-	 (org-name *org*))
-:satisfies (lambda($name)(not(eq :demo $name)))
+         (org-name *org*))
+:satisfies (lambda ($name) (not (eq :demo $name)))
 
 ;;;; Exceptional-Situations:
 
-(requirements-about IN-ORG :around (let((jingoh.org::*orgs*(make-hash-table))
-					(*org* (make-org)))
-				     (call-body))
-		    :doc-type function)
+(requirements-about IN-ORG :around (let ((jingoh.org::*orgs* (make-hash-table))
+                                         (*org* (make-org)))
+                                     (call-body))
+                    :doc-type function)
 
 
 ;;;; Description:
 ; Modify current org.
 #?(progn (deforg :demo)
-	 (princ(org-name(in-org :demo)))
-	 (princ(org-name *org*)))
+         (princ (org-name (in-org :demo)))
+         (princ (org-name *org*)))
 :outputs "DEMODEMO"
 
 #+syntax
@@ -61,7 +61,7 @@
 
 ; result := org
 #?(progn (deforg :demo)
-	 (in-org :demo))
+         (in-org :demo))
 :be-the ORG
 
 ;;;; Affected By:
@@ -76,9 +76,9 @@
 ; When specified org does not exist, an error is signaled.
 #?(in-org :no-such-org) :signals MISSING-ORG
 
-(requirements-about REQUIREMENTS-ABOUT :around (let((*org*(make-org)))
-						 (call-body))
-		    :doc-type function)
+(requirements-about REQUIREMENTS-ABOUT :around (let ((*org* (make-org)))
+                                                 (call-body))
+                    :doc-type function)
 
 ;;;; Description:
 ; Declare current subject of current org.
@@ -106,14 +106,14 @@
 
 ;;;; Side-Effects:
 ; Modify *ORG* current-subject slot and options slot.
-#?(let(acc)
+#?(let (acc)
     (deforg :demo)
     (in-org :demo)
-    (push (org-current-subjects *org*)acc)
-    (push (org-options *org*)acc)
+    (push (org-current-subjects *org*) acc)
+    (push (org-options *org*) acc)
     (requirements-about + :key :value)
-    (push (org-current-subjects *org*)acc)
-    (push (org-options *org*)acc)
+    (push (org-current-subjects *org*) acc)
+    (push (org-options *org*) acc)
     (nreverse acc))
 => ((NIL) NIL (+) (:KEY :VALUE))
 ,:test equal
@@ -122,9 +122,9 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about COMMON-REQUIREMENTS-ABOUT :around (let((*org*(make-org)))
-							(call-body))
-		    :doc-type function)
+(requirements-about COMMON-REQUIREMENTS-ABOUT :around (let ((*org* (make-org)))
+                                                        (call-body))
+                    :doc-type function)
 
 ;;;; Description:
 ; Declare current subjects of current org.
@@ -147,7 +147,7 @@
 ; but :AS is required. See below.
 
 ; as := symbol. Otherwise error.
-#?(common-requirements-about(first car) :as 0) :signals check-bnf:syntax-error
+#?(common-requirements-about (first car) :as 0) :signals check-bnf:syntax-error
 ,:lazy T
 ; specify alias for common subjects.
 
@@ -158,14 +158,14 @@
 
 ;;;; Side-Effects:
 ; Modify *ORG* current-subject slot and options slot.
-#?(let(acc)
+#?(let (acc)
     (deforg :demo)
     (in-org :demo)
-    (push (org-current-subjects *org*)acc)
-    (push (org-options *org*)acc)
+    (push (org-current-subjects *org*) acc)
+    (push (org-options *org*) acc)
     (common-requirements-about (car first) :as op)
-    (push (org-current-subjects *org*)acc)
-    (push (org-options *org*)acc)
+    (push (org-current-subjects *org*) acc)
+    (push (org-options *org*) acc)
     (nreverse acc))
 => ((NIL) NIL (CAR FIRST) (:AS OP))
 ,:test equal
@@ -268,9 +268,9 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about ORG-NAME :around (let((o(make-org)))
-				       (call-body))
-		    :doc-type function)
+(requirements-about ORG-NAME :around (let ((o (make-org)))
+                                       (call-body))
+                    :doc-type function)
 
 ;;;; Description:
 ; Return org name.
@@ -298,9 +298,9 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about ORG-PACKAGE :around (let((org(make-org)))
-					  (call-body))
-		    :doc-type function)
+(requirements-about ORG-PACKAGE :around (let ((org (make-org)))
+                                          (call-body))
+                    :doc-type function)
 
 ;;;; Description:
 ; return package which org in.
@@ -328,9 +328,9 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about ORG-CURRENT-SUBJECTS :around(let((org(make-org)))
-						  (call-body))
-		    :doc-type function)
+(requirements-about ORG-CURRENT-SUBJECTS :around(let ((org (make-org)))
+                                                  (call-body))
+                    :doc-type function)
 
 ;;;; Description:
 ; return current subjects.
@@ -362,9 +362,9 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about ORG-OPTIONS :around (let((org(make-org)))
-					  (call-body))
-		    :doc-type function)
+(requirements-about ORG-OPTIONS :around (let ((org (make-org)))
+                                          (call-body))
+                    :doc-type function)
 
 ;;;; Description:
 ; return current options.
@@ -395,9 +395,9 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about ORG-SPECIFICATIONS :around (let((org(make-org)))
-						 (call-body))
-		    :doc-type function)
+(requirements-about ORG-SPECIFICATIONS :around (let ((org (make-org)))
+                                                 (call-body))
+                    :doc-type function)
 
 ;;;; Description:
 ; return vector which includes specifications.
@@ -428,9 +428,9 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about REGISTER-ORG :around (let((jingoh.org::*orgs*(make-hash-table)))
-					   (call-body))
-		    :doc-type function)
+(requirements-about REGISTER-ORG :around (let ((jingoh.org::*orgs* (make-hash-table)))
+                                           (call-body))
+                    :doc-type function)
 
 ;;;; Description:
 ; register specified org into underlying org database.
@@ -458,15 +458,15 @@
 
 ;;;; Side-Effects:
 ; modify underlying org database.
-#?(let(acc)
-    (push (find-org :hoge nil)acc)
+#?(let (acc)
+    (push (find-org :hoge nil) acc)
     (register-org :hoge (make-org))
     (push (find-org :hoge nil) acc)
     (nreverse acc))
-:satisfies (lambda($result)
-	     (destructuring-bind(existp org)$result
-	       (& (null existp)
-		  (org-p org))))
+:satisfies (lambda ($result)
+             (destructuring-bind (existp org) $result
+               (& (null existp)
+                  (org-p org))))
 ;;;; Notes:
 
 ;;;; Exceptional-Situations:
@@ -499,30 +499,30 @@
 ;;;; Notes:
 ; if ORG-DESIGNATOR is NIL, org which name is NIL is returned.
 #?(find-org nil)
-:satisfies (lambda($result)
-	     (& (org-p $result)
-		(null (org-name $result))))
+:satisfies (lambda ($result)
+             (& (org-p $result)
+                (null (org-name $result))))
 
 ;;;; Exceptional-Situations:
 
-(requirements-about DELETE-ORG :around (let((jingoh.org::*orgs*(make-hash-table)))
-					 (call-body))
-		    :doc-type function)
+(requirements-about DELETE-ORG :around (let ((jingoh.org::*orgs* (make-hash-table)))
+                                         (call-body))
+                    :doc-type function)
 
 ;;;; Description:
 ; delete specified org from underlying org database.
-#?(let(acc)
-    (push (find-org :hoge nil)acc)
+#?(let (acc)
+    (push (find-org :hoge nil) acc)
     (register-org :hoge (make-org :name :hoge))
     (push (find-org :hoge) acc)
     (delete-org :hoge)
     (push (find-org :hoge nil) acc)
     (nreverse acc))
-:satisfies (lambda($result)
-	     (destructuring-bind(existp1 hoge existp2)$result
-	       (& (null existp1)
-		  (org-p hoge)
-		  (null existp2))))
+:satisfies (lambda ($result)
+             (destructuring-bind (existp1 hoge existp2) $result
+               (& (null existp1)
+                  (org-p hoge)
+                  (null existp2))))
 
 #+syntax
 (DELETE-ORG org-designator) ; => result
@@ -548,10 +548,10 @@
 
 ;;;; Description:
 ; Return number of requirements.
-#?(let((org(make-org)))
-    (princ(org-requirements-count org))
+#?(let ((org (make-org)))
+    (princ (org-requirements-count org))
     (add-requirement 'subject 0 org)
-    (princ(org-requirements-count org)))
+    (princ (org-requirements-count org)))
 :outputs "01"
 
 #+syntax
@@ -574,11 +574,11 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about MAP-REQUIREMENTS :around(let((*org*(make-org :current-subjects '(subject))))
-					      (add-requirement 'subject 0)
-					      (add-requirement 'subject 1)
-					      (call-body))
-		    :doc-type function)
+(requirements-about MAP-REQUIREMENTS :around(let ((*org* (make-org :current-subjects '(subject))))
+                                              (add-requirement 'subject 0)
+                                              (add-requirement 'subject 1)
+                                              (call-body))
+                    :doc-type function)
 
 ;;;; Description:
 ; Apply FUNCTION and collect its return value.
@@ -613,15 +613,15 @@
 ; When org is not found, an error is signaled.
 #?(map-requirements #'1+ :no-such-subject) :signals MISSING-SUBJECT
 
-(requirements-about DO-REQUIREMENTS :around(let((*org*(make-org :current-subjects '(subject))))
-					     (add-requirement 'subject 0)
-					     (add-requirement 'subject 1)
-					     (call-body))
-		    :doc-type function)
+(requirements-about DO-REQUIREMENTS :around (let ((*org* (make-org :current-subjects '(subject))))
+                                              (add-requirement 'subject 0)
+                                              (add-requirement 'subject 1)
+                                              (call-body))
+                    :doc-type function)
 
 ;;;; Description:
 ; Iterate forms for each requirements.
-#?(do-requirements(req)
+#?(do-requirements (req)
     (princ req))
 :outputs "01"
 
@@ -633,7 +633,7 @@
 ; var := When symbol, it is bound by each requirement.
 ; When list, its first element is symbol which is bound by each requirment,
 ; and, second element is symbol which is bound by such requirement's sbuject.
-#?(do-requirements((req sub))
+#?(do-requirements ((req sub))
     (format t "~&~S ~S"req sub))
 :outputs "0 SUBJECT
 1 SUBJECT"
@@ -641,45 +641,45 @@
 ; subject-designator := subject designator, described later.
 
 ; org := org generate form. when such form does not generate org, an error is signaled.
-#?(do-requirements(req t 0)
+#?(do-requirements (req t 0)
     (princ req))
 :signals NOT-ORG
 ,:lazy t
 ,:ignore-signals warning
 
 ; return := return value generate form.
-#?(do-requirements(req t *org* (princ :end))
+#?(do-requirements (req t *org* (princ :end))
     (princ req))
 :outputs "01END"
 
 ; inside return form, VAR is able to seen but it is bound by NIL.
-#?(do-requirements(req t *org* (princ req))
+#?(do-requirements (req t *org* (princ req))
     (princ req))
 :outputs "01NIL"
 
 ; any values are able to be returned.
-#?(let((sum 0))
-    (do-requirements(req t *org* (values sum 1 2 3))
+#?(let ((sum 0))
+    (do-requirements (req t *org* (values sum 1 2 3))
       (incf sum req)))
 :values (1 1 2 3)
 
 ; body := implicit progn.
 ; Body wrapped implicit block named nil, so you can return.
-#?(do-requirements(req t *org* (princ :never))
-    (if(zerop req)
+#?(do-requirements (req t *org* (princ :never))
+    (if (zerop req)
       (return :hoge)
       (princ req)))
 => :hoge
 
 ; CL:DECLARE can appear in top of BODY.
-#?(do-requirements(req)
-    (declare(type integer req))
+#?(do-requirements (req)
+    (declare (type integer req))
     (princ req))
 :outputs "01"
 
 ; result := value which return form generates.
 ; The default is nil.
-#?(do-requirements(req)
+#?(do-requirements (req)
     (+ req))
 => NIL
 
@@ -695,9 +695,9 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about ADD-REQUIREMENT :around(let((*org*(make-org)))
-					     (call-body))
-		    :doc-type function)
+(requirements-about ADD-REQUIREMENT :around(let ((*org* (make-org)))
+                                             (call-body))
+                    :doc-type function)
 
 ;;;; Description:
 ; add requirement into org.
@@ -723,29 +723,36 @@
 
 ;;;; Side-Effects:
 ; specified org object is destructively modified.
-#?(progn (princ(org-requirements-count *org*))
-	 (add-requirement 'subject 0)
-	 (princ(org-requirements-count *org*)))
+#?(progn (princ (org-requirements-count *org*))
+         (add-requirement 'subject 0)
+         (princ (org-requirements-count *org*)))
 :outputs "01"
 
 ;;;; Notes:
 
 ;;;; Exceptional-Situations:
 
-(requirements-about DELETE-SUBJECT :around (let((*org*(make-org :current-subjects '(subject)
-								:specifications (make-array 2 :fill-pointer 2 :adjustable t :element-type 'jingoh.org::spec :initial-contents (list (jingoh.org::spec 'subject 0)(jingoh.org::spec 'another 1))))))
-					     (call-body))
-		    :doc-type function)
+(requirements-about DELETE-SUBJECT
+                    :around (let ((*org* (make-org :current-subjects '(subject)
+                                                   :specifications (make-array 2
+                                                                               :fill-pointer 2
+                                                                               :adjustable t
+                                                                               :element-type 'jingoh.org::spec
+                                                                               :initial-contents
+                                                                               (list (jingoh.org::spec 'subject 0)
+                                                                                     (jingoh.org::spec 'another 1))))))
+                                             (call-body))
+                    :doc-type function)
 
 ;;;; Description:
 ; delete subject from org.
-#?(progn (do-requirements((req sub)nil)
-	   (declare(ignore req))
-	   (princ sub))
-	 (delete-subject 'subject)
-	 (do-requirements((req sub)nil)
-	   (declare(ignore req))
-	   (princ sub)))
+#?(progn (do-requirements ((req sub) nil)
+           (declare (ignore req))
+           (princ sub))
+         (delete-subject 'subject)
+         (do-requirements ((req sub) nil)
+           (declare (ignore req))
+           (princ sub)))
 :outputs "SUBJECTANOTHERANOTHER"
 
 #+syntax
@@ -998,7 +1005,7 @@
 ;;;; Notes:
 ; Do nothing when key is conflicted.
 #?(values (find-option-key :as)
-	  (add-new-option-key :as))
+          (add-new-option-key :as))
 :values (:AS :AS)
 
 ;;;; Exceptional-Situations:
@@ -1024,7 +1031,7 @@
 
 ;;;; Affected By:
 ; State of JINGOH.ORG::*OPTION-KEYS*
-#?(let((jingoh.org::*option-keys*(make-hash-table)))
+#?(let ((jingoh.org::*option-keys* (make-hash-table)))
     (find-option-key :as nil))
 => NIL
 
@@ -1049,8 +1056,8 @@
 
 ; result := BOOLEAN, T when KEY exists.
 #?(values (delete-option-key :no-such-key)
-	  (add-new-option-key :no-such-key)
-	  (delete-option-key :no-such-key))
+          (add-new-option-key :no-such-key)
+          (delete-option-key :no-such-key))
 :values (NIL :NO-SUCH-KEY T)
 
 ;;;; Affected By:
@@ -1076,8 +1083,7 @@
 
 ;;;; Affected By:
 ; JINGOH.ORG::*OPTION-KEYS*
-#?(let((jingoh.org::*option-keys*
-	 (make-hash-table)))
+#?(let ((jingoh.org::*option-keys* (make-hash-table)))
     (list-all-option-keys))
 => NIL
 
@@ -1094,16 +1100,16 @@
 #+syntax
 (CLEAR-OPTION-KEYS) ; => result
 
-#?(let((jingoh.org::*option-keys*(make-hash-table)))
+#?(let ((jingoh.org::*option-keys* (make-hash-table)))
     (values (add-new-option-key :one)
-	    (add-new-option-key :two)
-	    (find-option-key :one)
-	    (find-option-key :two)
-	    (type-of (clear-option-keys))
-	    (find-option-key :one nil)
-	    (find-option-key :two nil)))
+            (add-new-option-key :two)
+            (find-option-key :one)
+            (find-option-key :two)
+            (type-of (clear-option-keys))
+            (find-option-key :one nil)
+            (find-option-key :two nil)))
 :values (:ONE :TWO :ONE :TWO HASH-TABLE NIL NIL)
-	  
+          
 ;;;; Arguments and Values:
 
 ; result := hash-table

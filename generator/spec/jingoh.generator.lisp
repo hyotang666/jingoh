@@ -1,10 +1,10 @@
 (defpackage :jingoh.generator.spec (:use :cl :jingoh :jingoh.generator)
   (:shadowing-import-from :jingoh.generator
-			  #:dribble)
+                          #:dribble)
   (:import-from :jingoh.generator
-		#:ensure-name
-		#:generate-header
-		#:symbol-generate)
+                #:ensure-name
+                #:generate-header
+                #:symbol-generate)
   )
 (in-package :jingoh.generator.spec)
 (setup :jingoh.generator)
@@ -81,7 +81,7 @@
 ; print spec file's header.
 #?(generate-header :hoge)
 :output-satisfies
-(lambda($string)
+(lambda ($string)
   (with-input-from-string(*standard-input* $string)
     (& (equal (read) '(defpackage :hoge.spec (:use :cl :jingoh :hoge)))
        (equal (read) '(in-package :hoge.spec))
@@ -115,7 +115,7 @@
 
 ;;;; Description:
 ; Print symbol template.
-#?(defun dummy(arg)
+#?(defun dummy (arg)
     "This documentation shall be embed."
     arg)
 => DUMMY
@@ -208,22 +208,22 @@
 ,:with-restarts (jingoh.generator::rename continue)
 
 ; In such case, restart CONTINUE is achieved.
-#?(handler-bind((error #'continue))
+#?(handler-bind ((error #'continue))
     (ensure-name :alexandria))
 => "alexandria"
 ,:test equal
 
 ; Samely, restart JINGOH.GENERATOR::RENAME is also achieved.
-#?(with-input-from-string(s "new-name")
-    (let((*query-io*
-	   (make-two-way-stream s (make-broadcast-stream))))
-      (handler-bind((error (lambda(condition)
-			     (let((restart
-				    (find-restart 'jingoh.generator::rename condition)))
-			       (when restart
-				 (let((*error-output*
-					(make-broadcast-stream))) ; <--- CCL need.
-				   (invoke-restart-interactively restart)))))))
-	(ensure-name :alexandria))))
+#?(with-input-from-string (s "new-name")
+    (let ((*query-io*
+            (make-two-way-stream s (make-broadcast-stream))))
+      (handler-bind ((error (lambda (condition)
+                              (let ((restart
+                                      (find-restart 'jingoh.generator::rename condition)))
+                                (when restart
+                                  (let ((*error-output*
+                                         (make-broadcast-stream))) ; <--- CCL need.
+                                    (invoke-restart-interactively restart)))))))
+        (ensure-name :alexandria))))
 => "new-name"
 ,:test equal

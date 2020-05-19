@@ -9,12 +9,12 @@
 
 ;;;; Description:
 ; Set dispatch macro wich specified character to `*readtable*`.
-#?(let((*readtable*(copy-readtable nil)))
+#?(let ((*readtable* (copy-readtable nil)))
     (values (get-dispatch-macro-character #\# #\?)
 	    (enable)
 	    (get-dispatch-macro-character #\# #\?)))
 :multiple-value-satisfies
-(lambda($1 $2 $3)
+(lambda ($1 $2 $3)
   (& (null $1)
      $2
      $3))
@@ -43,7 +43,7 @@
 ; When specified dispatch macro character is already used,
 ; an error of type MACRO-CHAR-CONFLICTION is signaled with
 ; restart named REPLACE.
-#?(let((*readtable*(copy-readtable nil)))
+#?(let ((*readtable* (copy-readtable nil)))
     (enable #\*))
 :signals MACRO-CHAR-CONFLICTION
 ,:with-restarts REPLACE
@@ -83,9 +83,9 @@
 
 ;;;; Description:
 ; Dismatch macro function for making DEFSPEC form.
-#?(let((*readtable* (copy-readtable nil)))
+#?(let ((*readtable* (copy-readtable nil)))
     (enable)
-    (with-input-from-string(in "#?(+) => 0")
+    (with-input-from-string (in "#?(+) => 0")
       (read in)))
 => (DEFSPEC (+) => 0 :LINE NIL)
 ,:test equal
@@ -117,16 +117,16 @@
 
 ;;;; Description:
 ; Controls verbosity of |\#?reader|
-#?(let((*readtable*(copy-readtable nil))
-       (*read-verbose* T))
+#?(let ((*readtable* (copy-readtable nil))
+        (*read-verbose* T))
     (enable)
-    (with-input-from-string(in "#?(+) => 0")
+    (with-input-from-string (in "#?(+) => 0")
       (read in)))
 :output-satisfies
-(lambda($string)
+(lambda ($string)
   (& (string= (format nil "~%READ: ")
 	      (subseq $string 0 7))
-     (equal (with-input-from-string(in $string :start 7)
+     (equal (with-input-from-string (in $string :start 7)
 	      (read in))
 	    `(defspec (+) => 0 :LINE NIL))))
 ,:stream *trace-output*
@@ -144,14 +144,14 @@
 (requirements-about *READ-PRINT* :doc-type variable)
 
 ;;;; Control verbosity of |\#reader|.
-#?(let((*readtable*(copy-readtable nil))
-       (*read-print* T))
+#?(let ((*readtable* (copy-readtable nil))
+        (*read-print* T))
     (enable)
-    (with-input-from-string(in "#?(+) => 0")
+    (with-input-from-string (in "#?(+) => 0")
       (read in)))
 :output-satisfies
-(lambda($string)
-  (with-input-from-string(in $string)
+(lambda ($string)
+  (with-input-from-string (in $string)
     (& (string= "" (read-line in))
        (string= "#:TEST-FORM: (+)" (read-line in))
        (string= "#:KEYWORD: =>" (read-line in))
@@ -195,7 +195,7 @@
 ;;;; Notes:
 
 (requirements-about |block-comment| :doc-type function
-		    :around (let((*line* 1))
+		    :around (let ((*line* 1))
 			      (call-body)))
 
 ;;;; Description:
@@ -213,7 +213,7 @@
 ; character := #\|, ignored.
 
 ; number := NIL, ignored.
-#?(with-input-from-string(s "outer comment.
+#?(with-input-from-string (s "outer comment.
 			    #234| <--- this number will be ignored.
 			    |#
 			    outer end |# :next")
@@ -227,24 +227,24 @@
 
 ;;;; Side-Effects:
 ; Increse `JINGOH.READER::*LINE*`.
-#?(with-input-from-string(s (format nil "comment~%|#"))
+#?(with-input-from-string (s (format nil "comment~%|#"))
     (|block-comment| s '#:ignored '#:ignored)
     *line*)
 => 2
 
 ;;;; Notes:
 ; Works same with common lisp, i.e. tag must nested.
-#?(with-input-from-string(s "outer comment #| nested |# outer end|#:next")
+#?(with-input-from-string (s "outer comment #| nested |# outer end|#:next")
     (|block-comment| s '#:ignored '#:ignored)
     (read s))
 => :NEXT
 
-#?(with-input-from-string(s "outer comment #| nested |# but without outer end tag.~%:next")
+#?(with-input-from-string (s "outer comment #| nested |# but without outer end tag.~%:next")
     (|block-comment| s '#:ignored '#:ignored))
 :signals END-OF-FILE
 
 ;;;; Exceptional-Situations:
 ; When missing end tag `|#`, signals END-OF-FILE.
-#?(with-input-from-string(s "Missing end tag")
+#?(with-input-from-string (s "Missing end tag")
     (|block-comment| s '#:ignored '#:ignored))
 :signals END-OF-FILE

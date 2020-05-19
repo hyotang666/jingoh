@@ -5,7 +5,7 @@
 (in-package :jingoh.tester.spec)
 (setup :jingoh.tester)
 
-(requirements-about DEFSPEC :around (let((*org* (make-org)))
+(requirements-about DEFSPEC :around (let ((*org* (make-org)))
 				      (call-body))
 		    :doc-type function)
 
@@ -67,15 +67,15 @@
 #?(& T NIL (princ :hoge)) :signals jingoh.tester::UNSATISFIED
 
 ; *TIPS* - When clause is function, :args slot contains arguments.
-#?(handler-case(& (eq :hoge :fuga))
-    (jingoh.tester::unsatisfied(c)
+#?(handler-case (& (eq :hoge :fuga))
+    (jingoh.tester::unsatisfied (c)
       (jingoh.tester::args c)))
 => (:hoge :fuga)
 ,:test equal
 ; But when cluase is variable, macro form, or special form, 
 ; :args slot is stored with NIL.
-#?(handler-case(& (and (eq :hoge :fuga)))
-    (jingoh.tester::unsatisfied(c)
+#?(handler-case (& (and (eq :hoge :fuga)))
+    (jingoh.tester::unsatisfied (c)
       (jingoh.tester::args c)))
 => NIL
 
@@ -85,8 +85,8 @@
 
 ;;;; Description:
 ; tests equalilty as syntax. This is useful to test MACROEXPENDed form.
-#?(sexp= '(let((#0=#:var 0)) #0#)
-	 '(let((var 0))var))
+#?(sexp= '(let ((#0=#:var 0)) #0#)
+	 '(let ((var 0)) var))
 => T
 #?(sexp= '#:foo 'var) => T
 #?(sexp= 'foo '#:foo) => NIL
@@ -118,7 +118,7 @@
 ;;;; Description:
 ; One shot tester.
 #?(? (+) => 0) => NIL
-#?(? (+) => 1) :satisfies (lambda($result)
+#?(? (+) => 1) :satisfies (lambda ($result)
 			    (& (listp $result)
 			       (= 1 (length $result))
 			       (every #'issue-p $result)))
@@ -159,7 +159,7 @@
 
 ; To test complex multiple values, use :multiple-value-satisfies.
 #?(? (values 0 *standard-output*)
-     :multiple-value-satisfies (lambda(n s)
+     :multiple-value-satisfies (lambda (n s)
 				 (& (numberp n)
 				    (streamp s))))
 => NIL
@@ -172,11 +172,11 @@
 #?(? (signal 'warning) :signals warning) => NIL
 
 ; To test debugger is invoked or not, use :invokes-debugger
-#?(? (invoke-debugger(make-condition 'error)) :invokes-debugger ERROR)
+#?(? (invoke-debugger (make-condition 'error)) :invokes-debugger ERROR)
 => NIL
 
 ; To test macro expansion, use :expanded-to
-#?(& T) :expanded-to (progn (assert t ()'jingoh.tester::unsatisfied
+#?(& T) :expanded-to (progn (assert t () 'jingoh.tester::unsatisfied
 				    :test-form 'T)
 			    T)
 
@@ -201,7 +201,7 @@
 ,:ignore-signals warning
 
 ; To test compile time error is occur, use :lazy.
-#?(? (defun "invalid"()(princ :hoge))
+#?(? (defun "invalid" () (princ :hoge))
      :signals ERROR :lazy T)
 => NIL
 
@@ -227,13 +227,13 @@
 
 ; In many cases, :around is useful instead of :before or :after.
 ; Inside of :aroud, you must call CALL-BODY like CL:CALL-NEXT-METHOD.
-#?(? a => 0 :around (let((a 0))
+#?(? a => 0 :around (let ((a 0))
 		      (call-body)))
 => NIL
 
 ; :line is used to store file line internally.
 #?(? t => NIL :line 123)
-:satisfies (lambda($result)
+:satisfies (lambda ($result)
 	     (& (listp $result)
 		(= 1 (length $result))
 		(every #'issue-p $result)
@@ -241,7 +241,7 @@
 
 ; :as is used internally to substitute.
 ; And it is specifyed via COMMON-REQUIREMENTS-ABOUT only.
-#?(let((*org* (make-org)))
+#?(let ((*org* (make-org)))
     (common-requirements-about (car first) :as command)
     ;; In order to delay macro expansion, EVAL is needed.
     ;; Because defspec refers *ORG* at macro expansion time.
@@ -341,22 +341,22 @@
 ;;;; Description:
 ; Helper for writing make-requirement.
 #?(the-standard-handling-form 0 () 1 2 3)
-=> (lambda()
-     (let(0 (output ""))
-       (handler-case(setf output (with-output-to-string(*standard-output*)
-				   (with-integrated-output-stream(*standard-output*)
+=> (lambda ()
+     (let (0 (output ""))
+       (handler-case (setf output (with-output-to-string (*standard-output*)
+				   (with-integrated-output-stream (*standard-output*)
 				     3)))
-	 (warning(condition)
+	 (warning (condition)
 	   (push (make-instance 'warning-was-signaled :form '1 :expected '2
 				:actual condition :line nil
 				:message (princ-to-string condition))
 		 0))
-	 (error(condition)
+	 (error (condition)
 	   (push (make-instance 'error-was-signaled :form '1 :expected '2
 				:actual condition :line nil
 				:message (princ-to-string condition))
 		 0)))
-       (unless(string= "" output)
+       (unless (string= "" output)
 	 (push (make-instance 'unexpected-output :form '1 :expected '""
 			      :actual output :line nil)
 	       0))
@@ -435,7 +435,7 @@
 ;;;; Description:
 ; return dispatch keys.
 #?(reserved-keywords #'make-requirement)
-:satisfies (lambda($result)
+:satisfies (lambda ($result)
 	     (& (listp $result)
 		(null (set-difference $result
 				      '(=> :be-the :satisfies :values :outputs :multiple-value-satisfies :output-satisfies :expanded-to :equivalents :signals :invokes-debugger)))))
@@ -469,9 +469,9 @@
 #?(encallable #'car) => CAR
 #?(encallable #'car t) :be-the function
 #?(encallable '#'car) => CAR
-#?(encallable '(lambda(x)(print x))) => (LAMBDA (X) (PRINT X))
+#?(encallable '(lambda (x) (print x))) => (LAMBDA (X) (PRINT X))
 ,:test equal
-#?(encallable (lambda(x)(print x))) :be-the (cons (eql lambda)T)
+#?(encallable (lambda (x) (print x))) :be-the (cons (eql lambda)T)
 
 #+syntax
 (ENCALLABLE form &optional not-first-p) ; => result
@@ -500,10 +500,10 @@
 ;;;; Description:
 ; Helper for MAKE-REQUIREMENT
 #?(canonicalize '(+) ())
-:satisfies (lambda(form)
+:satisfies (lambda (form)
 	     (equal form
 		    (if bt:*supports-threads-p*
-		      '(bt:with-timeout(1)
+		      '(bt:with-timeout (1)
 			 (+))
 		      '(+))))
 
@@ -519,45 +519,45 @@
 ; key := (member :before :after :around :lazy :timeout)
 
 #?(canonicalize '(+) '(:before (print :before)))
-:satisfies (lambda(form)
+:satisfies (lambda (form)
 	     (equal form
 		    `(progn (print :before)
 			    ,(if bt:*supports-threads-p*
-			       '(bt:with-timeout(1)
+			       '(bt:with-timeout (1)
 				  (+))
 			       '(+)))))
 
 #?(canonicalize '(+) '(:after (print :after)))
-:satisfies (lambda(form)
+:satisfies (lambda (form)
 	     (equal form
 		    `(unwind-protect ,(if bt:*supports-threads-p*
-					'(bt:with-timeout(1)
+					'(bt:with-timeout (1)
 					   (+))
 					'(+))
 		       (print :after))))
 
-#?(canonicalize '(+) '(:around (let((a 0))(call-body))))
-:satisfies (lambda(form)
+#?(canonicalize '(+) '(:around (let ((a 0)) (call-body))))
+:satisfies (lambda (form)
 	     (equal form
-		    `(let((a 0))
+		    `(let ((a 0))
 		       ,(if bt:*supports-threads-p*
-			  '(bt:with-timeout(1)
+			  '(bt:with-timeout (1)
 			     (+))
 			  '(+)))))
 
 #?(canonicalize '(+) '(:lazy t))
-:satisfies (lambda(form)
+:satisfies (lambda (form)
 	     (equal form
 		    (if bt:*supports-threads-p*
-		      '(bt:with-timeout(1)
+		      '(bt:with-timeout (1)
 			 (eval (macroexpand '(+))))
 		      '(eval (macroexpand '(+))))))
 
 #?(canonicalize '(+) '(:timeout 2))
-:satisfies (lambda(form)
+:satisfies (lambda (form)
 	     (equal form
 		    (if bt:*supports-threads-p*
-		      '(bt:with-timeout(2)
+		      '(bt:with-timeout (2)
 			 (+))
 		      '(+))))
 
@@ -575,10 +575,10 @@
 	(result(canonicalize form ())))
     (rplaca form '-)
     result)
-:satisfies (lambda(form)
+:satisfies (lambda (form)
 	     (equal form
 		    (if bt:*supports-threads-p*
-		      '(bt:with-timeout(1)(+))
+		      '(bt:with-timeout (1) (+))
 		      '(+))))
 
 ;;;; Exceptional-Situations:
@@ -653,7 +653,7 @@
 
 ; TEST [Type] T
 #?(test-issue-test (make-instance 'object :test #'eql))
-:satisfies (lambda($result)
+:satisfies (lambda ($result)
 	     (& (functionp $result)
 		(eq 'eql (millet:function-name $result))))
 ;;;; Notes:
@@ -673,7 +673,7 @@
 
 ;;;; Description:
 ; when arg is issue object, returns t, otherwise nil.
-#?(let((issues (mapcar #'make-instance *issues*)))
+#?(let ((issues (mapcar #'make-instance *issues*)))
     (every #'issue-p issues))
 => T
 
@@ -701,10 +701,10 @@
 
 ;;;; Description:
 ; Tests arg is condition-issue.
-#?(let((issues(mapcar #'make-instance *condition-issues*)))
+#?(let ((issues (mapcar #'make-instance *condition-issues*)))
     (every #'condition-issue-p issues))
 => T
-#?(let((issues(mapcar #'make-instance (set-difference *issues* *condition-issues*))))
+#?(let ((issues (mapcar #'make-instance (set-difference *issues* *condition-issues*))))
     (notany #'condition-issue-p issues))
 => T
 
@@ -732,10 +732,10 @@
 
 ;;;; Description:
 ; Tests arg is test-issue.
-#?(let((issues(mapcar #'make-instance *test-issues*)))
+#?(let ((issues (mapcar #'make-instance *test-issues*)))
     (every #'test-issue-p issues))
 => T
-#?(let((issues(mapcar #'make-instance (set-difference *issues* *test-issues*))))
+#?(let ((issues (mapcar #'make-instance (set-difference *issues* *test-issues*))))
     (notany #'test-issue-p issues))
 => T
 
@@ -767,8 +767,8 @@
 
 ;;;; Description:
 ; Tests.
-#?(let*((pred-name(symbol-name 'pred))
-	(issue-name(find-symbol (subseq pred-name 0 (- (length pred-name) 2)))))
+#?(let* ((pred-name (symbol-name 'pred))
+	 (issue-name (find-symbol (subseq pred-name 0 (- (length pred-name) 2)))))
     (pred (make-instance issue-name)))
 => T
 #+syntax
@@ -797,8 +797,8 @@
 
 ;;;; Description:
 ; return issue form.
-#?(let((issues(loop :for name :in *issues*
-		    :collect (make-instance name :form 0))))
+#?(let ((issues (loop :for name :in *issues*
+		      :collect (make-instance name :form 0))))
     (loop :for i :in issues
 	  :always (zerop (issue-form i))))
 => T
@@ -832,7 +832,7 @@
 
 ;;;; Description: return expected value.
 #?(loop :for name :in *issues*
-	:always (zerop(issue-expected (make-instance name :expected 0))))
+	:always (zerop (issue-expected (make-instance name :expected 0))))
 => T
 
 #+syntax
@@ -931,7 +931,7 @@
 ;;;; Description:
 ; return test function name.
 #?(loop :for name :in *test-issues*
-	:always (eq 'equalp (test-issue-test(make-instance name :test 'equalp))))
+	:always (eq 'equalp (test-issue-test (make-instance name :test 'equalp))))
 => T
 
 #+syntax
@@ -947,7 +947,7 @@
 ,:lazy t
 ,:ignore-signals warning
 #?(loop :for name :in (set-difference *issues* *test-issues*)
-	:never (ignore-errors(test-issue-test(make-instance name))))
+	:never (ignore-errors (test-issue-test (make-instance name))))
 => T
 
 ; result := function name.
@@ -980,7 +980,7 @@
 
 ; instance := condition-issue, otherwise error.
 #?(loop :for name :in (set-difference *issues* *condition-issues*)
-	:never (ignore-errors(condition-issue-message(make-instance name))))
+	:never (ignore-errors (condition-issue-message (make-instance name))))
 => T
 #?(condition-issue-message 0) :signals error
 ,:lazy T
@@ -1002,7 +1002,7 @@
 
 ;;;; Description:
 ; return args.
-#?(unsatisfied-clause-args(make-instance 'unsatisfied-clause :args :hoge))
+#?(unsatisfied-clause-args (make-instance 'unsatisfied-clause :args :hoge))
 => :HOGE
 
 #+syntax
@@ -1015,7 +1015,7 @@
 
 ; instance := unsatified-clause, otherwise error.
 #?(loop :for name :in (remove 'unsatisfied-clause *issues*)
-	:never (ignore-errors(unsatisfied-clause-args(make-instance name))))
+	:never (ignore-errors (unsatisfied-clause-args (make-instance name))))
 => T
 #?(unsatisfied-clause-args 0) :signals error
 ,:lazy t
@@ -1072,10 +1072,10 @@
 ;;;; Affected By:
 ; `*print-vivid*` `jingoh.tester::*color-hook*`
 ; when `*print-vivid*` is nil, printed notation is not colored.
-#?(let((*print-vivid* nil))
+#?(let ((*print-vivid* nil))
     (prin1 (mismatch-sexp :foo :bar)))
 :outputs ":FOO"
-#?(let((*print-vivid* nil))
+#?(let ((*print-vivid* nil))
     (princ (mismatch-sexp "foo" "foobar")))
 :outputs "\"foo\""
 
@@ -1087,7 +1087,7 @@
 
 ; Like SEXP=, this handle uninterned symbol in expected as variable. 
 #?(mismatch-sexp '#:var 'hoge) => #:var
-,:test (lambda($actual $result)
+,:test (lambda ($actual $result)
 	 (& (symbolp $actual)
 	    (symbolp $result)
 	    (null (symbol-package $actual))
@@ -1099,22 +1099,22 @@
 
 ;;;; string-output tests
 ; When actual shorter than expected, string ":NULL" is added last.
-#?(let((*color-hook* #'identity)) ; without coloring.
+#?(let ((*color-hook* #'identity)) ; without coloring.
     (prin1 (mismatch-sexp "foo" "fooo")))
 :outputs "\"foo:NULL\""
 
 ; when actual longer than expected, such part is printed with coloring.
-#?(let((*color-hook* (constantly " instead of coloring")))
+#?(let ((*color-hook* (constantly " instead of coloring")))
     (prin1 (mismatch-sexp "foobar" "foo")))
 :outputs "\"foo instead of coloring\""
 
-#?(let((*color-hook* (constantly "instead of coloring")))
+#?(let ((*color-hook* (constantly "instead of coloring")))
     (prin1 (mismatch-sexp "foo" "bar")))
 :outputs "\"instead of coloring\""
 
 ;;;; Examples.
-#?(let((*print-vivid* nil))
-    (prin1(mismatch-sexp #2A() #2A((1 2)(3 4)))))
+#?(let ((*print-vivid* nil))
+    (prin1(mismatch-sexp #2A() #2A((1 2) (3 4)))))
 :outputs #.(prin1-to-string'(:DIFFERENT-DIMENSIONS :EXPECTED (2 2) :ACTUAL (0 0) #2A()))
 ,:test equalp
 

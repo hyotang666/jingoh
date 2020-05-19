@@ -5,7 +5,7 @@
 
 (requirements-about EXAMINE
 		    :around
-		    (let(*break-on-finish*)
+		    (let (*break-on-finish*)
 		      (call-body))
 		    :doc-type function)
 
@@ -22,26 +22,26 @@
 #?(examine 0) :signals missing-org
 
 ; subject := subject-designator, otherwise error
-#?(let((*org* (make-org))
+#?(let ((*org* (make-org))
        *issues*)
     (examine *org* :subject 0))
 :signals missing-subject
 
 ; *verbose* := (mod 4) specify verbosity of print.
 ; when specified 0, only summary printed.
-#?(let((*org*(make-org))
+#?(let ((*org* (make-org))
        *issues*)
-    (eval '(defspec(+) => 0))
+    (eval '(defspec (+) => 0))
     (examine *org* :verbose 0))
 :outputs #.(format nil "~A NIL~%"(cl-ansi-text:green "Pass"))
 
 ; when specified 1, issues are printed when fails.
-#?(let((*org*(make-org))
+#?(let ((*org* (make-org))
        *issues*)
     (eval '(defspec (+) => 0))
     (examine *org* :verbose 1))
 :outputs #.(format nil "~A NIL~%"(cl-ansi-text:green "Pass"))
-#?(let((*org*(make-org))
+#?(let ((*org* (make-org))
        *issues*
        *on-fails*)
     (eval '(defspec (+) => 1))
@@ -54,7 +54,7 @@
 				  :test 'eql))
 
 ; when specified 2 (the default.), progress is also printed.
-#?(let((*org*(make-org))
+#?(let ((*org* (make-org))
        *issues*)
     (eval '(defspec (+) => 0))
     (examine *org*))
@@ -63,9 +63,9 @@
 		   (cl-ansi-text:green "Pass"))
 
 ; When specified 3, each test is printed.
-#?(let((*org*(make-org))
+#?(let ((*org* (make-org))
        *issues*)
-    (eval '(defspec(+) => 0))
+    (eval '(defspec (+) => 0))
     (examine *org* :verbose 3))
 :outputs #.(format nil "~2%NIL~%~A ~S~%~A NIL~%"
 		   (cl-ansi-text:green "Pass")
@@ -75,7 +75,7 @@
 ; vivid := boolean, control print colorization.
 
 ; result := nil
-#?(let((*org* (make-org))
+#?(let ((*org* (make-org))
        *issues*)
     (eval '(defspec (+) => 0))
     (examine *org*))
@@ -94,13 +94,13 @@
 
 ;;;; Exceptional-Situations:
 ; When org is not found, an error of type missing-org is signaled.
-#?(let((*org*(make-org))
+#?(let ((*org* (make-org))
        *issues*)
     (examine :no-such-org))
 :signals missing-org
 
 ; When subject is not found, an error of type missing-subject is signaled.
-#?(let((*org*(make-org))
+#?(let ((*org* (make-org))
        *issues*)
     (examine *org* :subject 'no-such-subject))
 :signals missing-subject
@@ -123,19 +123,19 @@
 
 (requirements-about *ISSUES*
 		    :around
-		    (let(*break-on-finish*)
+		    (let (*break-on-finish*)
 		      (call-body))
 		    :doc-type variable)
 
 ;;;; Description:
 ; Previous issues.
-#?(let((*org*(make-org))
+#?(let ((*org* (make-org))
        *on-fails*
        *issues*)
     (eval '(defspec (+) => 1))
     (examine *org*)
     *issues*)
-:satisfies (lambda($result)
+:satisfies (lambda ($result)
 	     (& (listp $result)
 		(= 1 (length $result))
 		(every #'issue-p $result)))
@@ -161,8 +161,8 @@
 #? *ON-FAILS* :be-the (member :error :stop nil)
 
 ; If :ERROR, debugger is immediately invoked when one test is failed.
-#?(let(*break-on-finish*
-       (*org*(make-org))
+#?(let (*break-on-finish*
+       (*org* (make-org))
        (*on-fails* :error))
     (eval '(defspec (+) => 1))
     (eval '(defspec (+) => 0))
@@ -170,8 +170,8 @@
 :invokes-debugger jingoh.examiner::break-on-fails
 
 ; If :STOP, EXAMINE is immediately stop successfully when one test is failed.
-#?(let(*break-on-finish*
-       (*org*(make-org))
+#?(let (*break-on-finish*
+       (*org* (make-org))
        (*on-fails* :stop))
     (eval '(defspec (+) => 1))
     (eval '(defspec (+) => 0))

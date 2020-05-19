@@ -56,9 +56,9 @@
 ; accepts asdf system, returns meta-data list.
 #?(meta-datas<=system (asdf:find-system :jingoh.generator))
 :satisfies
-(lambda($result)
+(lambda ($result)
   (& (listp $result)
-     (every (lambda(x)
+     (every (lambda (x)
 	      (typep x 'meta-data))
 	    $result)))
 ,:ignore-signals warning
@@ -211,7 +211,7 @@ A | B | C | D | E | F | G | [H](X_Alph_H.html) | I | J | K | L | M | N | O | P |
 
 ;;;; Description:
 ; accepts meta-data, print intermediate markdown for pacakge html.
-#?(about-package(%make-meta-data :name :package-name
+#?(about-package (%make-meta-data :name :package-name
 				  :doc "package documentation"
 				  :exports '(symbols which extracted from |defpackage's| export option)
 				  :singles (list (make-single :name 'symbols
@@ -242,7 +242,7 @@ package documentation
 #?(about-package :not-meta-data) :signals type-error
 
 ; result := nil
-#?(about-package(%make-meta-data :name :package-name
+#?(about-package (%make-meta-data :name :package-name
 				  :doc "package documentation"
 				  :exports '(symbols which extracted from |defpackage's| export option)
 				  :singles (list (make-single :name 'symbols
@@ -273,7 +273,7 @@ package documentation
 ;;;; Arguments and Values:
 
 ; pathname := form generates pathname, otherwise error.
-#?(with-doc-directory(0):body) :signals type-error
+#?(with-doc-directory (0) :body) :signals type-error
 ,:ignore-signals warning
 
 ; body := lisp form which print markdown contents.
@@ -404,7 +404,7 @@ package documentation
 
 ;;;; Affected By:
 ; `*target-type*`
-#?(let((*target-type* "lisp"))
+#?(let ((*target-type* "lisp"))
     (x-alph-pathname #\b))
 => #.(make-pathname :name "X_Alph_b"
 		    :type "lisp")
@@ -464,7 +464,7 @@ package documentation
 
 ;;;; Affected By:
 ; `*target-type*`
-#?(let((*target-type* "asd"))
+#?(let ((*target-type* "asd"))
     (target-path "example"))
 => #.(make-pathname :name "example"
 		    :type "asd")
