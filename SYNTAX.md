@@ -58,7 +58,7 @@ The keyword `:satisfies` is used to specify primary return value satisfies the s
 This is used when return value is object and want to specify some slot values.
 
 ```lisp
-#? #P"foo/bar/bazz" :satisfies (lambda(pathname)
+#? #P"foo/bar/bazz" :satisfies (lambda (pathname)
                                  (& (pathnamep pathname)
                                     (equal '(:relative "foo" "bar")
                                            (pathname-directory pathname))
@@ -76,7 +76,7 @@ The keyword `:values` is used to specify every return values.
 The keyword `:multiple-value-satisfies` is used to specify return values satisfies the specified function.
 
 ```lisp
-#? (values 1 :a) :multiple-value-satisfies (lambda(num key)
+#? (values 1 :a) :multiple-value-satisfies (lambda (num key)
                                              (& (numberp num)
                                                 (keywordp key)))
 ```
@@ -92,7 +92,7 @@ The keyword `:outputs` is used to specify output string.
 The keyword `:output-satisfies` is used to specified output string satisfies specified function.
 
 ```lisp
-#?(princ :hoge) :output-satisifies (lambda(string)
+#?(princ :hoge) :output-satisifies (lambda (string)
                                      (& (stringp string)
                                         (=  4 (length string))))
 ```
@@ -131,10 +131,10 @@ The keyword `:expanded-to` is used to specify macroexpand-1 form.
 
 ```lisp
 (defmacro demo (arg)
-  (let((var(gensym)))
-    `(let((,var ,arg))
+  (let ((var (gensym)))
+    `(let ((,var ,arg))
        (+ ,var ,var))))
-#? (demo 0) :expanded-to (let((var 0))
+#? (demo 0) :expanded-to (let ((var 0))
                            (+ var var))
 ```
 
@@ -202,11 +202,11 @@ In such case, the function must one argument function as (function(condition)boo
 You can test environment (e.g. special symbols.) in it.
 
 ```lisp
-#? (let((*package*(find-package :cl-user)))
+#? (let ((*package* (find-package :cl-user)))
      (error "hoge"))
 :invokes-debugger error
-,:test (lambda(c)
-         (declare(ignore c))
+,:test (lambda (c)
+         (declare (ignore c))
          (eq *package* (find-package :cl-user)))
 ```
 #### :STREAM
@@ -264,19 +264,19 @@ The default is 1.
 
 ### Available keyword & option combinations
 
-| key			    | acceptable options |
+| key                            | acceptable options |
 | -----------------------   | ----------- |
-| =>			    | :ignore-signals :timeout :lazy :stream :test |
-| :values		    | :ignore-signals :timeout :lazy :stream :test |
-| :equivalents		    | :ignore-signals :timeout :lazy :stream :test |
-| :outputs 		    | :ignore-signals :timeout :lazy :stream :test |
-| :be-the		    | :ignore-signals :timeout :lazy :stream |
-| :satisfies 		    | :ignore-signals :timeout :lazy :stream |
+| =>                            | :ignore-signals :timeout :lazy :stream :test |
+| :values                    | :ignore-signals :timeout :lazy :stream :test |
+| :equivalents                    | :ignore-signals :timeout :lazy :stream :test |
+| :outputs                     | :ignore-signals :timeout :lazy :stream :test |
+| :be-the                    | :ignore-signals :timeout :lazy :stream |
+| :satisfies                     | :ignore-signals :timeout :lazy :stream |
 | :multiple-value-satisfies | :ignore-signals :timeout :lazy :stream |
 | :output-satisfies         | :ignore-signals :timeout :lazy :stream |
-| :signals		    | :ignore-signals :timeout :lazy :with-restarts |
-| :invokes-debugger	    | :ignore-signals :timeout :lazy :with-restarts :test |
-| :expanded-to		    | :ignore-signals :timeout :stream :test |
+| :signals                    | :ignore-signals :timeout :lazy :with-restarts |
+| :invokes-debugger            | :ignore-signals :timeout :lazy :with-restarts :test |
+| :expanded-to                    | :ignore-signals :timeout :stream :test |
 
 ## expert
 ### IMPLEMENTATION-DEPENDENT
@@ -323,7 +323,7 @@ This means return value is test form's one, not teardown form's one.
 
 ```lisp
 #? a => 1
-,:around (let((a 1))(call-body))
+,:around (let ((a 1)) (call-body))
 ```
 Consider `CALL-BODY` is CLOS's `CALL-NEXT-METHOD`.
 
@@ -348,7 +348,7 @@ Of course you can shadow it.
 Consider test like below.
 
 ```lisp
-#? "hoge" :satisfies (lambda(string)
+#? "hoge" :satisfies (lambda (string)
                        (and (stringp string)
                             (= 4 (length string))))
 ```
@@ -357,7 +357,7 @@ If test is failed, we could not get enough information about issue, because only
 In such cases, we can use `&` macro.
 
 ```lisp
-#? "hog" :satisfies (lambda(string)
+#? "hog" :satisfies (lambda (string)
                       (& (stringp string)
                          (= 4 (length string))))
 ;; =>
@@ -373,13 +373,13 @@ In such cases, we can use `&` macro.
 Otherwise you can not get enough information especially about ARGS.
 
 ```lisp
-#? "hog" :satisfies (lambda(string)
+#? "hog" :satisfies (lambda (string)
                       (& (stringp string)
-		         (LET((length(length string))) ; <--- Special operator.
-			   (= 4 length))))
+                         (LET ((length (length string))) ; <--- Special operator.
+                           (= 4 length))))
 =>
 #S(UNSATISFIED-CLAUSE
-   :FORM (LET((LENGTH(LENGTH STRING)))
+   :FORM (LET ((LENGTH(LENGTH STRING)))
            (= 4 LENGTH))
    :EXPECTED T
    :ACTUAL NIL

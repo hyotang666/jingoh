@@ -116,9 +116,9 @@ To run test, evaluate like below.
 Let's say your-system has function like below.
 
 ```lisp
-(defun adder(num)
+(defun adder (num)
   "Make adder function."
-  (lambda(x)
+  (lambda (x)
     (+ x num)))
 ```
 To add specification of ADDER to your spec file, evaluate like below.
@@ -221,10 +221,10 @@ This is ordinary debugger, so you can do anything in debugger, editting, reloadi
 Let's modify source like below.
 
 ```lisp
-(defun adder(num)
+(defun adder (num)
   "Make adder function."
   (check-type num number)
-  (lambda(x)
+  (lambda (x)
     (+ x num)))
 ```
 
@@ -269,7 +269,7 @@ One-sentence-some-examples style is recommended.
 #?(ADDER 1) :be-the FUNCTION
 
 ; Apply number to returned function, such function return added value.
-#?(FUNCALL(ADDER 1)2) => 3
+#?(FUNCALL (ADDER 1) 2) => 3
 
 #+syntax
 (ADDER num) ; => result
@@ -279,7 +279,7 @@ One-sentence-some-examples style is recommended.
 ; num := number which is acceptable for `CL:+`, otherwise error
 #?(ADDER :NOT-NUMBER) :signals SIMPLE-TYPE-ERROR
 
-; result := function as `(FUNCTION(NUMBER)NUMBER)`
+; result := function as `(FUNCTION (NUMBER) NUMBER)`
 
 ;;;; Affected By:
 ; none
@@ -339,8 +339,8 @@ If you want to run tests in parallel, modify `spec/your-system.test.asd` like be
 ### License
 MIT
 ### Tested with
-* CCL/1.11.5
-* SBCL/1.5.7
+* CCL/1.12
+* SBCL/2.0.2
 
 ### Known issue.
 * Could not load JINGOH.DOCUMENTIZER in CLISP/2.49, due to could not load 3BMD.

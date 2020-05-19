@@ -36,8 +36,8 @@ MIT
 ### Developed with
 SBCL
 ### Tested with
-SBCL/1.5.8
-CCL/1.11.5
+SBCL/2.0.2
+CCL/1.12
 ECL/16.1.3
 
 ### Known issue.
