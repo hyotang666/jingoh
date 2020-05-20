@@ -1,8 +1,8 @@
 (in-package :jingoh.tester)
 
 (defun ignore-signals (type params)
-  (let ((condition (getf params :ignore-signals)))
-    (or (eq type condition) (eq t condition))))
+  (let ((condition (getf params :ignore-signals '#:not-ignore-signals)))
+    (or (eq type condition) (eq t condition) (eq nil condition))))
 
 (defun function-designator-p (symbol)
   (and (symbolp symbol)
