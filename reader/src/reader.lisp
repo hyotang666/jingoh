@@ -55,7 +55,8 @@
   (declare (ignore character))
   (unless *lines*
     (let ((pathname (ignore-errors (pathname stream))))
-      (when pathname
+      (when (and pathname
+                 (probe-file pathname)) ; ECL need.
         (setf *lines* (collect-spec-lines pathname)))))
   (let ((*line* 1))
     (|#?reader-body| stream number)))
