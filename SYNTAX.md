@@ -231,6 +231,40 @@ When :stream specified with NIL, it means ignore any outputs.
 , :ignore-signals warning
 ```
 
+When :ignore-signals specified with NIL, it means no condition handling occurs.
+This is useful to test `WARN`.
+
+```lisp
+;;;; BAD EXAMPLE 1
+
+#? (warn "test")
+:outputs "WARNING: test
+"
+,:stream *error-output*
+```
+The test above fails as `WARNING-WAS-SIGNALED` since jingoh checks it.
+
+```lisp
+;;;; BAD EXAMPLE 2
+
+#? (warn "test")
+:outputs "WARNING: test
+"
+,:stream *error-output*
+,:ignore-signals warning
+```
+The test above also fails because warning will be muffled, no output occur.
+
+```lisp
+;;;; GOOD EXAMPLE
+
+#?(warn "test")
+:outputs "WARNING: test
+"
+,:stream *error-output*
+,:ignore-signals nil
+```
+
 #### :WITH-RESTARTS
 Specify additional test for restart.
 If specified restart is not found, it is issued.
