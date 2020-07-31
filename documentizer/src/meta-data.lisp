@@ -55,7 +55,7 @@
        (system &optional (sys-dir (asdf:system-source-directory system)))
   (let ((*default-pathname-defaults*
          (let ((spec-dir (merge-pathnames "spec/" sys-dir)))
-           (or (uiop:directory-exists-p spec-dir)
+           (or (uiop:probe-file* spec-dir)
                (return-from meta-datas<=system (missing-spec-file spec-dir))))))
     (mapcar #'make-meta-data (defpackage-forms<-system system))))
 
