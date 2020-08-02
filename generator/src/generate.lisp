@@ -57,9 +57,9 @@
 
 (defun method-extension-appender (name)
   (lambda ()
-    (let ((*package* (find-package :asdf)))
+    (let ((*package* (find-package :asdf)) (*print-case* :downcase))
       (format t
-              "~%;;; These forms below are added by JINGOH.GENERATOR.~{~%~A~%~(~S~)~}"
+              "~%;;; These forms below are added by JINGOH.GENERATOR.~{~%~A~%~S~}"
               `(";; Ensure in ASDF for pretty printings." (in-package :asdf)
                 ,(format nil ";; Enable testing via (asdf:test-system ~S)."
                          name)
