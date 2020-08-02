@@ -99,8 +99,13 @@
                                ((asdf::o asdf:load-op)
                                 (asdf::c (eql (asdf:find-system ,name))))
                       (uiop:with-muffled-conditions (uiop:*uninteresting-conditions*)
-                        (uiop:symbol-call :jingoh.documentizer
-                                          :import asdf::c))))))))))
+                        (handler-case
+                            (uiop:symbol-call :jingoh.documentizer
+                                              :import asdf::c)
+                          (error (condition)
+                            (warn "Fails to import documentation of ~S.~%~A"
+                                  (asdf:coerce-name asdf::c)
+                                  (princ-to-string condition)))))))))))))
 
 ;;; TEST-ASD
 
