@@ -4,7 +4,8 @@
   (:import-from :jingoh.generator
                 #:ensure-name
                 #:generate-header
-                #:symbol-generate)
+                #:symbol-generate
+                #:parse-lambda-list)
   )
 (in-package :jingoh.generator.spec)
 (setup :jingoh.generator)
@@ -227,3 +228,41 @@
         (ensure-name :alexandria))))
 => "new-name"
 ,:test equal
+
+(requirements-about PARSE-LAMBDA-LIST :doc-type function)
+
+;;;; Description:
+
+#+syntax (PARSE-LAMBDA-LIST symbol) ; => result
+
+;;;; Arguments and Values:
+
+; symbol := symbol, otherwise signals condition.
+#?(PARSE-LAMBDA-LIST "not symbol") :signals condition
+; When symbol does not FBOUNDed, an error is signaled.
+#?(PARSE-LAMBDA-LIST 'NO-SUCH) :signals UNDEFINED-FUNCTION
+
+; result := ((var typename)*)
+; var := [symbol | return-spec]
+; return-spec := [ "result" | "result n" | "optional" | "rest values" ]
+; typename := [ string | null ]
+#?(PARSE-LAMBDA-LIST 'PARSE-LAMBDA-LIST)
+=> ((SYMBOL NIL) ("result" NIL))
+, :test equal
+
+;;;; Affected By:
+; Proclamation of function.
+; If function is DECLAIMed, specified TYPENAME is returned.
+#+sbcl
+#?(PARSE-LAMBDA-LIST 'jingoh.generator::OUTPUT-TO)
+=> ((JINGOH.GENERATOR::PATH "PATHNAME") (JINGOH.GENERATOR::THUNK "FUNCTION")
+    (JINGOH.GENERATOR::IF-EXISTS "(MEMBER :SUPERSEDE :APPEND :ERROR)") ("result" "NULL"))
+, :test equal
+
+;;;; Side-Effects:
+; none.
+
+;;;; Notes:
+
+;;;; Exceptional-Situations:
+

@@ -248,7 +248,11 @@
                                                                     environment
                                                                     nil)))
                            (when value
-                             (write-to-string value :pretty nil))))))
+                             (write-to-string
+                               (if (typep value '(cons keyword *))
+                                   (cadr value)
+                                   value)
+                               :pretty nil))))))
                 lambda-vars variables)
               (let ((return (third ftype)))
                 (mapc #'acc
