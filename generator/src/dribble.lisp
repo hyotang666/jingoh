@@ -187,23 +187,25 @@
   (destructuring-bind
       (condition output result)
       args
-    (format *spec-output* "~%#?~S => ~S~@[~%~A~]~@[~%~A~]~@[~%~A~]" form
-            (if (y-or-n-p "~S~%Expected return value?" result)
-                result
-                (restart-case (error 'unexpected-behavior)
-                  (use-value (expected)
-                      :report "Specify expected value."
-                      :interactive (lambda ()
-                                     (list
-                                       (prompt-for:prompt-for t
-                                                              "Input expected result. >> ")))
-                    expected)))
-            (unless (typep result '(or symbol character integer))
-              ", :test equal")
-            (when (typep condition 'warning)
-              ", :ignore-signals warning")
-            (unless (equal "" output)
-              ", :stream nil")))
+    (funcall (formatter "~%~<#?~S ~_=> ~S~@[~%~A~]~@[~%~A~]~@[~%~A~]~:>")
+             *spec-output*
+             (list form
+                   (if (y-or-n-p "~S~%Expected return value?" result)
+                       result
+                       (restart-case (error 'unexpected-behavior)
+                         (use-value (expected)
+                             :report "Specify expected value."
+                             :interactive (lambda ()
+                                            (list
+                                              (prompt-for:prompt-for t
+                                                                     "Input expected result. >> ")))
+                           expected)))
+                   (unless (typep result '(or symbol character integer))
+                     ", :test equal")
+                   (when (typep condition 'warning)
+                     ", :ignore-signals warning")
+                   (unless (equal "" output)
+                     ", :stream nil"))))
   (force-output *spec-output*))
 
 (defun unreadable-objectp (object)
