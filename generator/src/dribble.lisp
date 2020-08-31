@@ -59,6 +59,7 @@
     "Generate specified symbol templates."
   (let ((symbol (prompt-for:prompt-for 'symbol "~&>> "))
         (*standard-output* *spec-output*))
+    (fresh-line)
     (symbol-generate symbol (symbol-package symbol))))
 
 (defun print-descriptions ()
