@@ -115,12 +115,13 @@
 (defmethod spec-of ((d (eql :condition)) form condition)
   (when (and (typep condition 'warning)
              (y-or-n-p "Expected signals? ~S" condition))
-    (format *spec-output* "~%#?~S :signals ~S" form (type-of condition))
+    (format *spec-output* "~@<~%#?~S ~_:signals ~S~:>" form
+            (type-of condition))
     (force-output *spec-output*)))
 
 (defmethod spec-of ((d (eql :output)) form output)
   (unless (equal "" output)
-    (format *spec-output* "~%#?~S :outputs ~S" form
+    (format *spec-output* "~@<~%#?~S ~_:outputs ~S~:>" form
             (if (y-or-n-p "Expected output?")
                 output
                 (restart-case (error 'unexpected-behavior)
@@ -134,7 +135,7 @@
     (force-output *spec-output*)))
 
 (defmethod spec-of ((d (eql :expansion)) form result)
-  (format *spec-output* "~%#?~S :expanded-to ~S" (cadr form)
+  (format *spec-output* "~@<~%#?~S ~_:expanded-to ~S~:>" (cadr form)
           (if (y-or-n-p "~S~%Expected expansion?" result)
               result
               (restart-case (error 'unexpected-behavior)
@@ -170,7 +171,7 @@
   (force-output *spec-output*))
 
 (defmethod spec-of ((d (eql :unreadable)) form result)
-  (format *spec-output* "~%#?~S :be-the ~S" form
+  (format *spec-output* "~@<~%#?~S ~_:be-the ~S~:>" form
           (if (y-or-n-p "~S~%Is it expected return type?" (type-of result))
               (type-of result)
               (restart-case (error 'unexpected-behavior)
