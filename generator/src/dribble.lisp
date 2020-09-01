@@ -86,7 +86,7 @@
                                         (lambda (c) (setq condition c))))
                           (with-output-to-string (s)
                             (let ((*standard-output*
-                                   (make-broadcast-stream *query-io* s)))
+                                   (make-broadcast-stream s *query-io*)))
                               (setq result (multiple-value-list (eval form)))
                               (force-output))))
             (append-spec ()
