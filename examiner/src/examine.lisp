@@ -126,14 +126,12 @@
         ((:vivid *print-vivid*) *print-vivid*))
   (setf *issues* nil)
   (prog* ((*org*
-           (resignal-bind:resignal-bind ((missing-org () 'missing-org
-                                           :api 'examine))
+           (resignal-bind ((missing-org () 'missing-org :api 'examine))
              (find-org org)))
           (*package* (org-package *org*)))
     ;; in order to be able to see tag, we need SETF in PROG*'s body.
     (setf *issues*
-            (resignal-bind:resignal-bind ((missing-subject () 'missing-subject
-                                            :api 'examine))
+            (resignal-bind ((missing-subject () 'missing-subject :api 'examine))
               (print-progress subject (lambda () (go #0=#:end)))))
     (print-summary *issues*)
    #0#

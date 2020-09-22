@@ -21,21 +21,24 @@
           :do (setf body
                       (subseq list 1 (position-if #'section-p list :start 1)))
           :and :if alias
-                 :collect (make-common
-                           :names (cadr section)
-                           :alias alias
-                           :doc-type (getf section :doc-type :unbound)
-                           :path (target-path (symbol-name (gensym "C_")))
-                           :body body) :into commons
+                 :collect (make-common :names (cadr section)
+                                       :alias alias
+                                       :doc-type (getf section
+                                                       :doc-type :unbound)
+                                       :path (target-path
+                                               (symbol-name (gensym "C_")))
+                                       :body body)
+                   :into commons
                :else
-                 :collect (make-single
-                           :name (cadr section)
-                           :doc-type (getf section :doc-type :unbound)
-                           :path (target-path
-                                   (format nil "S_~A"
-                                           (replace-invalid-chars
-                                             (cadr section))))
-                           :body body) :into singles
+                 :collect (make-single :name (cadr section)
+                                       :doc-type (getf section
+                                                       :doc-type :unbound)
+                                       :path (target-path
+                                               (format nil "S_~A"
+                                                       (replace-invalid-chars
+                                                         (cadr section))))
+                                       :body body)
+                   :into singles
         :finally (return (values singles commons))))
 
 (defun section-p (elt)

@@ -38,7 +38,8 @@
 (defun reserved-keywords (gf)
   (loop :for method :in (c2mop:generic-function-methods gf)
         :collect (c2mop:eql-specializer-object
-                   (second (c2mop:method-specializers method))) :into result
+                   (second (c2mop:method-specializers method)))
+          :into result
         :finally (return (delete-duplicates result))))
 
 (macrolet ((defs (&body keys)

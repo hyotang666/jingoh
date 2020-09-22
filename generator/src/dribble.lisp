@@ -34,8 +34,7 @@
     (force-output)
     (read)))
 
-(defgeneric spec-of
-    (dispatcher form result))
+(defgeneric spec-of (dispatcher form result))
 
 (defmethod spec-of :around (a b c)
   (declare (ignore a b c))

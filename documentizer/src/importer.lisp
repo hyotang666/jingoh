@@ -40,8 +40,7 @@
           :do (no-doc-type name)
         :else :if doc-type
           :collect `(defmethod documentation
-                               (
-                                (s
+                               ((s
                                  (eql
                                    (or (find-symbol ,(string name)
                                                     ,(string package))

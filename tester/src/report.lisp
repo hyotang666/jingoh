@@ -89,13 +89,11 @@
 
 (defstruct (diff-comparable (:include diff)) origin)
 
-(defstruct
-    (string-diff (:include diff-comparable)
-     (:constructor markup-string (object origin))))
+(defstruct (string-diff (:include diff-comparable)
+                        (:constructor markup-string (object origin))))
 
-(defstruct
-    (pathname-diff (:include diff-comparable)
-     (:constructor markup-pathname (object origin))))
+(defstruct (pathname-diff (:include diff-comparable)
+                          (:constructor markup-pathname (object origin))))
 
 (defvar *color-hook* #'cl-ansi-text:red)
 

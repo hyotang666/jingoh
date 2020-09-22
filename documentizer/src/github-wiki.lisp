@@ -3,10 +3,9 @@
 ;;;; UTILITIES
 
 (defmacro with-open-markdown ((name) &body body)
-  `(with-output-to ((make-pathname
-                     :name ,name
-                     :type "md"
-                     :defaults *default-pathname-defaults*))
+  `(with-output-to ((make-pathname :name ,name
+                                   :type "md"
+                                   :defaults *default-pathname-defaults*))
      ,@body))
 
 ;;;; GITHUB-WIKI

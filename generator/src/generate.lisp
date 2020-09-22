@@ -194,7 +194,7 @@
         (dolist (form forms) (generate form :append t)))))
 
 ;;; INIT
- #| Generate project skelton.
+#| Generate project skelton.
    project/---
             |---project.asd
             |---README.md

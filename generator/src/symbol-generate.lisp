@@ -48,7 +48,8 @@
                ((when (fboundp 'cltl2:variable-information)
                   (cdr
                     (assoc 'type
-                           (nth-value 2 (cltl2:variable-information symbol))))))
+                           (nth-value 2
+                                      (cltl2:variable-information symbol))))))
                ((boundp symbol) (type-of (symbol-value symbol)))
                (t :unbound))
               symbol

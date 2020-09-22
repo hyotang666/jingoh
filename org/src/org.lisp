@@ -6,18 +6,18 @@
   (current-subjects `(nil) :type cons)
   (options nil :type list)
   (specifications
-   (make-array 0 :fill-pointer 0 :adjustable t :element-type 'spec) :type
-   vector))
+    (make-array 0 :fill-pointer 0 :adjustable t :element-type 'spec)
+    :type vector))
 
-(defstruct
-    (spec (:copier nil) (:predicate nil)
-          (:constructor spec
-           (subject req &aux
-            (requirements
-             (make-array 1
-                         :fill-pointer 1
-                         :adjustable t
-                         :initial-contents (list req))))))
+(defstruct (spec (:copier nil)
+                 (:predicate nil)
+                 (:constructor spec
+                  (subject req &aux
+                   (requirements
+                    (make-array 1
+                                :fill-pointer 1
+                                :adjustable t
+                                :initial-contents (list req))))))
   (subject nil :type symbol :read-only t)
   (requirements #() :type vector))
 

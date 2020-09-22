@@ -2,10 +2,9 @@
 
 (defstruct (section (:predicate nil)) body path names (doc-type :unbound))
 
-(defstruct
-    (single (:include section)
-     (:constructor make-single
-      (&key body path name doc-type &aux (names (list name))))))
+(defstruct (single (:include section)
+                   (:constructor make-single
+                    (&key body path name doc-type &aux (names (list name))))))
 
 (defstruct (common (:include section)) alias)
 
@@ -36,10 +35,9 @@
 
 (defun expand-tab (line)
   (when (and line *tab-expand*)
-    (values
-      (ppcre:regex-replace-all #\Tab line
-                               (make-string *tab-expand*
-                                            :initial-element #\Space)))))
+    (values (ppcre:regex-replace-all #\Tab line
+                                     (make-string *tab-expand*
+                                                  :initial-element #\Space)))))
 
 (defun princ-section-body (body)
   (do* ((list body (cdr list))

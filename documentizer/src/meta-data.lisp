@@ -8,8 +8,9 @@
 
 (defun missing-spec-file (pathname) (warn 'missing-spec-file :path pathname))
 
-(defstruct
-    (meta-data (:constructor %make-meta-data) (:copier nil) (:predicate nil))
+(defstruct (meta-data (:constructor %make-meta-data)
+                      (:copier nil)
+                      (:predicate nil))
   (name nil :type symbol) ; pacakge-name
   (exports nil :type list) ; exported symbol extract from defpackage form.
   (doc nil :type (or null string)) ; documentation extract from defpacakge form.
@@ -21,27 +22,26 @@
 
 (defun make-meta-data (form)
   (let* ((pathname
-          (make-pathname
-           :name (string-downcase (string (second form)))
-           :type "lisp"
-           :defaults *default-pathname-defaults*))
+          (make-pathname :name (string-downcase (string (second form)))
+                         :type "lisp"
+                         :defaults *default-pathname-defaults*))
          (sections (parse-spec pathname)))
     (multiple-value-bind (singles commons)
         (sieve sections)
-      (%make-meta-data
-       :name (second form)
-       :exports (loop :for option :in (cddr form)
-                      :when (eq :export (car option))
-                        :append (cdr option))
-       :doc (let ((option (assoc :documentation (cddr form))))
-              (when option
-                (second option)))
-       :sections sections
-       :singles singles
-       :commons commons
-       :specifieds (apply #'append
-                          (loop :for sec :in sections
-                                :collect (section-names sec)))))))
+      (%make-meta-data :name (second form)
+                       :exports (loop :for option :in (cddr form)
+                                      :when (eq :export (car option))
+                                        :append (cdr option))
+                       :doc (let ((option (assoc :documentation (cddr form))))
+                              (when option
+                                (second option)))
+                       :sections sections
+                       :singles singles
+                       :commons commons
+                       :specifieds (apply #'append
+                                          (loop :for sec :in sections
+                                                :collect (section-names
+                                                           sec)))))))
 
 (defun sieve (meta-data-sections)
   (loop :for sec :in meta-data-sections

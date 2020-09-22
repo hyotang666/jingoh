@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.examiner
-  :version "0.0.12"
+  :version "0.0.13"
   :author "SATO Shinichi"
   :license "MIT"
   :description "Jingoh module for test running and control/config output."

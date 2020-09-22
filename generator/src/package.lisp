@@ -9,8 +9,7 @@
 
 (in-package :jingoh.generator)
 
-(defgeneric generate
-    (arg &key))
+(defgeneric generate (arg &key))
 
 (deftype system-designator () '(or keyword string asdf:system))
 

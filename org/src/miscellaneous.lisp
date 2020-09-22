@@ -58,8 +58,13 @@
             ,(the-subject-procedure var body gname org return-form)))))))
 
 (define-compiler-macro do-requirements
-    (&whole whole (var &optional (subject-designator t) (org '*org*) return)
-     &body body)
+                       (&whole whole
+                        (var
+                         &optional
+                         (subject-designator t)
+                         (org '*org*)
+                         return)
+                        &body body)
   (setf var (uiop:ensure-list var))
   (if (not (constantp subject-designator))
       whole
