@@ -128,8 +128,7 @@
 ;;;; Description:
 ; This documentation shall be embed.
 
-#+syntax
-(DUMMY arg) ; => result
+#+syntax (DUMMY arg) ; => result
 
 ;;;; Arguments and Values:
 
