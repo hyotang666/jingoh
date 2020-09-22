@@ -3,7 +3,7 @@
 (unless(uiop:version<= "3.3.3" (asdf:asdf-version))
   (error "JINGOH.GENERATOR require ASDF/3.3.3 or later."))
 (defsystem :jingoh.generator
-  :version "1.2.20"
+  :version "1.2.21"
   :author "SATO Shinichi"
   :license "MIT"
   :description "Jingoh extension: Project skelton and test template generator and more."
@@ -19,6 +19,7 @@
                "prompt-for" ; for type safe user input.
                "trivial-cltl2" ; wrapper for cltl2.
                "cl-unification" ; unification.
+               "alexandria" ; Public domain utilities.
                )
   :pathname "src"
   :components ((:file "package")

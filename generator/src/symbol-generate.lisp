@@ -177,35 +177,49 @@
   (let ((lambda-list (millet:lambda-list symbol))
         (setf-expander (setf-expander symbol))
         (notation (ensure-symbol-notation symbol)))
-    (format t "(requirements-about ~A :doc-type function)~2%~
-    ;;;; Description:~%~
-    ~A~%~
-    #+syntax~%(~A~@[ ~{~(~S~)~^ ~}~]) ; => result~2%~
-    ~@[#+setf~%~S ; => new-value~2%~]~
-    ~@[;;;; Argument Precedence Order:~%; ~{~(~S~)~^ ~}~2%~]~
-    ~@[;;;; Method signature:~%~{#+signature~S~%~}~%~]~
-    ;;;; Arguments and Values:~2%~
-    ~:{; ~(~A~) := ~@[~(~A~)~]~2%~}~
-    ~{;;;; ~:(~A~):~2%~}"
-            notation ; requirements-about
-            (comentize (documentation symbol 'function)) ; description
-            notation lambda-list ; lambda-list
-            (when setf-expander ; setf
-              (destructuring-bind
-                  (op name)
-                  (millet:function-name setf-expander)
-                (destructuring-bind
-                    (new . args)
-                    (millet:lambda-list setf-expander)
-                  `(,op (,name ,@args) ,new))))
-            (when (eq :generic-function roll) ; argument-precedence-order
-              (closer-mop:generic-function-argument-precedence-order
-                (symbol-function symbol)))
-            (when (eq :generic-function roll) ; Method Signature
-              (specialized-lambda-lists symbol))
-            ;; Arguments and Values
-            (parse-lambda-list symbol)
-            '(|affected by| side-effects notes exceptional-situations))))
+    (funcall
+      (formatter
+       #.(apply #'concatenate 'string
+                (alexandria:flatten
+                  (list "(requirements-about ~A :doc-type function)~2%"
+                        ";;;; Description:~%" "~A~%"
+                        (list "~<#+syntax ~@_" ; syntax.
+                              (list "~:<" ; form.
+                                    "~A~^ ~1I~@_" ; notation.
+                                    (list "~@{" ; lambda-list
+                                          (list "~(" ; downcase.
+                                                (list "~:<" ; Each lambda vars.
+                                                      "~W~^ ~1I~@_" ; var
+                                                      "~@{~W~^ ~:_~}" "~:>")
+                                                "~)~^ ~_")
+                                          "~}")
+                                    "~:> ~_")
+                              "; => result~:>~2%")
+                        "~@[#+setf~%~S ; => new-value~2%~]"
+                        "~@[;;;; Argument Precedence Order:~%; ~{~(~S~)~^ ~}~2%~]"
+                        "~@[;;;; Method signature:~%~{#+signature~S~%~}~%~]"
+                        ";;;; Arguments and Values:~2%"
+                        "~:{; ~(~A~) := ~@[~(~A~)~]~2%~}"
+                        "~{;;;; ~:(~A~):~2%~}"))))
+      *standard-output* notation ; requirements-about
+      (comentize (documentation symbol 'function)) ; description
+      (list (cons notation lambda-list)) ; syntax.
+      (when setf-expander ; setf
+        (destructuring-bind
+            (op name)
+            (millet:function-name setf-expander)
+          (destructuring-bind
+              (new . args)
+              (millet:lambda-list setf-expander)
+            `(,op (,name ,@args) ,new))))
+      (when (eq :generic-function roll) ; argument-precedence-order
+        (closer-mop:generic-function-argument-precedence-order
+          (symbol-function symbol)))
+      (when (eq :generic-function roll) ; Method Signature
+        (specialized-lambda-lists symbol))
+      ;; Arguments and Values
+      (parse-lambda-list symbol)
+      '(|affected by| side-effects notes exceptional-situations))))
 
 (defun parse-lambda-list (symbol)
   (multiple-value-bind (type _ information)
