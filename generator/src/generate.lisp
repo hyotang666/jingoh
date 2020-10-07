@@ -31,6 +31,13 @@
 
 ;;; README
 
+;; For future refactoring we dare to write this.
+(defun system-version (system)
+  (#.(if (uiop:version<= "3.3.2.11" (asdf:asdf-version))
+         'asdf:system-version
+         'asdf:component-version)
+   system))
+
 (defun readme-generator (system-name)
   (let ((system (asdf:find-system system-name nil)))
     (lambda ()
@@ -49,7 +56,7 @@
 	      ### Tested with~2%~
 	      ## Installation~2%"
               system-name
-              (or (and system (asdf:system-version system)) "0.0.0")
+              (or (and system (system-version system)) "0.0.0")
               (and system (asdf:system-description system))
               (and system (asdf:system-license system))))))
 
@@ -150,7 +157,7 @@
 (defun readme-updator (system readme-lines)
   (lambda ()
     (format t "# ~@:(~A~) ~:[0.0.0~;~:*~A~]~%" (asdf:coerce-name system)
-            (asdf:component-version system))
+            (system-version system))
     (do* ((lines (cdr readme-lines) (cdr lines))
           (line (car lines) (car lines)))
          ((endp lines) (force-output))
