@@ -100,7 +100,7 @@
                 ";; Enable importing spec documentations."
                 (let ((asdf::system
                        (asdf:find-system "jingoh.documentizer" nil)))
-                  (when (and asdf::system (not (uiop:featurep :clisp)))
+                  (when asdf::system
                     (asdf:load-system asdf::system)
                     (defmethod asdf:perform :after
                                ((asdf::o asdf:load-op)

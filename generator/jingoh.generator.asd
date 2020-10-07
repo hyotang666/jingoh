@@ -2,7 +2,7 @@
 (in-package :asdf)
 
 (defsystem :jingoh.generator
-  :version "1.2.23"
+  :version "1.2.24"
   :author "SATO Shinichi"
   :license "MIT"
   :description "Jingoh extension: Project skelton and test template generator and more."
@@ -62,8 +62,13 @@
       (call-next-method))))
 ;; Enable importing spec documentations.
 (let ((system (find-system "jingoh.documentizer" nil)))
-  (when (and system (not (featurep :clisp)))
+  (when system
     (load-system system)
     (defmethod perform :after
                ((o load-op) (c (eql (find-system "jingoh.generator"))))
-      (symbol-call :jingoh.documentizer :import c))))
+      (with-muffled-conditions (*uninteresting-conditions*)
+        (handler-case (symbol-call :jingoh.documentizer :import c)
+                      (error (condition)
+                             (warn "Fails to import documentation of ~S.~%~A"
+                                   (coerce-name c)
+                                   (princ-to-string condition))))))))
