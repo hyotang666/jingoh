@@ -1,4 +1,4 @@
-# JINGOH.GENERATOR 0.21.4
+# JINGOH.GENERATOR 1.2.23
 ## What is this?
 Jingoh extension: Project skelton and test template generator and more.
 
@@ -252,10 +252,17 @@ MIT
 SBCL
 
 ### Tested with
-* SBCL/2.0.2
+* SBCL/2.0.9
 * CCL/1.12
-* CLISP/2.49
-* ECL/16.1.3
+* ECL/20.4.24
+
+### Known issue.
+#### CLISP
+[CLISP says](https://clisp.sourceforge.io/impnotes.html#clpp)
+
+> The Lisp Pretty Printer implementation is not perfect yet.
+
+JINGOH.GENERATOR depends on pretty-printer and test fails in clisp.
 
 ## Installation
 

@@ -1,4 +1,4 @@
-# JINGOH.DOCUMENTIZER 6.0.0
+# JINGOH.DOCUMENTIZER 6.6.1
 ## What is this?
 Jingoh extension: Import/Convert specification documentation.
 
@@ -36,12 +36,12 @@ MIT
 ### Developed with
 SBCL
 ### Tested with
-SBCL/2.0.2
+SBCL/2.0.9
 CCL/1.12
-ECL/16.1.3
+ECL/20.4.24
+CLISP/2.49
 
 ### Known issue.
-CLISP fails to load due to 3BMD does not load.
 
 ## Installation
 

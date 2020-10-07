@@ -1,4 +1,4 @@
-# JINGOH 0.0.0
+# JINGOH 3.0.1
 *NOTE!* Jingoh is very personal products, so use your own risk.
 Other products (if any) are strongly recommended.
 
@@ -340,10 +340,18 @@ If you want to run tests in parallel, modify `spec/your-system.test.asd` like be
 MIT
 ### Tested with
 * CCL/1.12
-* SBCL/2.0.2
+* SBCL/2.0.9
+* ECL/20.4.24
 
 ### Known issue.
-* Could not load JINGOH.DOCUMENTIZER in CLISP/2.49, due to could not load 3BMD.
+#### CLISP
+[CLISP says](https://clisp.sourceforge.io/impnotes.html#clpp)
+
+> The Lisp Pretty Printer implementation is not perfect yet.
+
+JINGOH.GENERATOR depends on pretty-printer and test fails in clisp.
+
+Other features works fine though.
 
 ## Installation
 TODO
