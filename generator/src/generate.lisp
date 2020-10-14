@@ -30,8 +30,8 @@
                  ((:file ,system-name)))))))
 
 ;;; README
-
 ;; For future refactoring we dare to write this.
+
 (defun system-version (system)
   (#.(if (uiop:version<= "3.3.2.11" (asdf:asdf-version))
          'asdf:system-version
@@ -55,8 +55,7 @@
 	      ### Developed with~2%~
 	      ### Tested with~2%~
 	      ## Installation~2%"
-              system-name
-              (or (and system (system-version system)) "0.0.0")
+              system-name (or (and system (system-version system)) "0.0.0")
               (and system (asdf:system-description system))
               (and system (asdf:system-license system))))))
 
@@ -169,15 +168,15 @@
                            (cdr lines))
                          lines))))
         (cond
-         ((uiop:string-prefix-p "## What is this?" line)
-          (format t "~A~%~:[~;~:*~A~]~2%" line
-                  (asdf:system-description system))
-          (skip-to "##"))
-         ((uiop:string-prefix-p "### License" line)
-          (format t "~A~%~:[TODO~;~:*~A~]~2%" line
-                  (asdf:system-license system))
-          (skip-to "##"))
-         (t (write-line line)))))))
+          ((uiop:string-prefix-p "## What is this?" line)
+           (format t "~A~%~:[~;~:*~A~]~2%" line
+                   (asdf:system-description system))
+           (skip-to "##"))
+          ((uiop:string-prefix-p "### License" line)
+           (format t "~A~%~:[TODO~;~:*~A~]~2%" line
+                   (asdf:system-license system))
+           (skip-to "##"))
+          (t (write-line line)))))))
 
 ;;;; GENERATE
 ;;; SYMBOL
@@ -235,7 +234,9 @@
                 :test #'equal))
         name
         (restart-case (error "~S is already used in quicklisp." name)
-          (continue () :report "Use it anyway." name)
+          (continue ()
+              :report "Use it anyway."
+            name)
           (rename (name)
               :report "Specify new name."
               :interactive (lambda ()

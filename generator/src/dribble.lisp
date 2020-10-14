@@ -97,7 +97,9 @@
     (shiftf *** ** * (car result))
     (shiftf /// // / result)
     (cond ((find form '(+++ ++ + *** ** * /// // /) :test #'equal)) ; do nothing
-          (t (spec-of :condition form condition) (spec-of :output form output)
+          (t
+           (spec-of :condition form condition)
+           (spec-of :output form output)
            (if (cdr result) ; multiple-value.
                (if (typep form '(cons (eql macroexpand-1) *))
                    (spec-of :expansion form (car result))

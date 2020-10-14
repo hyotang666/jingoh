@@ -88,9 +88,10 @@
                        (if (not (alpha-char-p char))
                            (links (cdr chars) code
                                   (pushnew
-                                   (format nil "[Non-Alphabetic](~A)"
-                                           *x-non-alph-namestring*)
-                                   have-non-alph-p :test #'string=)
+                                    (format nil "[Non-Alphabetic](~A)"
+                                            *x-non-alph-namestring*)
+                                    have-non-alph-p
+                                    :test #'string=)
                                   acc)
                            (if (= code (char-code char))
                                (links (cdr chars) (1+ code) have-non-alph-p

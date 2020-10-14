@@ -45,13 +45,13 @@
 	         ;;;; Notes:~2%"
               symbol (comentize (documentation symbol 'variable))
               (cond
-               ((when (fboundp 'cltl2:variable-information)
-                  (cdr
-                    (assoc 'type
-                           (nth-value 2
-                                      (cltl2:variable-information symbol))))))
-               ((boundp symbol) (type-of (symbol-value symbol)))
-               (t :unbound))
+                ((when (fboundp 'cltl2:variable-information)
+                   (cdr
+                     (assoc 'type
+                            (nth-value 2
+                                       (cltl2:variable-information symbol))))))
+                ((boundp symbol) (type-of (symbol-value symbol)))
+                (t :unbound))
               symbol
               (if (boundp symbol)
                   (symbol-value symbol)

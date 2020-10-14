@@ -32,7 +32,9 @@
                (restart-case (error 'macro-char-confliction
                                     :format-control "Dispatch macro #~C is used. ~S"
                                     :format-arguments (list ,var ,it))
-                 (replace () :report "Replace it." #0#)))))))
+                 (replace ()
+                     :report "Replace it."
+                   #0#)))))))
 
 (defun replace-macro-character (char sub-char)
   (check-type char character)
@@ -55,8 +57,7 @@
   (declare (ignore character))
   (unless *lines*
     (let ((pathname (ignore-errors (pathname stream))))
-      (when (and pathname
-                 (probe-file pathname)) ; ECL need.
+      (when (and pathname (probe-file pathname)) ; ECL need.
         (setf *lines* (collect-spec-lines pathname)))))
   (let ((*line* 1))
     (|#?reader-body| stream number)))

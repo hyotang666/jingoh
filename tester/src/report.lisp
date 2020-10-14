@@ -244,14 +244,14 @@
                                 (and (not a-p) b-p) ; actual is longer
                                 (and a-p (not b-p))) ; actual is shorter
                             (cond
-                             ((and (not a-p) (not b-p)) ; same length
-                              (coerce (nreverse acc) 'vector))
-                             ((and (not a-p) b-p) ; actual is longer
-                              (concatenate 'vector (nreverse acc)
-                                           (map 'vector #'markup
-                                                (subseq actual i))))
-                             ((and a-p (not b-p)) ; actual is shorter
-                              (coerce (nreverse (cons :null acc)) 'vector))))
+                              ((and (not a-p) (not b-p)) ; same length
+                               (coerce (nreverse acc) 'vector))
+                              ((and (not a-p) b-p) ; actual is longer
+                               (concatenate 'vector (nreverse acc)
+                                            (map 'vector #'markup
+                                                 (subseq actual i))))
+                              ((and a-p (not b-p)) ; actual is shorter
+                               (coerce (nreverse (cons :null acc)) 'vector))))
                         (push (rec (aref actual i) (aref expected i)) acc))))
                  (array
                   (if (not (arrayp actual))
