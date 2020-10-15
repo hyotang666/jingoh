@@ -175,6 +175,12 @@
 #?(? (invoke-debugger (make-condition 'error)) :invokes-debugger ERROR)
 => NIL
 
+; Corner case: Handling unknown condition.
+#?(? (invoke-debugger (make-condition 'error)) :invokes-debugger unknown-condition)
+:satisfies (lambda (result)
+             (and (listp result)
+                  (every #'issue-p result)))
+
 ; To test macro expansion, use :expanded-to
 #?(& T) :expanded-to (progn (assert t () 'jingoh.tester::unsatisfied
 				    :test-form 'T)

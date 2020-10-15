@@ -261,7 +261,7 @@
                                  'unsatisfied-clause `(test-form condition) t
                                  nil (getf parameters :line) :args
                                  `(args condition))))))
-                    (if (typep condition ',expected)
+                    (if (ignore-errors (typep condition ',expected))
                         ,(let ((restarts (getf parameters :with-restarts)))
                            (when restarts
                              `(let ((,actual
