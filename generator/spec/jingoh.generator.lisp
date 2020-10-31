@@ -239,7 +239,11 @@
 ; symbol := symbol, otherwise signals condition.
 #?(PARSE-LAMBDA-LIST "not symbol") :signals condition
 ; When symbol does not FBOUNDed, an error is signaled.
-#?(PARSE-LAMBDA-LIST 'NO-SUCH) :signals UNDEFINED-FUNCTION
+#?(PARSE-LAMBDA-LIST 'NO-SUCH) :signals condition
+
+#+ccl ; as guard.
+#?(nth-value 1 (ignore-errors (parse-lambda-list 'no-such)))
+:be-the simple-error
 
 ; result := ((var typename)*)
 ; var := [symbol | return-spec]
