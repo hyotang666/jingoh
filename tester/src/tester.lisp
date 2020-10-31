@@ -340,8 +340,9 @@
       `(let ((,actual ,form))
          (handler-case
              (unless (,test ,actual)
-               ,(the-push-instance-form result 'issue `',test-form
-                  `(satisfies ,test) nil (getf parameters :line)))
+               ,(the-push-instance-form result 'unsatisfied-clause `',test-form
+                  `(satisfies ,test) nil (getf parameters :line) :args
+                  `(list ,actual)))
            (unsatisfied (condition)
              ,(the-push-instance-form result 'unsatisfied-clause
                 `(test-form condition) t nil (getf parameters :line) :args
