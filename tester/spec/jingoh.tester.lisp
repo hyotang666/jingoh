@@ -180,6 +180,7 @@
 :satisfies (lambda (result)
              (and (listp result)
                   (every #'issue-p result)))
+,:ignore-signals warning ; ccl need.
 
 ; To test macro expansion, use :expanded-to
 #?(& T) :expanded-to (progn (assert t () 'jingoh.tester::unsatisfied
