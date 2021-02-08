@@ -120,8 +120,8 @@
             (mapcar #'class-name (closer-mop:class-precedence-list class)))
     (dolist (slot (applicables class))
       (apply #'format t "; ~A [Type] ~A~%~
-	     ~{~@[~{; [~A] ~{~(~S~)~^ ~}~}~%~]~}~%~
-	     ~@[~A~]~&"
+	     ~{~@[~{; [~A] ~{~(~S~)~^ ~}~}~&~]~}~&~
+	     ~@[; ~A~]~&~%"
              slot))
     (format t ";;;; Notes:~2%")))
 
