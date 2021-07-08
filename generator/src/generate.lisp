@@ -34,7 +34,7 @@
 
 (defun system-version (system)
   (#.(if (uiop:version<= "3.3.2.11" (asdf:asdf-version))
-         'asdf:system-version
+         (uiop:find-symbol* "SYSTEM-VERSION" :asdf)
          'asdf:component-version)
    system))
 

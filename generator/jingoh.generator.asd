@@ -1,11 +1,8 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 
-(unless (uiop:version<= "3.3.2.11" (asdf-version))
-  (error "JINGOH.GENERATOR require asdf version 3.3.2.11 or later."))
-
 (defsystem :jingoh.generator
-  :version "1.2.28"
+  :version "1.2.29"
   :author "SATO Shinichi"
   :license "MIT"
   :description "Jingoh extension: Project skelton and test template generator and more."
