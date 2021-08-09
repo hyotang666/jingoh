@@ -175,7 +175,8 @@
 (defun |generic-function| (symbol) (function-template symbol :generic-function))
 
 (defun function-template (symbol roll)
-  (let ((lambda-list (millet:lambda-list symbol))
+  (let ((lambda-list
+         (lambda-fiddle:remove-aux-part (millet:lambda-list symbol)))
         (setf-expander (setf-expander symbol))
         (notation (ensure-symbol-notation symbol)))
     (funcall
@@ -227,7 +228,8 @@
       (when (fboundp 'cltl2:function-information)
         (cltl2:function-information symbol))
     (declare (ignore _))
-    (let* ((lambda-list (millet:lambda-list symbol))
+    (let* ((lambda-list
+            (lambda-fiddle:remove-aux-part (millet:lambda-list symbol)))
            (lambda-vars
             (lambda-fiddle:extract-all-lambda-vars
               (lambda-fiddle:flatten-lambda-list lambda-list))))
