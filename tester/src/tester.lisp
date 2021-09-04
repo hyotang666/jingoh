@@ -141,6 +141,8 @@
 (defmethod make-requirement
            (test-form (key (eql :signals)) expected &rest parameters)
   (declare (ignore key))
+  (assert (millet:type-specifier-p expected))
+  (assert (subtypep expected 'condition))
   (alexandria:with-unique-names (actual result end output)
     (let ((form (canonicalize test-form parameters)))
       (labels ((may-bind (type)

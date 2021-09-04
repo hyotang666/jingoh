@@ -171,6 +171,13 @@
 #?(? (error "error") :signals ERROR) => NIL
 #?(? (signal 'warning) :signals warning) => NIL
 
+; Corner case: Handling unknown condition.
+#?(? (error "error") :signals unknown-condition)
+:satisfies (lambda (result)
+             (and (listp result)
+                  (every #'issue-p result)))
+,:ignore-signals warning ; ccl need.
+
 ; To test debugger is invoked or not, use :invokes-debugger
 #?(? (invoke-debugger (make-condition 'error)) :invokes-debugger ERROR)
 => NIL

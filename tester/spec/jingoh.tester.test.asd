@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.tester.test
-  :version "0.0.8"
+  :version "0.0.9"
   :depends-on
   (:jingoh "jingoh.tester")
   :components
