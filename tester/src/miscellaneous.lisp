@@ -49,7 +49,7 @@
    :around :line :timeout))
 
 (defun canonicalize (test-form parameters)
-  (setf test-form (copy-tree test-form))
+  (setf test-form (copy-cons test-form))
   (labels ((check ()
              (loop :for key :in parameters :by #'cddr
                    :do (resignal-bind:resignal-bind ((error (c) 'simple-error
@@ -160,3 +160,16 @@
          (*debug-io* (make-two-way-stream *debug-io* ,var))
          (*query-io* (make-two-way-stream *query-io* ,var)))
      ,@body))
+
+(defun copy-cons (cons)
+  (let ((seen (make-hash-table :test #'eq)))
+    (labels ((rec (thing)
+               (if (atom thing)
+                   thing
+                   (or (gethash thing seen)
+                       (let ((new (cons nil nil)))
+                         (setf (gethash thing seen) new)
+                         (rplaca new (rec (car thing)))
+                         (rplacd new (rec (cdr thing)))
+                         new)))))
+      (rec cons))))

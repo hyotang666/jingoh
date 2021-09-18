@@ -281,6 +281,11 @@
 
 ;;;; Exceptional-Situations:
 
+;;;; Tests.
+; Edge case.
+; Using literal circular list.
+#?(? '#0=(:a . #0#) :be-the list) => NIL
+
 (requirements-about CHECK :doc-type function)
 
 ;;;; Description:
