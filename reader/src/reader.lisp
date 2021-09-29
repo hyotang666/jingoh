@@ -16,6 +16,8 @@
 
 (in-package :jingoh.reader)
 
+(declaim (optimize speed))
+
 (defparameter *dispatch-macro-character* #\#)
 
 (defparameter *dispatch-macro-sub-char* #\?)
@@ -51,6 +53,8 @@
 
 (defparameter *lines* nil)
 
+(declaim (type (mod #.most-positive-fixnum) *line*))
+
 (defvar *line*)
 
 (defun |#?reader| (stream character number)
@@ -58,6 +62,11 @@
   (setf *lines* (or *lines* (collect-spec-lines stream)))
   (let ((*line* 1))
     (|#?reader-body| stream number)))
+
+(declaim
+ (ftype (function (stream (or null (mod #.most-positive-fixnum)))
+         (values cons &optional))
+        |#?reader-body|))
 
 (defun |#?reader-body| (stream number)
   (labels ((read-form (as)
@@ -94,14 +103,18 @@
         (format *trace-output* "~%READ: ~S" form))
       form)))
 
-(named-readtables:defreadtable syntax
-  (:merge :standard)
-  (:dispatch-macro-char *dispatch-macro-character* *dispatch-macro-sub-char*
-   '|#?reader|))
+(locally
+ (declare (optimize (speed 1))) ; out of responds.
+ (named-readtables:defreadtable syntax
+   (:merge :standard)
+   (:dispatch-macro-char *dispatch-macro-character* *dispatch-macro-sub-char*
+    '|#?reader|)))
 
 ;;;; COLLECT-SPEC-LINES
 
 (defvar *line-pos*)
+
+(declaim (ftype (function (stream) (values list &optional)) collect-spec-lines))
 
 (defun collect-spec-lines (input)
   (let ((*readtable* (named-readtables:find-readtable 'counter))
@@ -162,17 +175,20 @@
               (otherwise #|Do nothing, to next loop|#)))
   (values))
 
-(defun |string-line-counter| (stream character)
-  (let ((string
-         (funcall
-           (load-time-value (get-macro-character #\" (copy-readtable nil)) t)
-           stream character)))
-    (incf *line* (count #\Newline string))
-    string))
+(let ((reader
+       (coerce
+         (load-time-value (get-macro-character #\" (copy-readtable nil)) t)
+         'function)))
+  (defun |string-line-counter| (stream character)
+    (let ((string (funcall reader stream character)))
+      (incf *line* (count #\Newline string))
+      string)))
 
-(named-readtables:defreadtable counter
-  (:merge :standard)
-  (:macro-char #\Newline '|line-counter|)
-  (:macro-char #\; '|line-comment|)
-  (:macro-char #\" '|string-line-counter|)
-  (:dispatch-macro-char #\# #\| '|block-comment|))
+(locally ; out of responds.
+ (declare (optimize (speed 1)))
+ (named-readtables:defreadtable counter
+   (:merge :standard)
+   (:macro-char #\Newline '|line-counter|)
+   (:macro-char #\; '|line-comment|)
+   (:macro-char #\" '|string-line-counter|)
+   (:dispatch-macro-char #\# #\| '|block-comment|)))
