@@ -109,7 +109,7 @@
         (*line* 1)
         (pathname (ignore-errors (pathname input))))
     (when (and pathname (probe-file pathname)) ; ECL need.
-      ;; To set dispatch macro dynamically, since it may be constomized.
+      ;; To set dispatch macro dynamically, since it may be customized.
       (set-dispatch-macro-character *dispatch-macro-character*
                                     *dispatch-macro-sub-char* '|#?counter|)
       (with-open-file (s pathname :external-format (stream-external-format
