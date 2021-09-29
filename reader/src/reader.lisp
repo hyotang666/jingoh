@@ -55,10 +55,7 @@
 
 (defun |#?reader| (stream character number)
   (declare (ignore character))
-  (unless *lines*
-    (let ((pathname (ignore-errors (pathname stream))))
-      (when (and pathname (probe-file pathname)) ; ECL need.
-        (setf *lines* (collect-spec-lines pathname)))))
+  (setf *lines* (or *lines* (collect-spec-lines stream)))
   (let ((*line* 1))
     (|#?reader-body| stream number)))
 
@@ -106,18 +103,21 @@
 
 (defvar *line-pos*)
 
-(defun collect-spec-lines (pathname)
+(defun collect-spec-lines (input)
   (let ((*readtable* (named-readtables:find-readtable 'counter))
         (*line-pos*)
-        (*line* 1))
-    ;; To set dispatch macro dynamically, since it may be constomized.
-    (set-dispatch-macro-character *dispatch-macro-character*
-                                  *dispatch-macro-sub-char* '|#?counter|)
-    (with-open-file (s pathname)
-      (loop :with tag = '#:end
-            :for sexp = (read s nil tag)
-            :until (eq sexp tag)))
-    (nreverse *line-pos*)))
+        (*line* 1)
+        (pathname (ignore-errors (pathname input))))
+    (when (and pathname (probe-file pathname)) ; ECL need.
+      ;; To set dispatch macro dynamically, since it may be constomized.
+      (set-dispatch-macro-character *dispatch-macro-character*
+                                    *dispatch-macro-sub-char* '|#?counter|)
+      (with-open-file (s pathname :external-format (stream-external-format
+                                                     input))
+        (loop :with tag = '#:end
+              :for sexp = (read s nil tag)
+              :until (eq sexp tag)))
+      (nreverse *line-pos*))))
 
 (defun |line-counter| (stream character)
   (declare (ignore stream character))
