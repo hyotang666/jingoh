@@ -8,17 +8,17 @@
   :description "Jingoh extension: Project skelton and test template generator and more."
   :in-order-to((test-op(test-op "jingoh.generator.test")))
   :depends-on (
-               "millet" ; wrappter for implementation dependent utilities.
-               "closer-mop" ; wrapper for meta object protocols.
-               "lambda-fiddle" ; utilities for lambda-list.
-               "asdf" ; system loading.
-               "uiop" ; utilities.
-               "quicklisp" ; system installing.
-               "named-readtables" ; to manage readtable.
-               "prompt-for" ; for type safe user input.
-               "trivial-cltl2" ; wrapper for cltl2.
-               "cl-unification" ; unification.
-               "alexandria" ; Public domain utilities.
+               "alexandria"             ; Utilities.
+               "uiop"                   ; Utilities, implicitly via asdf.
+               "millet"                 ; Wrappter for implementation dependent utilities.
+               "closer-mop"             ; Wrapper for meta object protocols.
+               "trivial-cltl2"          ; Wrapper for cltl2.
+               "lambda-fiddle"          ; Operators for lambda-list.
+               "prompt-for"             ; Type safe user input.
+               "named-readtables"       ; Readtable manager.
+               "cl-unification"         ; Unification.
+               "asdf"                   ; System loading.
+               "quicklisp"              ; System installing.
                )
   :pathname "src"
   :components ((:file "package")
