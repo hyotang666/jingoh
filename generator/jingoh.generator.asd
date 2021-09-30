@@ -2,7 +2,7 @@
 (in-package :asdf)
 
 (defsystem :jingoh.generator
-  :version "1.2.32"
+  :version "1.2.33"
   :author "SATO Shinichi"
   :license "MIT"
   :description "Jingoh extension: Project skelton and test template generator and more."
@@ -18,7 +18,8 @@
                "named-readtables"       ; Readtable manager.
                "cl-unification"         ; Unification.
                "asdf"                   ; System loading.
-               "quicklisp"              ; System installing.
+               ;; Quicklisp project can not test to build the system that depends on quicklisp.
+               ;; "quicklisp"              ; System installing.
                )
   :pathname "src"
   :components ((:file "package")

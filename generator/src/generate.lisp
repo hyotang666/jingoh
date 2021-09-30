@@ -221,17 +221,19 @@
       (path-of system-name "lisp"
                (uiop:subpathname *default-pathname-defaults* "src/"))
       (cl-source-file-generator system-name))
-    (ql:register-local-projects)
+    (when (find-package '#:quicklisp)
+      (uiop:symbol-call '#:ql '#:register-local-projects))
     (when (find-package :roswell)
       (uiop:symbol-call :roswell.util "LOCAL-PROJECT-BUILD-HASH" :rebuild t))
     (generate (asdf:find-system system-name))))
 
 (defun ensure-name (system)
   (let ((name (asdf:coerce-name system)))
-    (if (not
-          (find name (ql-dist:provided-systems t)
-                :key #'ql-dist:name
-                :test #'equal))
+    (if (and (find-package '#:ql)
+             (not
+               (find name (uiop:symbol-call '#:ql-dist '#:provided-systems t)
+                     :key (uiop:find-symbol* '#:name '#:ql-dist)
+                     :test #'equal)))
         name
         (restart-case (error "~S is already used in quicklisp." name)
           (continue ()
@@ -278,7 +280,9 @@
 (defun local-project-directory ()
   (let ((directories
          (append (asdf-default-source-registries-directories)
-                 ql:*local-project-directories*
+                 (when (find-package '#:ql)
+                   (symbol-value
+                     (uiop:find-symbol* '#:*local-project-directories* '#:ql)))
                  (when (find-package :roswell)
                    (symbol-value
                      (uiop:find-symbol* "*LOCAL-PROJECT-DIRECTORIES*"
@@ -342,7 +346,8 @@
       (add-method-extension system))
     (generate 'test-asd :system system :forms forms :path test-asd-path)
     (dolist (form forms) (generate form :append append)))
-  (ql:register-local-projects)
+  (when (find-package '#:ql)
+    (uiop:symbol-call '#:ql '#:register-local-projects))
   (when (find-package :roswell)
     (uiop:symbol-call :roswell.util "LOCAL-PROJECT-BUILD-HASH" :rebuild t)))
 
