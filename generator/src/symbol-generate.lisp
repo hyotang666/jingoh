@@ -235,8 +235,7 @@
     (declare (ignore _))
     (let* ((lambda-list
             (lambda-fiddle:remove-aux-part (millet:lambda-list symbol)))
-           (lambda-vars
-            (lambda-fiddle:extract-lambda-vars lambda-list)))
+           (lambda-vars (lambda-fiddle:extract-lambda-vars lambda-list)))
       (if (or (eq :macro type) (null (assoc 'ftype information)))
           (uiop:while-collecting (acc)
             (dolist (elt lambda-vars) (acc (list elt nil)))
