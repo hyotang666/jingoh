@@ -223,8 +223,9 @@
       (cl-source-file-generator system-name))
     (when (find-package '#:quicklisp)
       (uiop:symbol-call '#:ql '#:register-local-projects))
-    (when (find-package :roswell)
-      (uiop:symbol-call :roswell.util "LOCAL-PROJECT-BUILD-HASH" :rebuild t))
+    (when (find-package '#:roswell)
+      (uiop:symbol-call '#:roswell.util '#:local-project-build-hash
+                        :rebuild t))
     (generate (asdf:find-system system-name))))
 
 (defun ensure-name (system)
@@ -283,10 +284,10 @@
                  (when (find-package '#:ql)
                    (symbol-value
                      (uiop:find-symbol* '#:*local-project-directories* '#:ql)))
-                 (when (find-package :roswell)
+                 (when (find-package '#:roswell)
                    (symbol-value
-                     (uiop:find-symbol* "*LOCAL-PROJECT-DIRECTORIES*"
-                                        :roswell))))))
+                     (uiop:find-symbol* '#:*local-project-directories*
+                                        '#:roswell))))))
     (if (typep directories '(cons * null))
         (car directories)
         (restart-case (error
@@ -348,8 +349,8 @@
     (dolist (form forms) (generate form :append append)))
   (when (find-package '#:ql)
     (uiop:symbol-call '#:ql '#:register-local-projects))
-  (when (find-package :roswell)
-    (uiop:symbol-call :roswell.util "LOCAL-PROJECT-BUILD-HASH" :rebuild t)))
+  (when (find-package '#:roswell)
+    (uiop:symbol-call '#:roswell.util '#:local-project-build-hash :rebuild t)))
 
 (defun add-method-extension (system)
   (let ((system (asdf:find-system system)))
