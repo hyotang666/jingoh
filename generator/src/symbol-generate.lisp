@@ -1,11 +1,13 @@
 (in-package :jingoh.generator)
 
+(declaim (optimize speed))
+
 (defun symbol-generate (symbol package)
   (multiple-value-bind (s existp)
-      (find-symbol (string symbol) package)
+      (find-symbol (symbol-name symbol) package)
     (if (not existp)
         (error "Symbol ~S is not found in ~S" symbol package)
-        (dolist (roll (rolls-of s)) (funcall roll s)))))
+        (dolist (roll (rolls-of s)) (funcall (coerce roll 'function) s)))))
 
 (defun rolls-of (symbol)
   (unless (special-operator-p symbol)
@@ -138,15 +140,15 @@
 (defun parse-class (class)
   (loop :for slot :in (closer-mop:class-direct-slots class)
         :for r = (closer-mop:slot-definition-readers slot)
-        :for w = (closer-mop:slot-definition-writers slot)
-        :for a
-             = (remove-if
-                 (complement
-                   (lambda (x)
-                     (find x w
-                           :key (lambda (x)
-                                  (when (listp x)
-                                    (cadr x))))))
+        :for w :of-type list = (closer-mop:slot-definition-writers slot)
+        :for a :of-type list
+             = (remove-if-not
+                 (lambda (x)
+                   (declare (type symbol x))
+                   (find x w
+                         :key (lambda (x)
+                                (when (listp x)
+                                  (cadr x)))))
                  r)
         :collect (list (closer-mop:slot-definition-name slot)
                        (closer-mop:slot-definition-type slot)
@@ -155,11 +157,10 @@
                            (when it
                              (list :reader it)))
                          (let ((it
-                                (remove-if
-                                  (complement
-                                    (lambda (x)
-                                      (when (listp x)
-                                        (find x a))))
+                                (remove-if-not
+                                  (lambda (x)
+                                    (when (listp x)
+                                      (find x a)))
                                   w)))
                            (when it
                              (list :writer it)))
@@ -293,7 +294,7 @@
                 (destructuring-bind
                     ((k v))
                     acc
-                  (if (string= "result 1" k)
+                  (if (equal "result 1" k)
                       `(("result" ,v))
                       acc)))
                (otherwise (nreverse acc))))
@@ -313,6 +314,12 @@
                        (list (format nil "~@[~A ~]result ~D" optionalp num)
                              (write-to-string spec :pretty nil))
                        acc))))))
+    (declare
+      (ftype (function
+              (* list (or null string) (mod #.most-positive-fixnum) list)
+              (values list &optional))
+             body)
+      (ftype (function (list) (values list &optional)) do-return))
     (rec (cdr values))))
 
 (defun ensure-symbol-notation (symbol)

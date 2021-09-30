@@ -1,5 +1,7 @@
 (in-package :jingoh.generator)
 
+(declaim (optimize speed))
+
 (declaim
  (ftype (function (system-designator) (values pathname &optional))
         spec-directory))

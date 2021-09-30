@@ -1,5 +1,7 @@
 (in-package #:jingoh.generator)
 
+(declaim (optimize speed))
+
 ;;;; GENERATOR
 
 (declaim
@@ -123,6 +125,7 @@
                `(apply #'uiop:symbol-call :jingoh :examine
                        ,(package-key (second form)) asdf::args))
              (package-key (package-name)
+               (declare (optimize (speed 1))) ; due to type uncertainty.
                (intern (string package-name) :keyword)))
       (let ((*package* (find-package :asdf)))
         (format t "; vim: ft=lisp et~%~
@@ -155,26 +158,28 @@
 
 (defun readme-updator (system readme-lines)
   (lambda ()
-    (format t "# ~@:(~A~) ~:[0.0.0~;~:*~A~]~%" (asdf:coerce-name system)
-            (system-version system))
+    (let ((version (system-version system)))
+      (format t "# ~@:(~A~) ~:[0.0.0~;~A~]~%" (asdf:coerce-name system) version
+              version))
     (do* ((lines (cdr readme-lines) (cdr lines))
           (line (car lines) (car lines)))
          ((endp lines) (force-output))
       (flet ((skip-to (prefix)
                (setf lines
                        (nthcdr
-                         (position-if
-                           (lambda (line) (uiop:string-prefix-p prefix line))
-                           (cdr lines))
+                         (locally ; KLUDGE: SBCL could not infer type.
+                          (declare (optimize (speed 1)))
+                          (position-if
+                            (lambda (line) (uiop:string-prefix-p prefix line))
+                            (cdr lines)))
                          lines))))
         (cond
           ((uiop:string-prefix-p "## What is this?" line)
-           (format t "~A~%~:[~;~:*~A~]~2%" line
-                   (asdf:system-description system))
+           (format t "~A~%~@[~A~]~2%" line (asdf:system-description system))
            (skip-to "##"))
           ((uiop:string-prefix-p "### License" line)
-           (format t "~A~%~:[TODO~;~:*~A~]~2%" line
-                   (asdf:system-license system))
+           (let ((license (asdf:system-license system)))
+             (format t "~A~%~:[TODO~;~A~]~2%" line license license))
            (skip-to "##"))
           (t (write-line line)))))))
 
@@ -232,8 +237,11 @@
   (let ((name (asdf:coerce-name system)))
     (if (and (find-package '#:ql)
              (not
-               (find name (uiop:symbol-call '#:ql-dist '#:provided-systems t)
-                     :key (uiop:find-symbol* '#:name '#:ql-dist)
+               (find name
+                     (the list
+                          (uiop:symbol-call '#:ql-dist '#:provided-systems t))
+                     :key (coerce (uiop:find-symbol* '#:name '#:ql-dist)
+                                  'function)
                      :test #'equal)))
         name
         (restart-case (error "~S is already used in quicklisp." name)
@@ -254,6 +262,8 @@
   (uiop:collect-sub*directories pathname #'uiop:directory-exists-p
                                 #'uiop:directory-exists-p
                                 (lambda (directory)
+                                  ;; KLUDGE: muffle sbcl compiler.
+                                  (declare (optimize (speed 1)))
                                   (let ((files
                                          (uiop:directory-files directory
                                                                "*.asd")))
@@ -268,8 +278,9 @@
     (cdr source-registry)))
 
 (defun default-source-registry-directories ()
-  (mapcan (lambda (symbol) (parse-registry (funcall symbol)))
-          asdf:*default-source-registries*))
+  (mapcan
+    (lambda (symbol) (parse-registry (funcall (coerce symbol 'function))))
+    asdf:*default-source-registries*))
 
 (defun asdf-default-source-registries-directories ()
   (loop :for directory :in (default-source-registry-directories)
@@ -300,7 +311,8 @@
               :test (lambda (condition) (typep condition 'some-repository))
               :interactive (lambda ()
                              (loop :for d :in directories
-                                   :for i :upfrom 0
+                                   :for i :of-type (mod #.most-positive-fixnum)
+                                        :upfrom 0
                                    :do (format *query-io* "~%~3D: ~S" i d))
                              (list
                                (prompt-for:prompt-for
@@ -331,7 +343,7 @@
 (defmethod generate ((system asdf:system) &key append)
   (let* ((forms)
          (*macroexpand-hook*
-          (let ((outer-hook *macroexpand-hook*))
+          (let ((outer-hook (coerce *macroexpand-hook* 'function)))
             (lambda (expander form env)
               (when (typep form '(cons (eql defpackage) *))
                 (pushnew form forms :key #'second :test #'string=))
@@ -392,7 +404,13 @@
 	    (setup ~(~S~))~2%"
             `(defpackage ,spec-name
                (:use :cl :jingoh ,package-name))
-            spec-name (intern (string package-name) :keyword))))
+            spec-name
+            (intern
+              (locally
+               ;; due to type uncertainty
+               (declare (optimize (speed 1)))
+               (string package-name))
+              :keyword))))
 
 ;;; :README
 

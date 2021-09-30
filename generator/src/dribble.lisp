@@ -1,5 +1,7 @@
 (in-package #:jingoh.generator)
 
+(declaim (optimize speed))
+
 (defvar *spec-output* *standard-output*)
 
 (defvar *spec-append-hook* 'funcall)
@@ -19,12 +21,12 @@
 (defun spec-appender (appender)
   (with-open-file (*spec-output* *default-pathname-defaults* :direction :output
                    :if-exists :append)
-    (funcall appender)))
+    (funcall (coerce appender 'function))))
 
 (defun repl ()
   (catch 'quit
     (loop (restart-case (multiple-value-call #'dribble-print
-                          (funcall *spec-append-hook*
+                          (funcall (coerce *spec-append-hook* 'function)
                                    (lambda () (dribble-eval (dribble-read)))))
             (dribble () :report "Return to dribble.")))))
 
@@ -41,6 +43,8 @@
   (the (values null &optional) (call-next-method)))
 
 (defvar *special-commands* (make-hash-table))
+
+(declaim (ftype (function (t) (or null function)) get-special-command))
 
 (defun get-special-command (form) (cdr (gethash form *special-commands*)))
 
@@ -75,8 +79,10 @@
   (when (or (and (typep form 'symbol)
                  (string= "?" form)
                  (progn (print-descriptions) t))
-            (and (get-special-command form)
-                 (progn (funcall (get-special-command form)) t)))
+            (let ((command (get-special-command form)))
+              (when command
+                (funcall command)
+                t)))
     (return-from dribble-eval (values)))
   (let* ((condition)
          (result)
@@ -90,8 +96,8 @@
                               (force-output))))
             (append-spec ()
                 :report "This is expected behavior, returning to dribble."
-              (format *spec-output* "~%#?~S :signals ~S" form
-                      (type-of condition))
+              (funcall (formatter "~%#?~S :signals ~S") *spec-output* form
+                       (type-of condition))
               (return-from dribble-eval (values))))))
     (shiftf +++ ++ + form)
     (shiftf *** ** * (car result))
@@ -116,73 +122,75 @@
 (defmethod spec-of ((d (eql :condition)) form condition)
   (when (and (typep condition 'warning)
              (y-or-n-p "Expected signals? ~S" condition))
-    (format *spec-output* "~@<~%#?~S ~_:signals ~S~:>" form
-            (type-of condition))
+    (funcall (formatter "~@<~%#?~S ~_:signals ~S~:>") *spec-output* form
+             (type-of condition))
     (force-output *spec-output*)))
 
 (defmethod spec-of ((d (eql :output)) form output)
   (unless (equal "" output)
-    (format *spec-output* "~@<~%#?~S ~_:outputs ~S~:>" form
-            (if (y-or-n-p "Expected output?")
-                output
-                (restart-case (error 'unexpected-behavior)
-                  (use-value (expected)
-                      :report "Specify expected output"
-                      :interactive (lambda () (list (read-expected)))
-                    expected)
-                  (ignore ()
-                      :report "Ignore about outputs."
-                    (return-from spec-of nil)))))
+    (funcall (formatter "~@<~%#?~S ~_:outputs ~S~:>") *spec-output* form
+             (if (y-or-n-p "Expected output?")
+                 output
+                 (restart-case (error 'unexpected-behavior)
+                   (use-value (expected)
+                       :report "Specify expected output"
+                       :interactive (lambda () (list (read-expected)))
+                     expected)
+                   (ignore ()
+                       :report "Ignore about outputs."
+                     (return-from spec-of nil)))))
     (force-output *spec-output*)))
 
 (defmethod spec-of ((d (eql :expansion)) form result)
-  (format *spec-output* "~@<~%#?~S ~_:expanded-to ~S~:>" (eval (cadr form))
-          (if (y-or-n-p "~S~%Expected expansion?" result)
-              result
-              (restart-case (error 'unexpected-behavior)
-                (use-value (expected)
-                    :report "Specify expected expression."
-                    :interactive (lambda ()
-                                   (list
-                                     (prompt-for:prompt-for t
-                                                            "Input expected form. >> ")))
-                  expected))))
+  (funcall (formatter "~@<~%#?~S ~_:expanded-to ~S~:>") *spec-output*
+           (eval (cadr form))
+           (if (y-or-n-p "~S~%Expected expansion?" result)
+               result
+               (restart-case (error 'unexpected-behavior)
+                 (use-value (expected)
+                     :report "Specify expected expression."
+                     :interactive (lambda ()
+                                    (list
+                                      (prompt-for:prompt-for t
+                                                             "Input expected form. >> ")))
+                   expected))))
   (force-output *spec-output*))
 
-(defmethod spec-of ((d (eql :values)) form result)
+(defmethod spec-of ((d (eql :values)) form (result list))
   (if (some #'unreadable-objectp result)
       (if (y-or-n-p "~{~S~%~}Expected values?" result)
-          (format *spec-output* "~%#?~S~%:multiple-value-satisfies~%~S" form
-                  `(lambda
-                       ,(loop :for i :upfrom 1 :to (length result)
-                              :collect (intern (format nil "RESULT~D" i)))
-                     :todo))
+          (funcall (formatter "~%#?~S~%:multiple-value-satisfies~%~S")
+                   *spec-output* form
+                   `(lambda
+                        ,(loop :for i :upfrom 1 :to (length result)
+                               :collect (intern (format nil "RESULT~D" i)))
+                      :todo))
           (error 'unexpected-behavior))
-      (format *spec-output* "~%#?~S~%:values ~S" form
-              (if (y-or-n-p "~{~S~%~}Expected values?" result)
-                  result
-                  (restart-case (error 'unexpected-behavior)
-                    (use-value (expected)
-                        :report "Specify expected values as list."
-                        :interactive (lambda ()
-                                       (list
-                                         (prompt-for:prompt-for 'list
-                                                                "Input expected values. >> ")))
-                      expected)))))
+      (funcall (formatter "~%#?~S~%:values ~S") *spec-output* form
+               (if (y-or-n-p "~{~S~%~}Expected values?" result)
+                   result
+                   (restart-case (error 'unexpected-behavior)
+                     (use-value (expected)
+                         :report "Specify expected values as list."
+                         :interactive (lambda ()
+                                        (list
+                                          (prompt-for:prompt-for 'list
+                                                                 "Input expected values. >> ")))
+                       expected)))))
   (force-output *spec-output*))
 
 (defmethod spec-of ((d (eql :unreadable)) form result)
-  (format *spec-output* "~@<~%#?~S ~_:be-the ~S~:>" form
-          (if (y-or-n-p "~S~%Is it expected return type?" (type-of result))
-              (type-of result)
-              (restart-case (error 'unexpected-behavior)
-                (use-value (expected)
-                    :report "Specify expected type."
-                    :interactive (lambda ()
-                                   (list
-                                     (prompt-for:prompt-for t
-                                                            "Input expected type. >> ")))
-                  expected))))
+  (funcall (formatter "~@<~%#?~S ~_:be-the ~S~:>") *spec-output* form
+           (if (y-or-n-p "~S~%Is it expected return type?" (type-of result))
+               (type-of result)
+               (restart-case (error 'unexpected-behavior)
+                 (use-value (expected)
+                     :report "Specify expected type."
+                     :interactive (lambda ()
+                                    (list
+                                      (prompt-for:prompt-for t
+                                                             "Input expected type. >> ")))
+                   expected))))
   (force-output *spec-output*))
 
 (defmethod spec-of ((d (eql :default)) form args)
