@@ -46,9 +46,7 @@
       (format t "# ~@:(~A~) ~A~%~
 	      ## What is this?~%~
 	      ~@[~A~]~%~
-	      ### Current lisp world~2%~
-	      ### Issues~2%~
-	      ### Proposal~2%~
+	      ## Alternatives and differences.~2%~
 	      ## Usage~2%~
 	      ## From developer~2%~
 	      ### Product's goal~2%~
