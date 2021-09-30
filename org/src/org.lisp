@@ -1,5 +1,7 @@
 (in-package :jingoh.org)
 
+(declaim (optimize speed))
+
 (defstruct (org (:copier nil))
   (name nil :type symbol :read-only t)
   (package *package* :type package :read-only t)
@@ -7,7 +9,9 @@
   (options nil :type list)
   (specifications
     (make-array 0 :fill-pointer 0 :adjustable t :element-type 'spec)
-    :type vector))
+    :type (vector spec *)))
+
+(deftype requirement () 'cons)
 
 (defstruct (spec (:copier nil)
                  (:predicate nil)
@@ -19,23 +23,41 @@
                                 :adjustable t
                                 :initial-contents (list req))))))
   (subject nil :type symbol :read-only t)
-  (requirements #() :type vector))
+  (requirements #() :type (vector requirement *)))
+
+(declaim
+ (ftype (function (spec) (values (vector requirement *) &optional))
+        spec-requirements))
+
+(declaim
+ (ftype (function (org) (values (mod #.most-positive-fixnum) &optional))
+        org-requirements-count))
+
+(macrolet ((! (form)
+             `(resignal-bind ((error () 'not-org
+                                :datum org
+                                :expected-type 'org
+                                :api 'org-requirements-count))
+                ,form)))
+  (defun org-requirements-count (org)
+    (reduce #'+ (! (org-specifications org))
+            :key (lambda (x) (length (spec-requirements x)))))) ; end of macrolet
 
 (defmethod print-object ((o org) *standard-output*)
   (if (null *print-escape*)
       (call-next-method)
       (print-unreadable-object (o *standard-output* :type t)
         (let ((count (org-requirements-count o)))
-          (format t "~A~:[ ~D ~:*requirement~P~;~]" (org-name o) (zerop count)
-                  count)))))
+          (format t "~A~:[ ~D requirement~P~;~]" (org-name o) (zerop count)
+                  count count)))))
 
 (defmethod print-object ((s spec) *standard-output*)
   (if (null *print-escape*)
       (call-next-method)
       (print-unreadable-object (s *standard-output* :type t)
         (let ((count (length (spec-requirements s))))
-          (format t "~A~:[ ~D ~:*requirement~P~;~]" (spec-subject s)
-                  (zerop count) count)))))
+          (format t "~A~:[ ~D requirement~P~;~]" (spec-subject s) (zerop count)
+                  count count)))))
 
 (deftype org-designator () '(or (and symbol (not boolean)) org))
 

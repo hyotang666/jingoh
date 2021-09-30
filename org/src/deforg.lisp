@@ -1,5 +1,7 @@
 (in-package :jingoh.org)
 
+(declaim (optimize speed))
+
 (defvar *orgs* (make-hash-table :test #'eq))
 
 (defparameter *org* (make-org))

@@ -1,5 +1,7 @@
 (in-package :jingoh.org)
 
+(declaim (optimize speed))
+
 (defun the-nil-subject-procedure (org var body return)
   ;; iterate all requirements
   (let ((s (gensym "S")) (sub? (cadr var)))
@@ -90,14 +92,13 @@
                                 :datum org
                                 :expected-type 'org
                                 :api
-                                ',(nth n
-                                       '(map-requirements add-requirement
-                                                          org-requirements-count))))
+                                ',(nth n '(map-requirements add-requirement))))
                 ,form))
            (?! (form)
              `(or ,form
                   (error 'missing-subject :api 'map-requirements :datum sub))))
   (defun map-requirements (function &optional (subject t) (org *org*))
+    (declare (optimize (speed 1))) ; due to not simple-array.
     (flet ((s-reqs (sub)
              (spec-requirements
                (?! (find sub (! 0 (org-specifications org))
@@ -118,12 +119,10 @@
           (vector-push-extend requirement (spec-requirements spec))
           (vector-push-extend (spec subject requirement)
                               (org-specifications org))))
-    requirement)
-  (defun org-requirements-count (org)
-    (loop :for s :across (! 2 (org-specifications org))
-          :sum (length (spec-requirements s))))) ; end of macrolet
+    requirement)) ; end of macrolet
 
 (defun find-subject (subject &optional (org *org*))
+  (declare (optimize (speed 1))) ; due to not simple-array.
   (loop :for s :across (org-specifications org)
         :when (eq subject (spec-subject s))
           :return s))

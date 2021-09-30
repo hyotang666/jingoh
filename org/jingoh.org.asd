@@ -2,7 +2,7 @@
 (in-package :asdf)
 
 (defsystem :jingoh.org
-  :version "0.1.13"
+  :version "0.1.14"
   :description "Jingoh's background database system"
   :author "SATO Shinichi"
   :license "MIT"
@@ -17,7 +17,7 @@
   :components((:file "package")
               ; bottom
               (:file "conditions" :depends-on ("package"))
-              (:file "org" :depends-on ("package"))
+              (:file "org" :depends-on ("conditions"))
               ; mid1
 	      (:file "deforg" :depends-on ("org"))
               ; top

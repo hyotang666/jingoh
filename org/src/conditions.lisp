@@ -1,5 +1,7 @@
 (in-package :jingoh.org)
 
+(declaim (optimize speed))
+
 (define-condition not-org (type-error)
   ((api :initarg :api :reader api :type symbol))
   (:report

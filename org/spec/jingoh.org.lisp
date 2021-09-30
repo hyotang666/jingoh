@@ -560,7 +560,7 @@
 ;;;; Arguments and Values:
 
 ; org := org, otherwise error.
-#?(org-requirements-count 0) :signals NOT-ORG
+#?(org-requirements-count 0) :signals condition
 
 ; result := non negative integer.
 
