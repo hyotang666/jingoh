@@ -12,6 +12,8 @@
 
 (in-package :jingoh.examiner) ; subject, detail, summary
 
+(declaim (optimize speed))
+
 (defparameter *verbose* 2 "Controls VERIFY's verbosity.")
 
 (declaim (type (mod 4) *verbose*))
@@ -62,7 +64,10 @@
           stream))
       (call-next-method)))
 
-(defun print-progress (subject &optional (goto #'identity))
+(defun print-progress
+       (subject
+        &optional (goto #'identity)
+        &aux (goto (coerce goto 'function)))
   (let ((current-subject '#:dummy) (issues))
     (do-requirements ((requirement sub) subject)
       (let ((result (check requirement)))
@@ -91,11 +96,17 @@
     (apply #'nconc (nreverse issues))))
 
 (defun print-requirement (result requirement)
-  (let ((cl-ansi-text:*enabled* *print-vivid*) (token))
+  (let ((cl-ansi-text:*enabled* *print-vivid*)
+        (token
+         (if result
+             "Fails"
+             "Pass")))
     (uiop:format! t "~&~A ~A"
-                  (if result
-                      (cl-ansi-text:red (setf token "Fails"))
-                      (cl-ansi-text:green (setf token "Pass")))
+                  (funcall
+                    (if result
+                        #'cl-ansi-text:red
+                        #'cl-ansi-text:green)
+                    token)
                   (string-left-trim '(#\Space)
                                     (format nil "~VT ~S" (length token)
                                             requirement)))))
@@ -109,6 +120,10 @@
           (write-char #\.))))
   (force-output))
 
+(declaim
+ (ftype (function (list &optional stream) (values null &optional))
+        print-summary))
+
 (defun print-summary (issues &optional (*standard-output* *standard-output*))
   (if (zerop (org-requirements-count *org*))
       (warn "No requirements in ~S" (org-name *org*))
@@ -116,7 +131,7 @@
         (if (zerop count)
             (format t "~&~A ~S" (cl-ansi-text:green "Pass") (org-name *org*))
             (format t "~&~A in ~S"
-                    (cl-ansi-text:red (format nil "~D fail~:*~P" count))
+                    (cl-ansi-text:red (format nil "~D fail~P" count count))
                     (org-name *org*))))))
 
 (defun examine
@@ -129,10 +144,14 @@
            (resignal-bind ((missing-org () 'missing-org :api 'examine))
              (find-org org)))
           (*package* (org-package *org*)))
-    ;; in order to be able to see tag, we need SETF in PROG*'s body.
-    (setf *issues*
-            (resignal-bind ((missing-subject () 'missing-subject :api 'examine))
-              (print-progress subject (lambda () (go #0=#:end)))))
+    (flet ((to-end ()
+             (go #0=#:end)))
+      (declare (dynamic-extent #'to-end)) ; To muffle SBCL compiler.
+      ;; in order to be able to see tag, we need SETF in PROG*'s body.
+      (setf *issues*
+              (resignal-bind ((missing-subject () 'missing-subject
+                                :api 'examine))
+                (print-progress subject #'to-end))))
     (print-summary *issues*)
    #0#
     (when (or (<= 1 *verbose*) (eq :stop *on-fails*))
