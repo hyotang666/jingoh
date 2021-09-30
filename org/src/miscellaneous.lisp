@@ -16,7 +16,7 @@
   (alexandria:with-unique-names (specifications subject)
     `(let ((,specifications (! (org-specifications ,org))))
        (dolist
-           (,(or (cadr var) subject) (uiop:ensure-list ,gname)
+           (,(or (cadr var) subject) (alexandria:ensure-list ,gname)
                                      (let (,(car var))
                                        (declare (ignorable ,(car var)))
                                        ,return))
@@ -36,7 +36,7 @@
     ((subject-designator symbol))
     ((org check-bnf:expression))
     ((return-form check-bnf:expression)))
-  (setf var (uiop:ensure-list var))
+  (setf var (alexandria:ensure-list var))
   (let ((gname (gensym "NAME")))
     `(macrolet ((?! (form)
                   `(or ,form
@@ -65,7 +65,7 @@
                          (org '*org*)
                          return)
                         &body body)
-  (setf var (uiop:ensure-list var))
+  (setf var (alexandria:ensure-list var))
   (if (not (constantp subject-designator))
       whole
       `(macrolet ((?! (form)
@@ -100,9 +100,8 @@
   (defun map-requirements (function &optional (subject t) (org *org*))
     (flet ((s-reqs (sub)
              (spec-requirements
-               (?!
-                 (find sub (! 0 (org-specifications org))
-                       :key #'spec-subject)))))
+               (?! (find sub (! 0 (org-specifications org))
+                         :key #'spec-subject)))))
       (case subject
         ((nil) ; all subject.
          (loop :for spec :across (! 0 (org-specifications org))

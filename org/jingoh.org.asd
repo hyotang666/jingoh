@@ -2,7 +2,7 @@
 (in-package :asdf)
 
 (defsystem :jingoh.org
-  :version "0.1.12"
+  :version "0.1.13"
   :description "Jingoh's background database system"
   :author "SATO Shinichi"
   :license "MIT"
@@ -10,10 +10,9 @@
                         (uiop:subpathname *load-pathname* "CONCEPTS.md"))
   :pathname "src/"
   :depends-on (
-               "resignal-bind" ; to condition handling.
-               "alexandria" ; public domain utilities.
-               "uiop" ; utilities.
-               "check-bnf" ; Macro arguments checker.
+               "alexandria"     ; Utilities, implicitly depends on via check-bnf.
+               "resignal-bind"  ; Macro to handle the conditions.
+               "check-bnf"      ; Macro to check defmacro arguments.
                )
   :components((:file "package")
               ; bottom
