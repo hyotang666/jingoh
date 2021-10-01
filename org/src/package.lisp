@@ -1,7 +1,7 @@
 (in-package :cl-user)
 
 (defpackage :jingoh.org
-  (:use :cl :resignal-bind)
+  (:use :cl)
   (:nicknames :org)
   (:export ;;;; Main api for light users.
            #:deforg

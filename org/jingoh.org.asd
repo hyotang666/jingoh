@@ -2,7 +2,7 @@
 (in-package :asdf)
 
 (defsystem :jingoh.org
-  :version "2.0.1"
+  :version "2.0.2"
   :description "Jingoh's background database system"
   :author "SATO Shinichi"
   :license "MIT"
@@ -11,7 +11,6 @@
   :pathname "src/"
   :depends-on (
                "alexandria"     ; Utilities, implicitly depends on via check-bnf.
-               "resignal-bind"  ; Macro to handle the conditions.
                "check-bnf"      ; Macro to check defmacro arguments.
                )
   :components((:file "package")

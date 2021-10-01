@@ -46,8 +46,9 @@
 (defmacro in-org (&whole whole name)
   (check-bnf:check-bnf (:whole whole) ((name symbol)))
   `(eval-when (:load-toplevel :compile-toplevel :execute)
-     (resignal-bind ((missing-org () 'missing-org :api 'in-org))
-       (setf *org* (find-org ',name)))))
+     (setf *org*
+             (or (find-org ',name nil)
+                 (error 'missing-org :api 'in-org :datum ',name)))))
 
 (defmacro requirements-about (&whole whole subject &rest option*)
   (check-bnf:check-bnf (:whole whole)
