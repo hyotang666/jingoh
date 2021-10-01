@@ -35,10 +35,7 @@
 
 (defun org-requirements-count (org)
   #+clisp
-  (assert (typep org 'org) ()
-    'not-org :datum org
-             :expected-type 'org
-             :api 'org-requirements-count)
+  (check-type org org)
   (reduce #'+ (org-specifications org)
           :key (lambda (x) (length (spec-requirements x)))))
 

@@ -8,33 +8,29 @@
 
 (declaim (ftype (function (symbol org) (values org &optional)) register-org))
 
+(defun register-org (name org)
+  #+clisp
+  (progn (check-type name symbol) (check-type org org))
+  (setf (gethash name *orgs*) org))
+
 (declaim
  (ftype (function (symbol &optional org) (values (eql t) &optional))
         delete-subject))
 
-(macrolet ((! (n form)
-             `(resignal-bind ((type-error () 'not-org
-                                :api ',(nth n '(register-org delete-subject))))
-                ,form)))
-  (defun register-org (name org)
-    #+clisp
-    (progn (check-type name symbol) (! 0 (check-type org org)))
-    (setf (gethash name *orgs*) org))
-  (defun delete-subject (subject-designator &optional (org *org*))
-    (flet ((del-sub (sub)
-             (setf (org-specifications org)
-                     (delete sub (! 1 (org-specifications org))
-                             :key #'spec-subject))))
-      (case subject-designator
-        ((nil) ; delete all.
-         (loop :with spec = (! 1 (org-specifications org))
-               :repeat (fill-pointer spec)
-               :do (vector-pop spec)))
-        ((t) ; delete current.
-         (mapc #'del-sub (org-current-subjects org)))
-        (otherwise ; delete specified one.
-         (del-sub subject-designator))))
-    t)) ; end of macrolet
+(defun delete-subject (subject-designator &optional (org *org*))
+  (flet ((del-sub (sub)
+           (setf (org-specifications org)
+                   (delete sub (org-specifications org) :key #'spec-subject))))
+    (case subject-designator
+      ((nil) ; delete all.
+       (loop :with spec = (org-specifications org)
+             :repeat (fill-pointer spec)
+             :do (vector-pop spec)))
+      ((t) ; delete current.
+       (mapc #'del-sub (org-current-subjects org)))
+      (otherwise ; delete specified one.
+       (del-sub subject-designator))))
+  t)
 
 (defmacro deforg (&whole whole name)
   (check-bnf:check-bnf (:whole whole) ((name symbol)))
