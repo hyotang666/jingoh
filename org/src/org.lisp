@@ -2,16 +2,7 @@
 
 (declaim (optimize speed))
 
-(defstruct (org (:copier nil))
-  (name nil :type symbol :read-only t)
-  (package *package* :type package :read-only t)
-  (current-subjects `(nil) :type cons)
-  (options nil :type list)
-  (specifications
-    (make-array 0 :fill-pointer 0 :adjustable t :element-type 'spec)
-    :type (vector spec *)))
-
-(deftype requirement () 'cons)
+(deftype requirement () 't)
 
 (defstruct (spec (:copier nil)
                  (:predicate nil)
@@ -24,6 +15,15 @@
                                 :initial-contents (list req))))))
   (subject nil :type symbol :read-only t)
   (requirements #() :type (vector requirement *)))
+
+(defstruct (org (:copier nil))
+  (name nil :type symbol :read-only t)
+  (package *package* :type package :read-only t)
+  (current-subjects `(nil) :type cons)
+  (options nil :type list)
+  (specifications
+    (make-array 0 :fill-pointer 0 :adjustable t :element-type 'spec)
+    :type (vector spec *)))
 
 (declaim
  (ftype (function (spec) (values (vector requirement *) &optional))
