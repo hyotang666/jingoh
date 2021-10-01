@@ -574,45 +574,6 @@
 
 ;;;; Exceptional-Situations:
 
-(requirements-about MAP-REQUIREMENTS :around(let ((*org* (make-org :current-subjects '(subject))))
-                                              (add-requirement 'subject 0)
-                                              (add-requirement 'subject 1)
-                                              (call-body))
-                    :doc-type function)
-
-;;;; Description:
-; Apply FUNCTION and collect its return value.
-#?(map-requirements #'1+)
-=> (1 2)
-,:test equal
-
-#+syntax
-(MAP-REQUIREMENTS function &optional (subject t) (org *org*)) ; => result
-
-;;;; Arguments and Values:
-
-; function := (function(requirement)T)
-
-; subject := subject designator, described later.
-
-; org := org, otherwise error.
-#?(map-requirements #'1+ t 0) :signals NOT-ORG
-
-; result := list
-
-;;;; Affected By:
-; *org* when ORG is not specified.
-; Org curret subject when subject is not specified.
-
-;;;; Side-Effects:
-; none
-
-; Notes:
-
-;;;; Exceptional-Situations:
-; When org is not found, an error is signaled.
-#?(map-requirements #'1+ :no-such-subject) :signals MISSING-SUBJECT
-
 (requirements-about DO-REQUIREMENTS :around (let ((*org* (make-org :current-subjects '(subject))))
                                               (add-requirement 'subject 0)
                                               (add-requirement 'subject 1)

@@ -99,25 +99,8 @@
                                 :datum org
                                 :expected-type 'org
                                 :api
-                                ',(nth n '(map-requirements add-requirement))))
-                ,form))
-           (?! (form)
-             `(or ,form
-                  (error 'missing-subject :api 'map-requirements :datum sub))))
-  (defun map-requirements (function &optional (subject t) (org *org*))
-    (declare (optimize (speed 1))) ; due to not simple-array.
-    (flet ((s-reqs (sub)
-             (spec-requirements
-               (?! (find sub (! 0 (org-specifications org))
-                         :key #'spec-subject)))))
-      (case subject
-        ((nil) ; all subject.
-         (loop :for spec :across (! 0 (org-specifications org))
-               :nconc (map 'list function (spec-requirements spec))))
-        ((t) ; current subject
-         (loop :for sub :in (org-current-subjects *org*)
-               :nconc (map 'list function (s-reqs sub))))
-        (otherwise (map 'list function (s-reqs subject))))))
+                                ',(nth n '(add-requirement))))
+                ,form)))
   (defun add-requirement (subject requirement &optional (org *org*))
     #+clisp
     (check-type subject symbol)

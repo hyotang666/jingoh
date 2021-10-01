@@ -260,7 +260,8 @@
     ;; In order to delay macro expansion, EVAL is needed.
     ;; Because defspec refers *ORG* at macro expansion time.
     (eval '(defspec (command '(1 2 3)) => 1))
-    (map-requirements #'check))
+    (uiop:while-collecting (collect)
+      (do-requirements (req) (collect (check req)))))
 => (NIL NIL)
 ,:test equal
 

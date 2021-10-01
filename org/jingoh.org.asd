@@ -2,7 +2,7 @@
 (in-package :asdf)
 
 (defsystem :jingoh.org
-  :version "0.1.18"
+  :version "1.0.0"
   :description "Jingoh's background database system"
   :author "SATO Shinichi"
   :license "MIT"

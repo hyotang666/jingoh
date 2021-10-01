@@ -33,7 +33,6 @@
            #:delete-org
            #:org-requirements-count
            ;; requirements operators
-           #:map-requirements
            #:do-requirements
            #:add-requirement
            #:delete-subject
