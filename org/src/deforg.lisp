@@ -83,14 +83,11 @@
          (values (or null org) &optional))
         find-org))
 
-(macrolet ((?! (form)
-             `(or ,form
-                  (when errorp
-                    (error 'missing-org
-                           :api 'find-org
-                           :datum org-designator)))))
-  (defun find-org (org-designator &optional (errorp t))
-    (typecase org-designator
-      (org org-designator)
-      (null (make-org))
-      (t (?! (gethash org-designator *orgs*))))))
+(defun find-org (org-designator &optional (errorp t))
+  (typecase org-designator
+    (org org-designator)
+    (null (make-org))
+    (t
+     (or (values (gethash org-designator *orgs*))
+         (when errorp
+           (error 'missing-org :api 'find-org :datum org-designator))))))
