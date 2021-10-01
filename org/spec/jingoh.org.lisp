@@ -604,7 +604,7 @@
 ; org := org generate form. when such form does not generate org, an error is signaled.
 #?(do-requirements (req t 0)
     (princ req))
-:signals NOT-ORG
+:signals type-error
 ,:lazy t
 ,:ignore-signals warning
 
