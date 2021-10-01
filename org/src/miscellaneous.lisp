@@ -90,6 +90,10 @@
             (otherwise
              (the-subject-procedure var body subject-designator org return))))))
 
+(declaim
+ (ftype (function (symbol * &optional org) (values t &optional))
+        add-requirement))
+
 (macrolet ((! (n form)
              `(resignal-bind ((error () 'not-org
                                 :datum org
@@ -115,6 +119,7 @@
                :nconc (map 'list function (s-reqs sub))))
         (otherwise (map 'list function (s-reqs subject))))))
   (defun add-requirement (subject requirement &optional (org *org*))
+    #+clisp
     (check-type subject symbol)
     (let ((spec
            (find subject (! 1 (org-specifications org)) :key #'spec-subject)))

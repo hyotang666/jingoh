@@ -19,7 +19,7 @@
 ;;;; Arguments and Values:
 
 ; org := org-designator, otherwise error
-#?(examine 0) :signals missing-org
+#?(examine 0) :signals condition
 
 ; subject := subject-designator, otherwise error
 #?(let ((*org* (make-org))

@@ -482,7 +482,7 @@
 ;;;; Arguments and Values:
 
 ; org-designator := org-designator, describe later. Otherwise nil.
-#?(find-org 0 nil) => NIL
+#?(find-org :dummy nil) => NIL
 
 ; errorp := boolean, when specified T (the default) if specified org is not found, an error is signaled.
 #?(find-org :no-such-org) :signals MISSING-ORG
@@ -709,12 +709,12 @@
 ;;;; Arguments and Values:
 
 ; subject := symbol, otherwise error.
-#?(add-requirement "subject" 0) :signals TYPE-ERROR
+#?(add-requirement "not symbol" 0) :signals condition
 
 ; requirement := any lisp object. unspecified.
 
 ; org := org, otherwise error.
-#?(add-requirement 'subject :value 0) :signals NOT-ORG
+#?(add-requirement 'subject :value :not-org) :signals condition
 
 ; result := requirement
 
@@ -763,7 +763,7 @@
 ; subject-designator := subject-designator, describe later
 
 ; org := org, otherwise error
-#?(delete-subject 'subject 0) :signals TYPE-ERROR
+#?(delete-subject 'subject :not-org) :signals condition
 
 ; result := T
 #?(delete-subject 'subject) => T
@@ -990,7 +990,7 @@
 ;;;; Arguments and Values:
 
 ; key := keyword, otherwise TYPE-ERROR is signaled.
-#?(add-new-option-key "not-keyword-symbol") :signals type-error
+#?(add-new-option-key "not-keyword-symbol") :signals condition
 
 ; result := key
 #?(add-new-option-key :this-is-returned) => :THIS-IS-RETURNED
@@ -1020,7 +1020,8 @@
 ;;;; Arguments and Values:
 
 ; key := T
-#?(find-option-key "not keyword" nil) => NIL
+#?(find-option-key '#:not-keyword nil) :signals condition
+#?(find-option-key :no-such nil) => NIL
 
 ; errorp := generalized-boolean, to specify signal an error unless found.
 #?(find-option-key :no-such-key) :signals error
@@ -1052,7 +1053,7 @@
 ;;;; Arguments and Values:
 
 ; key := T
-#?(delete-option-key "not keyword") => NIL
+#?(delete-option-key :no-such) => NIL
 
 ; result := BOOLEAN, T when KEY exists.
 #?(values (delete-option-key :no-such-key)
