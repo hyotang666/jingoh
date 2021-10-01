@@ -442,14 +442,10 @@
 ;;;; Arguments and Values:
 
 ; name := symbol, otherwise error.
-#?(register-org 0 (make-org)) :signals TYPE-ERROR
-,:lazy t
-,:ignore-signals warning
+#?(register-org 0 (make-org)) :signals condition
 
 ; org := Org, otherwise error.
-#?(register-org :hoge 0) :signals TYPE-ERROR
-,:lazy t
-,:ignore-signals warning
+#?(register-org :hoge 0) :signals condition
 
 ; result := org
 
