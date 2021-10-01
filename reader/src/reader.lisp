@@ -1,7 +1,7 @@
 (in-package :cl-user)
 
 (defpackage :jingoh.reader
-  (:use :cl :jingoh.tester :named-readtables)
+  (:use :cl)
   (:export ;;;; main api
            #:enable
            #:replace-macro-character
@@ -92,7 +92,7 @@
                 (|line-comment| stream (read-char stream))
                 (have-option?)))))
     (let ((form
-           `(defspec
+           `(jingoh.tester:defspec
               ,(read-form '#:test-form)
               ,(read-form '#:keyword)
               ,(read-form '#:expected)
