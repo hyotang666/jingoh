@@ -79,6 +79,8 @@
         find-option-key))
 
 (defun find-option-key (key &optional (errorp t))
+  #+clisp
+  (check-type key keyword)
   (or (values (gethash key *option-keys*))
       (when errorp
         (error "Not found option key ~S." key))))
