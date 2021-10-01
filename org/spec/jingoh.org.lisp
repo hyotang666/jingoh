@@ -801,27 +801,6 @@
 
 #| conditions |#
 
-(requirements-about NOT-ORG :doc-type type)
-
-#|[Condition] NOT-ORG |#
-
-;;;; Class Precedence List: (case in CLISP)
-; not-org type-error error serious-condition condition standard-object t
-
-;;;; Effective Slots:
-
-; API [Type] SYMBOL
-; [READER] api
-; Which API got not org value.
-
-; $DATUM [Type] T
-; [READER] type-error-datum
-
-; $EXPECTED-TYPE [Type] T
-; [READER] type-error-expected-type
-
-;;;; Notes:
-
 (requirements-about MISSING :doc-type type)
 
 #|[Condition] MISSING |#
@@ -890,11 +869,10 @@
 
 ;;;; Method signature:
 ; (API (CLOS::OBJECT MISSING))
-; (API (CLOS::OBJECT NOT-ORG))
 
 ;;;; Arguments and Values:
 
-; object := (or missing not-org)
+; object := missing
 
 ; result := symbol
 

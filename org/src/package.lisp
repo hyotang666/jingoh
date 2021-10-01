@@ -43,7 +43,6 @@
            #:*org* ; current org
            )
   (:export ;;;; conditions
-           #:not-org
            #:missing
            #:missing-org
            #:missing-subject
