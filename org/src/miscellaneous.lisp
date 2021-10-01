@@ -94,23 +94,15 @@
  (ftype (function (symbol * &optional org) (values t &optional))
         add-requirement))
 
-(macrolet ((! (n form)
-             `(resignal-bind ((error () 'not-org
-                                :datum org
-                                :expected-type 'org
-                                :api
-                                ',(nth n '(add-requirement))))
-                ,form)))
-  (defun add-requirement (subject requirement &optional (org *org*))
-    #+clisp
-    (check-type subject symbol)
-    (let ((spec
-           (find subject (! 1 (org-specifications org)) :key #'spec-subject)))
-      (if spec
-          (vector-push-extend requirement (spec-requirements spec))
-          (vector-push-extend (spec subject requirement)
-                              (org-specifications org))))
-    requirement)) ; end of macrolet
+(defun add-requirement (subject requirement &optional (org *org*))
+  #+clisp
+  (check-type subject symbol)
+  (let ((spec (find subject (org-specifications org) :key #'spec-subject)))
+    (if spec
+        (vector-push-extend requirement (spec-requirements spec))
+        (vector-push-extend (spec subject requirement)
+                            (org-specifications org))))
+  requirement)
 
 (defun find-subject (subject &optional (org *org*))
   (declare (optimize (speed 1))) ; due to not simple-array.
