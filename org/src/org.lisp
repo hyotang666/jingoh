@@ -33,15 +33,14 @@
  (ftype (function (org) (values (mod #.most-positive-fixnum) &optional))
         org-requirements-count))
 
-(macrolet ((! (form)
-             `(resignal-bind ((error () 'not-org
-                                :datum org
-                                :expected-type 'org
-                                :api 'org-requirements-count))
-                ,form)))
-  (defun org-requirements-count (org)
-    (reduce #'+ (! (org-specifications org))
-            :key (lambda (x) (length (spec-requirements x)))))) ; end of macrolet
+(defun org-requirements-count (org)
+  #+clisp
+  (assert (typep org 'org) ()
+    'not-org :datum org
+             :expected-type 'org
+             :api 'org-requirements-count)
+  (reduce #'+ (org-specifications org)
+          :key (lambda (x) (length (spec-requirements x)))))
 
 (defmethod print-object ((o org) *standard-output*)
   (if (null *print-escape*)
