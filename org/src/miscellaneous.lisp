@@ -5,14 +5,17 @@
 (defun the-nil-subject-procedure (org var body return)
   ;; iterate all requirements
   (let ((s (gensym "S")) (sub? (cadr var)))
-    `(loop :for ,s :across (! (org-specifications ,org))
-                ,@(when sub?
-                    `(:for ,sub? = (spec-subject ,s)))
-           :do (map nil (lambda (,(car var)) ,@body) (spec-requirements ,s))
-           :finally (return
-                     (let (,@var)
-                       (declare (ignorable ,@var))
-                       ,return)))))
+    `(locally
+      ;; Due to not simple-array.
+      (declare (optimize (speed 1)))
+      (loop :for ,s :across (! (org-specifications ,org))
+                 ,@(when sub?
+                     `(:for ,sub? = (spec-subject ,s)))
+            :do (map nil (lambda (,(car var)) ,@body) (spec-requirements ,s))
+            :finally (return
+                      (let (,@var)
+                        (declare (ignorable ,@var))
+                        ,return))))))
 
 (defun the-subject-procedure (var body gname org return)
   (alexandria:with-unique-names (specifications subject)
