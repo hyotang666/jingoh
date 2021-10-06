@@ -363,8 +363,8 @@ package documentation
 #?(first-char '*hoge*) => #\*
 ;;;; Arguments and Values:
 
-; symbol := symbol, otherwise errro.
-#?(first-char "not symbol") :signals type-error
+; symbol := symbol, otherwise implementation dependent condition.
+#?(first-char "not symbol") :signals condition
 
 ; result := character
 
@@ -488,9 +488,9 @@ package documentation
 => (#\B #\F #\H)
 ;;;; Arguments and Values:
 
-; symbols := (symbol*), otherwise error.
-#?(index-chars #(foo bar bazz)) :signals type-error
-#?(index-chars '("foo" "bar" "bazz")) :signals type-error
+; symbols := (symbol*), otherwise implementation dependent condition.
+#?(index-chars #(not list)) :signals condition
+#?(index-chars '("not" "symbol")) :signals type-error
 
 ; result := (character*)
 

@@ -1,5 +1,7 @@
 (in-package #:jingoh.documentizer)
 
+(declaim (optimize speed))
+
 ;;;; COMPILE
 
 (defun compile (system &optional (*print-example* *print-example*))
@@ -42,11 +44,12 @@
           :collect `(defmethod documentation
                                ((s
                                  (eql
-                                   (or (find-symbol ,(string name)
-                                                    ,(string package))
+                                   (or (find-symbol ,(symbol-name name)
+                                                    ,(symbol-name package))
                                        (error
                                          "Not found symbol ~S in package ~S"
-                                         ,(string name) ,(string package)))))
+                                         ,(symbol-name name)
+                                         ,(symbol-name package)))))
                                 (type (eql ',doc-type)))
                       (declare (ignore s type))
                       ,(princ-to-string section))))
@@ -65,7 +68,7 @@
             ((nil) #| Do nothing |#)
             (:unbound (no-doc-type name))
             (otherwise
-             (funcall *import-hook*
+             (funcall (coerce *import-hook* 'function)
                       (uiop:find-symbol* (symbol-name name) (meta-data-name m))
                       doc-type s))))))))
 

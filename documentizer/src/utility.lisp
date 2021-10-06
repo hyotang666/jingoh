@@ -1,10 +1,16 @@
 (in-package :jingoh.documentizer)
 
+(declaim (optimize speed))
+
 (defun escape-* (arg)
   (flet ((ensure-symbol-notation (arg)
+           (declare (optimize (speed 1))) ; due to type uncertainty.
            (if (uiop:string-suffix-p (prin1-to-string arg) "|")
                (format nil "|~A|" arg)
                (string arg))))
+    (declare
+      (ftype (function ((or symbol string)) (values simple-string &optional))
+             ensure-symbol-notation))
     (loop :for c :across (ensure-symbol-notation arg)
           :when (char= #\* c)
             :collect #\\ :into result

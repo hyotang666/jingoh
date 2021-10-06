@@ -1,5 +1,7 @@
 (in-package :jingoh.documentizer)
 
+(declaim (optimize speed))
+
 (defstruct (section (:predicate nil)) body path names (doc-type :unbound))
 
 (defstruct (single (:include section)
@@ -33,6 +35,11 @@
 
 (defparameter *tab-expand* 8)
 
+(declaim
+ (ftype (function ((or null simple-string))
+         (values (or null simple-string) &optional))
+        expand-tab))
+
 (defun expand-tab (line)
   (when (and line *tab-expand*)
     (values (ppcre:regex-replace-all #\Tab line
@@ -58,7 +65,7 @@
       ((uiop:string-prefix-p "#?" elt)
        (when *print-example*
          (format t "~%```lisp~%~A~%~A ~A~%" elt (cadr list) (caddr list)))
-       (loop :with ops = 0
+       (loop :with ops :of-type (mod #.most-positive-fixnum) = 0
              :for (key value) :on (cdddr list) :by #'cddr
              :while (uiop:string-prefix-p "," key)
              :do (when *print-example*
@@ -66,7 +73,11 @@
                  (incf ops)
              :finally (when *print-example*
                         (format t "```~%"))
-                      (setf list (nthcdr (+ 2 (* 2 ops)) list))))
+                      (setf list
+                              (nthcdr
+                                (the (mod #.most-positive-fixnum)
+                                     (+ 2 (* 2 ops)))
+                                list))))
       ((uiop:string-prefix-p "#+syntax" elt)
        (format t "~%### ")
        (write-line (escape-* elt) *standard-output* :start 2))
@@ -77,6 +88,8 @@
        (write-string "* ")
        (write-line (escape-* elt) *standard-output* :start 12))
       ((uiop:string-prefix-p "#| " elt)
-       (write-string "# ")
-       (write-line elt *standard-output* :start 3 :end (- (length elt) 2)))
+       (locally
+        (declare (type simple-string elt))
+        (write-string "# ")
+        (write-line elt *standard-output* :start 3 :end (- (length elt) 2))))
       (t nil))))

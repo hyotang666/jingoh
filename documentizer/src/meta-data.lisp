@@ -1,5 +1,7 @@
 (in-package :jingoh.documentizer)
 
+(declaim (optimize speed))
+
 (define-condition missing-spec-file (style-warning)
   ((path :initarg :path :reader path))
   (:report
@@ -22,7 +24,10 @@
 
 (defun make-meta-data (form)
   (let* ((pathname
-          (make-pathname :name (string-downcase (string (second form)))
+          (make-pathname :name (string-downcase
+                                 (locally ; due to generics.
+                                  (declare (optimize (speed 1)))
+                                  (string (second form))))
                          :type "lisp"
                          :defaults *default-pathname-defaults*))
          (sections (parse-spec pathname)))
@@ -68,7 +73,7 @@
           (dolist (component (component-children system))
             (with-open-file (s (asdf:component-pathname component))
               (do* ((tag '#:tag)
-                    (hook *macroexpand-hook*)
+                    (hook (coerce *macroexpand-hook* 'function))
                     (*macroexpand-hook* (lambda (expander form env)
                                           (typecase form
                                             ((cons (eql in-package) *)

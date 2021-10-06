@@ -1,8 +1,16 @@
 (in-package :jingoh.documentizer)
 
+(declaim (optimize speed))
+
 (defun parse-spec (pathname)
   (when (probe-file pathname)
     (multiple-value-call #'engroup (sectionize (enlist pathname)))))
+
+(declaim
+ (ftype (function (pathname)
+         (values list ; of simple-string
+                 &optional))
+        enlist))
 
 (defun enlist (pathname)
   (with-open-file (s pathname)
@@ -11,6 +19,15 @@
                    (read-as-string:read-as-string s nil nil))
           :while exp
           :collect exp)))
+
+(declaim
+ (ftype (function
+         (list ; of-type simple-string
+               )
+         (values list ; of-type single
+                 list ; of-type common
+                 &optional))
+        sectionize))
 
 (defun sectionize (list)
   (loop :for list :on list
@@ -41,8 +58,10 @@
                    :into singles
         :finally (return (values singles commons))))
 
+(declaim (ftype (function (simple-string) (values list &optional)) section-p))
+
 (defun section-p (elt)
-  (and (char= #\( (char elt 0))
+  (and (uiop:string-prefix-p "(" elt)
        (let* ((*package* (find-package :jingoh.documentizer))
               (null-package:*only-junk-p* t)
               (sexp
@@ -53,13 +72,25 @@
            sexp))))
 
 (defun replace-invalid-chars (arg)
-  (loop :for c :across (string-downcase (string arg))
-        :for n :upfrom 0
+  (loop :for c
+             :across (string-downcase
+                       (locally ; due to type uncertainty.
+                        (declare (optimize (speed 1)))
+                        (string arg)))
         :when (and (not (alphanumericp c)) (not (char= #\. c)))
           :collect (princ-to-string (char-code c)) :into result
         :else
           :collect c :into result
         :finally (return (uiop:reduce/strcat result))))
+
+(declaim
+ (ftype (function
+         (list ; of-type single
+               list ; of-type common
+               )
+         (values list ; of-type section
+                 &optional))
+        engroup))
 
 (defun engroup (singles commons)
   (nconc commons
@@ -68,6 +99,8 @@
                     = (find (car (section-names single)) commons
                             :key #'section-names
                             :test (lambda (name list)
+                                    (declare (type list list)
+                                             (type symbol name))
                                     (find name list :test #'string=)))
                :if common
                  :do (setf (section-body common)
