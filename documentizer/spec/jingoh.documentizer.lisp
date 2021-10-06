@@ -71,8 +71,8 @@
 
 ;;;; Arguments and Values:
 
-; system := asdf system object, otherwise error.
-#?(meta-datas<=system :jingoh.generator) :signals error
+; system := asdf system object, otherwise implementation dependent condition.
+#?(meta-datas<=system :jingoh.generator) :signals condition
 
 ; sys-dir := system source directory
 ; For easy testing, this is optional.

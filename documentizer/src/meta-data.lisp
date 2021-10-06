@@ -56,6 +56,12 @@
           :collect sec :into commons
         :finally (return (values singles commons))))
 
+(declaim
+ (ftype (function (asdf:system &optional pathname)
+         (values list ; of-type meta-data
+                 &optional))
+        meta-datas<=system))
+
 (defun meta-datas<=system
        (system &optional (sys-dir (asdf:system-source-directory system)))
   (let ((*default-pathname-defaults*
