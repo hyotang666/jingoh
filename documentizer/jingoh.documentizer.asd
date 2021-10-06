@@ -6,12 +6,12 @@
   :license "MIT"
   :description "Jingoh extension: Import/Convert specification documentation."
   :depends-on (
-               "3bmd" ; markdown.
-               "3bmd-ext-code-blocks"
-               "read-as-string" ; s-expression string reader.
-               "uiop" ; utilities.
-               "null-package" ; Safe S expression reader.
-               "cl-ppcre" ; regex.
+               "uiop"                   ; Utilities, implicitly depends on via asdf.
+               "3bmd"                   ; Markdown.
+               "3bmd-ext-code-blocks"   ; Extension for 3bmd.
+               "read-as-string"         ; S-expression string reader.
+               "null-package"           ; Safe S expression reader.
+               "cl-ppcre"               ; Regular expression.
                )
   :pathname "src/"
   :components(;; package.
