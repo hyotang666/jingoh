@@ -11,13 +11,13 @@
     (declare
       (ftype (function ((or symbol string)) (values simple-string &optional))
              ensure-symbol-notation))
-    (loop :for c :across (ensure-symbol-notation arg)
-          :when (char= #\* c)
-            :collect #\\ :into result
-            :and :collect c :into result
-          :else
-            :collect c :into result
-          :finally (return (coerce result 'string)))))
+    (with-output-to-string (*standard-output*)
+      (loop :for c :across (ensure-symbol-notation arg)
+            :when (char= #\* c)
+              :do (write-char #\\)
+                  (write-char c)
+            :else
+              :do (write-char c)))))
 
 (defun x-alph-pathname (char) (target-path (format nil "X_Alph_~A" char)))
 
