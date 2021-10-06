@@ -122,14 +122,13 @@
              links))
     (let* ((symbols
             (apply #'append (mapcar #'meta-data-specifieds meta-datas)))
+           (num-symbols (length symbols))
            (index-chars (index-chars symbols)))
       (declare (type list symbols))
       (funcall
-        (locally ; due to ~:*.
-         (declare (optimize (speed 1)))
-         (formatter
-          "# Alphabetical Symbol Index~2%There ~:[is~;are~] ~D symbol~:*~P by ~A.~2%~{~A~^ | ~}"))
-        *standard-output* (not (= 1 (length symbols))) (length symbols)
+        (formatter
+         "# Alphabetical Symbol Index~2%There ~:[is~;are~] ~D symbol~P by ~A.~2%~{~A~^ | ~}")
+        *standard-output* (not (= 1 num-symbols)) num-symbols num-symbols
         (asdf:coerce-name system) (links index-chars)))))
 
 ;;; ABOUT-PACKAGE
