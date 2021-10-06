@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.documentizer.test
-  :version "1.0.2"
+  :version "1.0.3"
   :depends-on
   (:jingoh "jingoh.documentizer")
   :components

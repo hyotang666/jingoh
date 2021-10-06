@@ -217,6 +217,7 @@ A | B | C | D | E | F | G | [H](X_Alph_H.html) | I | J | K | L | M | N | O | P |
 				  :singles (list (make-single :name 'symbols
 							      :path #P"path/to/file.html"))
 				  :commons (list (make-common :names '(which extracted)
+							      :alias 'op
 							      :path #P"path/to/common/file.html"))))
 :outputs
 "# PACKAGE-NAME
@@ -248,6 +249,7 @@ package documentation
 				  :singles (list (make-single :name 'symbols
 							      :path #P"path/to/file.html"))
 				  :commons (list (make-common :names '(which extracted)
+							      :alias 'op
 							      :path #P"path/to/common/file.html"))))
 => NIL
 ,:stream nil

@@ -2,13 +2,20 @@
 
 (declaim (optimize speed))
 
-(defstruct (section (:predicate nil)) body path names (doc-type :unbound))
+(defstruct (section (:predicate nil))
+  (body nil :type list)
+  (path (error "PATH is required.") :type pathname :read-only t)
+  (names nil :type list :read-only t)
+  (doc-type :unbound
+            :type (member :unbound nil t function compiler-macro setf
+                          method-combination type structure variable)))
 
 (defstruct (single (:include section)
                    (:constructor make-single
                     (&key body path name doc-type &aux (names (list name))))))
 
-(defstruct (common (:include section)) alias)
+(defstruct (common (:include section))
+  (alias (error "ALIAS is required.") :type symbol :read-only t))
 
 (defmethod print-object ((obj single) *standard-output*)
   (if *print-escape*
