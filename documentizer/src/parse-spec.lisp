@@ -72,16 +72,16 @@
            sexp))))
 
 (defun replace-invalid-chars (arg)
-  (loop :for c
-             :across (string-downcase
-                       (locally ; due to type uncertainty.
-                        (declare (optimize (speed 1)))
-                        (string arg)))
-        :when (and (not (alphanumericp c)) (not (char= #\. c)))
-          :collect (princ-to-string (char-code c)) :into result
-        :else
-          :collect c :into result
-        :finally (return (uiop:reduce/strcat result))))
+  (with-output-to-string (*standard-output*)
+    (loop :for c
+               :across (string-downcase
+                         (locally ; due to type uncertainty.
+                          (declare (optimize (speed 1)))
+                          (string arg)))
+          :when (and (not (alphanumericp c)) (not (char= #\. c)))
+            :do (write (char-code c))
+          :else
+            :do (write-char c))))
 
 (declaim
  (ftype (function

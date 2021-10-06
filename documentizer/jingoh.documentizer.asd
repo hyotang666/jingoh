@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.documentizer
-  :version "6.6.6"
+  :version "6.6.7"
   :author "SATO Shinichi"
   :license "MIT"
   :description "Jingoh extension: Import/Convert specification documentation."
