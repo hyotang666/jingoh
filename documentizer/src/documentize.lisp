@@ -93,29 +93,29 @@
 
 (defun symbol-index (meta-datas system)
   (labels ((links (chars &optional (code #.(char-code #\A)) have-non-alph-p acc)
-             (if (not (<= code #.(char-code #\Z)))
-                 (nreconc acc (or have-non-alph-p '("Non-Alphabetic")))
-                 (let ((char (car chars)))
-                   (if (null char)
-                       (links chars (1+ code) have-non-alph-p
-                              (cons (princ-to-string (code-char code)) acc))
-                       (if (not (alpha-char-p char))
-                           (links (cdr chars) code
-                                  (adjoin
-                                    (format nil "[Non-Alphabetic](~A)"
-                                            *x-non-alph-namestring*)
-                                    have-non-alph-p
-                                    :test #'string=)
-                                  acc)
-                           (if (= code (char-code char))
-                               (links (cdr chars) (1+ code) have-non-alph-p
-                                      (cons
-                                        (format nil "[~A](~A)" char
-                                                (x-alph-pathname char))
-                                        acc))
-                               (links chars (1+ code) have-non-alph-p
-                                      (cons (princ-to-string (code-char code))
-                                            acc)))))))))
+             (let (char)
+               (cond
+                 ((not (<= code #.(char-code #\Z)))
+                  (nreconc acc (or have-non-alph-p '("Non-Alphabetic"))))
+                 ((null (setq char (car chars)))
+                  (links chars (1+ code) have-non-alph-p
+                         (cons (princ-to-string (code-char code)) acc)))
+                 ((not (alpha-char-p char))
+                  (links (cdr chars) code
+                         (adjoin
+                           (format nil "[Non-Alphabetic](~A)"
+                                   *x-non-alph-namestring*)
+                           have-non-alph-p
+                           :test #'string=)
+                         acc))
+                 ((= code (char-code char))
+                  (links (cdr chars) (1+ code) have-non-alph-p
+                         (cons
+                           (format nil "[~A](~A)" char (x-alph-pathname char))
+                           acc)))
+                 (t
+                  (links chars (1+ code) have-non-alph-p
+                         (cons (princ-to-string (code-char code)) acc)))))))
     (declare
       (ftype (function (list &optional (mod #.most-positive-fixnum) list list)
               (values list &optional))
