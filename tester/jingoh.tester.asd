@@ -8,17 +8,19 @@
   :long-description #.(uiop:read-file-string (merge-pathnames "CONCEPTS.md"
                                                               *load-pathname*))
   :depends-on (
-               "jingoh.org" ; database.
-               "millet" ; Wrapper for implementation dependent utilities.
-               "closer-mop" ; wrapper for meta object protocol.
-               "alexandria" ; public domain utilities.
-               "cl-ansi-text" ; text colorizing.
-               "cl-ppcre" ; regular expression.
-               "structure-ext" ; to enable constructing structure with MAKE-INSTANCE.
-               "uiop" ; utilities.
-               "bordeaux-threads"       ; multi threading especially for timeout.
-               "resignal-bind" ; condition capturing for better error message.
-               "check-bnf" ; Macro arguments checker.
+               "alexandria"             ; Utilities, implicitly depends on via (bordeaux-threads check-bnf cl-colors2 cl-ansi-text vivid-diff)
+               "uiop"                   ; Utilities, implicitly depends on via asdf.
+               "millet"                 ; Wrapper for implementation dependent utilities.
+               "closer-mop"             ; Wrapper for meta object protocol.
+               "bordeaux-threads"       ; Wrapper for multi threading especially for timeout.
+               "structure-ext"          ; To enable constructing structure with MAKE-INSTANCE.
+               "resignal-bind"          ; Condition capturing for better error message.
+               "check-bnf"              ; Macro arguments checker.
+               "cl-ansi-text"           ; Ansi escape sequence especially for text coloring.
+               "vivid-diff"             ; Object diff viewer.
+               "vivid-colors"           ; Colored pretty printer, implicitly depends on via vivid-diff.
+               "cl-colors2"             ; Color object, implicity depends on via vivid-colors
+               "jingoh.org"             ; Module the database.
                )
   :pathname "src/"
   :components ((:file "package")
