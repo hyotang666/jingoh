@@ -22,6 +22,15 @@
   (specifieds nil :type list) ; symbols which specified.
   )
 
+(defmacro doexports ((var <meta-data> &optional <return>) &body body)
+  `(dolist (,var (meta-data-exports ,<meta-data>) ,<return>) ,@body))
+
+(defmacro dosections ((var <meta-data> &optional <return>) &body body)
+  `(dolist (,var (meta-data-sections ,<meta-data>) ,<return>) ,@body))
+
+(defmacro dospecifieds ((var <meta-data> &optional <return>) &body body)
+  `(dolist (,var (meta-data-specifieds ,<meta-data>) ,<return>) ,@body))
+
 (defun make-meta-data (form)
   (let* ((pathname
           (make-pathname :name (string-downcase
@@ -43,10 +52,10 @@
                        :sections sections
                        :singles singles
                        :commons commons
-                       :specifieds (apply #'append
-                                          (loop :for sec :in sections
-                                                :collect (section-names
-                                                           sec)))))))
+                       :specifieds (uiop:while-collecting (collect)
+                                     (loop :for sec :in sections
+                                           :do (donames (name sec)
+                                                 (collect name))))))))
 
 (defun sieve (meta-data-sections)
   (loop :for sec :in meta-data-sections

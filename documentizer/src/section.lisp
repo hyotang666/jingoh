@@ -2,6 +2,8 @@
 
 (declaim (optimize speed))
 
+;;; OBJECT
+
 (defstruct (section (:predicate nil))
   (body nil :type list)
   (path (error "PATH is required.") :type pathname :read-only t)
@@ -17,10 +19,28 @@
 (defstruct (common (:include section))
   (alias (error "ALIAS is required.") :type symbol :read-only t))
 
+;;; ABSTRACTION BARRIARS
+
+(defmacro donames ((var <section> &optional <return>) &body body)
+  (setf var (uiop:ensure-list var)) ; canonicalize.
+  `(loop :for ,var :on (section-names ,<section>)
+         :do (let ((,(car var) ,(car var)))
+               ,@body)
+         :finally (return ,<return>)))
+
+(defun conc-body (section contents)
+  (setf (section-body section) (nconc (section-body section) contents)))
+
+(defun list<-body (section) (section-body section))
+
+(defun single-name (single) (car (single-names single)))
+
+;;; PRINTERS
+
 (defmethod print-object ((obj single) *standard-output*)
   (if *print-escape*
       (print-unreadable-object (obj *standard-output* :type nil :identity nil)
-        (prin1 (car (section-names obj))))
+        (prin1 (single-name obj)))
       (call-next-method)))
 
 (defmethod print-object ((obj common) *standard-output*)
@@ -33,8 +53,12 @@
   (if *print-escape*
       (call-next-method)
       (progn
-       (format t "# ~{~A~^, ~}~&" (mapcar #'escape-* (section-names obj)))
-       (princ-section-body (section-body obj)))))
+       (write-string "# ")
+       (donames ((name . rest?) obj (fresh-line))
+         (write-string (escape-* name))
+         (when rest?
+           (write-string ", ")))
+       (princ-section-body (list<-body obj)))))
 
 (defparameter *print-example* t)
 

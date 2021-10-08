@@ -121,7 +121,10 @@
               (values list &optional))
              links))
     (let* ((symbols
-            (apply #'append (mapcar #'meta-data-specifieds meta-datas)))
+            (uiop:while-collecting (collect)
+              (dolist (m meta-datas)
+                (dospecifieds (symbol m)
+                  (collect symbol)))))
            (num-symbols (length symbols))
            (index-chars (index-chars symbols)))
       (declare (type list symbols))
@@ -137,39 +140,27 @@
   (format t
           (locally ; due to ~:*
            (declare (optimize (speed 1)))
-           (formatter
-            "# ~A~%~@[## ~:*~A Concepts~%~A~%~]## ~A Dictionary~2%~{* ~A~&~}"))
+           (formatter "# ~A~%~@[## ~:*~A Concepts~%~A~%~]## ~A Dictionary~2%"))
           (meta-data-name meta-data) (meta-data-doc meta-data)
-          (meta-data-name meta-data)
-          (labels ((rec (exports &optional acc)
-                     (if (endp exports)
-                         (nreverse acc)
-                         (body (car exports) (cdr exports) acc)))
-                   (find-in-sec (symbol sections)
-                     (find-if
-                       (lambda (section)
-                         (find symbol (the list (section-names section))
-                               :test #'string=))
-                       sections))
-                   (markup (symbol sec)
-                     (format nil "[~A](~A)" (escape-* symbol)
-                             (section-path sec)))
-                   (body (symbol rest acc)
-                     (let ((sec
-                            (find-in-sec symbol (meta-data-singles meta-data))))
-                       (if sec
-                           (rec rest (push (markup symbol sec) acc))
-                           (let ((sec
-                                  (find-in-sec symbol
-                                               (meta-data-commons meta-data))))
-                             (if sec
-                                 (rec rest (push (markup symbol sec) acc))
-                                 (rec rest (push (escape-* symbol) acc))))))))
-            (declare
-              (ftype (function (symbol list)
-                      (values (or null section) &optional))
-                     find-in-sec))
-            (rec (meta-data-exports meta-data)))))
+          (meta-data-name meta-data))
+  (flet ((find-in-sec (symbol section)
+           (donames (name section)
+             (declare (type symbol name))
+             (when (string= symbol name)
+               (return t)))))
+    (declare
+      (ftype (function (symbol section) (values boolean &optional))
+             find-in-sec))
+    (doexports (symbol meta-data)
+      (format t "* ~A~&"
+              (let ((sec
+                     (dosections (section meta-data)
+                       (when (find-in-sec symbol section)
+                         (return section)))))
+                (if sec
+                    (format nil "[~A](~A)" (escape-* symbol)
+                            (section-path sec))
+                    (escape-* symbol)))))))
 
 ;;; ABOUT-SYMBOLS
 
@@ -177,8 +168,8 @@
        (meta-data
         &optional (callback #'princ)
         &aux (callback (coerce callback 'function)))
-  (dolist (section (meta-data-singles meta-data)) (funcall callback section))
-  (dolist (section (meta-data-commons meta-data)) (funcall callback section)))
+  (dosections (section meta-data)
+    (funcall callback section)))
 
 (defun section-callback (section)
   (with-doc-directory ((merge-pathnames (section-path section)))
@@ -191,19 +182,26 @@
         &optional (callback #'table-printer)
         &aux (callback (coerce callback 'function)))
   (labels ((line (sec)
-             (loop :for name :in (section-names sec)
-                   :collect (cons name
-                                  (format nil "[~A](~A)~%" (escape-* name)
-                                          (section-path sec))))))
+             (uiop:while-collecting (acc)
+               (donames (name sec)
+                 (acc
+                   (cons name
+                         (format nil "[~A](~A)~%" (escape-* name)
+                                 (section-path sec))))))))
     (let ((pairs
            (loop :for sec
-                      :in (apply #'append
-                                 (mapcar #'meta-data-sections meta-datas))
+                      :in (uiop:while-collecting (collect)
+                            (dolist (m meta-datas)
+                              (dosections (s m)
+                                (collect s))))
                  :nconc (line sec) :into result
                  :finally (return (sort result #'string< :key #'car))))
           (index-chars
            (index-chars
-             (apply #'append (mapcar #'meta-data-specifieds meta-datas)))))
+             (uiop:while-collecting (collect)
+               (dolist (m meta-datas)
+                 (dospecifieds (symbol m)
+                   (collect symbol)))))))
       (labels ((rec (chars pairs)
                  (unless (endp chars)
                    (apply #'rec (funcall callback chars pairs)))))

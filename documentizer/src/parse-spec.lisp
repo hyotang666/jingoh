@@ -96,18 +96,17 @@
   (nconc commons
          (loop :for single :in singles
                :for common
-                    = (find (car (section-names single)) commons
-                            :key #'section-names
-                            :test (lambda (name list)
-                                    (declare (type list list)
-                                             (type symbol name))
-                                    (find name list :test #'string=)))
+                    = (find (single-name single) commons
+                            :test (lambda (name section)
+                                    (declare (type symbol name))
+                                    (donames (n section)
+                                      (declare (type symbol n))
+                                      (when (string= name n)
+                                        (return t)))))
                :if common
-                 :do (setf (section-body common)
-                             (nconc (section-body common)
-                                    (cons
-                                      (format nil "#| ~A |#"
-                                              (car (section-names single)))
-                                      (section-body single))))
+                 :do (conc-body common
+                                (cons
+                                  (format nil "#| ~A |#" (single-name single))
+                                  (section-body single)))
                :else
                  :collect single)))

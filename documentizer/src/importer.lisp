@@ -14,7 +14,7 @@
     (with-output-to ((merge-pathnames "doc.lisp"))
       (dolist (meta meta-datas)
         (print `(in-package ,(meta-data-name meta)))
-        (dolist (s (meta-data-sections meta))
+        (dosections (s meta)
           (map nil #'print (<documentations> s (meta-data-name meta))))))))
 
 (defun ensure-system (system)
@@ -36,23 +36,24 @@
 (defun no-doc-type (name) (warn 'no-doc-type :name name))
 
 (defun <documentations> (section package)
-  (loop :for name :in (section-names section)
-        :for doc-type = (section-doc-type section)
-        :if (eq :unbound doc-type)
-          :do (no-doc-type name)
-        :else :if doc-type
-          :collect `(defmethod documentation
-                               ((s
-                                 (eql
-                                   (or (find-symbol ,(symbol-name name)
-                                                    ,(symbol-name package))
-                                       (error
-                                         "Not found symbol ~S in package ~S"
-                                         ,(symbol-name name)
-                                         ,(symbol-name package)))))
-                                (type (eql ',doc-type)))
-                      (declare (ignore s type))
-                      ,(princ-to-string section))))
+  (let ((doc-type (section-doc-type section)))
+    (cond
+      ((eq :unbound doc-type)
+       (donames (name section)
+         (no-doc-type name)))
+      ((null doc-type))
+      (t
+       (uiop:while-collecting (collect)
+         (donames (name section)
+           (collect
+            `(defmethod documentation
+                        ((s
+                          (eql
+                            (uiop:find-symbol* ,(symbol-name name)
+                                               ,(symbol-name package))))
+                         (type (eql ',doc-type)))
+               (declare (ignore s type))
+               ,(princ-to-string section)))))))))
 
 ;;;; IMPORT
 
@@ -61,13 +62,15 @@
 (defun import (system &optional (*print-example* *print-example*))
   "Import spec documentation to lisp image."
   (dolist (m (meta-datas<=system (ensure-system system)))
-    (dolist (s (meta-data-sections m))
-      (dolist (name (section-names s))
-        (let ((doc-type (section-doc-type s)))
-          (case doc-type
-            ((nil) #| Do nothing |#)
-            (:unbound (no-doc-type name))
-            (otherwise
+    (dosections (s m)
+      (let ((doc-type (section-doc-type s)))
+        (case doc-type
+          ((nil))
+          (:unbound
+           (donames (name s)
+             (no-doc-type name)))
+          (otherwise
+           (donames (name s)
              (funcall (coerce *import-hook* 'function)
                       (uiop:find-symbol* (symbol-name name) (meta-data-name m))
                       doc-type s))))))))

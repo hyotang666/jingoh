@@ -214,11 +214,12 @@ A | B | C | D | E | F | G | [H](X_Alph_H.html) | I | J | K | L | M | N | O | P |
 #?(about-package (%make-meta-data :name :package-name
 				  :doc "package documentation"
 				  :exports '(symbols which extracted from |defpackage's| export option)
-				  :singles (list (make-single :name 'symbols
-							      :path #P"path/to/file.html"))
-				  :commons (list (make-common :names '(which extracted)
-							      :alias 'op
-							      :path #P"path/to/common/file.html"))))
+				  :singles #0=(list (make-single :name 'symbols
+								 :path #P"path/to/file.html"))
+				  :commons #1=(list (make-common :names '(which extracted)
+								 :alias 'op
+								 :path #P"path/to/common/file.html"))
+				  :sections (append #0# #1#)))
 :outputs
 "# PACKAGE-NAME
 ## PACKAGE-NAME Concepts
