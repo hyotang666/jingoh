@@ -46,7 +46,7 @@
              `(progn
                ,@(mapcar (lambda (key) `(add-new-option-key ,key)) keys))))
   (defs :test :lazy :ignore-signals :with-restarts :stream :before :after
-   :around :line :timeout))
+    :around :line :timeout :comment))
 
 (defun canonicalize (test-form parameters)
   (setf test-form (copy-cons test-form))

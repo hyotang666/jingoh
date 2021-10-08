@@ -35,7 +35,8 @@ option-key := [ :test
               | :timesout
               | :before
               | :after
-              | :around ]
+              | :around 
+	      | :comment ]
 option-value := one-lisp-form
 ```
 ## basic forms
@@ -330,6 +331,9 @@ Always success.
 
 ### BEFORE, AFTER, AROUND
 Like clos, specify setup, teardown or both.
+
+### COMMENT
+Additional comment for the issue.
 
 #### For setup.
 

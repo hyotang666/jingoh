@@ -80,10 +80,10 @@
 (defgeneric make-requirement (form key expected &rest params))
 
 (defun the-push-instance-form
-       (place type test-form expected actual line &rest options)
+       (place type test-form expected actual line comment &rest options)
   `(push
     (make-instance ',type :form ,test-form :expected ',expected :actual ,actual
-                   :line ,line ,@options)
+                   :line ,line :comment ,comment ,@options)
     ,place))
 
 (defun the-standard-handling-form
@@ -110,16 +110,17 @@
                `((warning (condition)
                   ,(the-push-instance-form result 'warning-was-signaled
                      `',test-form expected 'condition (getf parameters :line)
-                     :message `(princ-to-string condition)))))
+                     (getf parameters :comment) :message
+                     `(princ-to-string condition)))))
            ,@(unless (ignore-signals 'error parameters)
                `((error (condition)
                         ,(the-push-instance-form result 'error-was-signaled
                            `',test-form expected 'condition
-                           (getf parameters :line) :message
-                           `(princ-to-string condition))))))
+                           (getf parameters :line) (getf parameters :comment)
+                           :message `(princ-to-string condition))))))
          (unless (string= "" ,output)
            ,(the-push-instance-form result 'unexpected-output `',test-form ""
-              output (getf parameters :line)))
+              output (getf parameters :line) (getf parameters :comment)))
          ,result))))
 
 (set-pprint-dispatch
@@ -136,7 +137,8 @@
         `(let ((,actual ,form))
            (unless (,test ,actual ',expected)
              ,(the-push-instance-form result 'test-issue `',test-form expected
-                actual (getf parameters :line) :test `',test)))))))
+                actual (getf parameters :line) (getf parameters :comment) :test
+                `',test)))))))
 
 (defmethod make-requirement
            (test-form (key (eql :signals)) expected &rest parameters)
@@ -153,8 +155,8 @@
                         ,(the-push-instance-form result
                            (intern (format nil "~A-WAS-SIGNALED" type))
                            `',test-form expected 'condition
-                           (getf parameters :line) :message
-                           `(princ-to-string condition))
+                           (getf parameters :line) (getf parameters :comment)
+                           :message `(princ-to-string condition))
                         ,(ecase type
                            (warning
                             `(when (find-restart 'muffle-warning condition)
@@ -173,7 +175,8 @@
                                    'missing-restarts `',test-form restarts
                                    `(mapcar #'restart-name
                                             (compute-restarts condition))
-                                   (getf parameters :line)))))))
+                                   (getf parameters :line)
+                                   (getf parameters :comment)))))))
                     (go ,end))))
         `(lambda ()
            (prog (,result ,actual (,output ""))
@@ -189,11 +192,13 @@
                                          (coerce '(lambda () ,form)
                                                  'function))))))))
                ,(the-push-instance-form result 'unexpected-success `',test-form
-                  expected actual (getf parameters :line)))
+                  expected actual (getf parameters :line)
+                  (getf parameters :comment)))
             ,end
              (when (and ,output (not (string= "" ,output)))
                ,(the-push-instance-form result 'unexpected-output `',test-form
-                  "" output (getf parameters :line)))
+                  "" output (getf parameters :line)
+                  (getf parameters :comment)))
              (return ,result)))))))
 
 (defmethod make-requirement
@@ -211,7 +216,8 @@
                     (when (eq condition ,temp)
                       ,(the-push-instance-form result 'debugger-was-invoked
                          `',test-form nil 'condition (getf parameters :line)
-                         :message `(princ-to-string condition)))
+                         (getf parameters :comment) :message
+                         `(princ-to-string condition)))
                     (go ,end))
                   (handler (condition)
                     (if (find-restart 'muffle-warning condition)
@@ -219,7 +225,8 @@
                          ,@(unless (ignore-signals 'warning parameters)
                              `(,(the-push-instance-form result
                                   'warning-was-signaled `',test-form nil
-                                  'condition (getf parameters :line) :message
+                                  'condition (getf parameters :line)
+                                  (getf parameters :comment) :message
                                   `(princ-to-string condition))))
                          (muffle-warning condition))
                         (setf ,temp condition))))
@@ -231,7 +238,7 @@
                            ,form)))))
            (when (and ,output (not (string= "" ,output)))
              ,(the-push-instance-form result 'unexpected-output `',test-form ""
-                output (getf parameters :line)))
+                output (getf parameters :line) (getf parameters :comment)))
           ,end
            (return ,result))))))
 
@@ -257,11 +264,12 @@
                               (unless (,(encallable test) condition)
                                 ,(the-push-instance-form result 'test-issue
                                    `',test-form t nil (getf parameters :line)
-                                   :test `',test))
+                                   (getf parameters :comment) :test `',test))
                             (unsatisfied (condition)
                               ,(the-push-instance-form result
                                  'unsatisfied-clause `(test-form condition) t
-                                 nil (getf parameters :line) :args
+                                 nil (getf parameters :line)
+                                 (getf parameters :comment) :args
                                  `(args condition))))))
                     (if (ignore-errors (typep condition ',expected))
                         ,(let ((restarts (getf parameters :with-restarts)))
@@ -274,18 +282,20 @@
                                      'missing-restarts `',test-form restarts
                                      `(mapcar #'restart-name
                                               (compute-restarts condition))
-                                     (getf parameters :line))))))
+                                     (getf parameters :line)
+                                     (getf parameters :comment))))))
                         ,(the-push-instance-form result 'unmatch-condition
                            `',test-form expected 'condition
-                           (getf parameters :line) :message
-                           `(princ-to-string condition)))
+                           (getf parameters :line) (getf parameters :comment)
+                           :message `(princ-to-string condition)))
                     (go ,end))
                   (handler (condition)
                     (when (find-restart 'muffle-warning condition)
                       ,@(unless (ignore-signals 'warning parameters)
                           `(,(the-push-instance-form result
                                'warning-was-signaled `',test-form expected
-                               'condition (getf parameters :line) :message
+                               'condition (getf parameters :line)
+                               (getf parameters :comment) :message
                                `(princ-to-string condition))))
                       (muffle-warning condition))))
              (setf *debugger-hook* #'hook
@@ -296,10 +306,11 @@
                                  (handler-bind ((warning #'handler))
                                    ,form))))))
           ,(the-push-instance-form result 'unexpected-success `',test-form
-             expected actual (getf parameters :line))
+             expected actual (getf parameters :line)
+             (getf parameters :comment))
            (when (and ,output (not (string= "" ,output)))
              ,(the-push-instance-form result 'unexpected-output `',test-form ""
-                output (getf parameters :line)))
+                output (getf parameters :line) (getf parameters :comment)))
           ,end
            (return ,result))))))
 
@@ -313,8 +324,8 @@
         `(let ((,actual (multiple-value-list ,form)))
            (unless (,test ,actual ',expected)
              ,(the-push-instance-form result 'issue-of-multiple-values
-                `',test-form expected actual (getf parameters :line) :test
-                `',test)))))))
+                `',test-form expected actual (getf parameters :line)
+                (getf parameters :comment) :test `',test)))))))
 
 (defmethod make-requirement
            (test-form (key (eql :outputs)) expected &rest parameters)
@@ -329,7 +340,8 @@
                   ,form)))
            (unless (,test ,expected ,actual)
              ,(the-push-instance-form result 'wrong-format `',test-form
-                expected actual (getf parameters :line) :test `',test)))))))
+                expected actual (getf parameters :line)
+                (getf parameters :comment) :test `',test)))))))
 
 (defmethod make-requirement
            (test-form (key (eql :satisfies)) expected &rest parameters)
@@ -343,12 +355,12 @@
          (handler-case
              (unless (,test ,actual)
                ,(the-push-instance-form result 'unsatisfied-clause `',test-form
-                  `(satisfies ,test) nil (getf parameters :line) :args
-                  `(list ,actual)))
+                  `(satisfies ,test) nil (getf parameters :line)
+                  (getf parameters :comment) :args `(list ,actual)))
            (unsatisfied (condition)
              ,(the-push-instance-form result 'unsatisfied-clause
-                `(test-form condition) t nil (getf parameters :line) :args
-                `(args condition))))))))
+                `(test-form condition) t nil (getf parameters :line)
+                (getf parameters :comment) :args `(args condition))))))))
 
 (defmethod no-applicable-method ((gf (eql #'make-requirement)) &rest args)
   (error 'syntax-error
@@ -384,11 +396,12 @@
          (handler-case
              (unless (apply ,test ,actual)
                ,(the-push-instance-form result 'issue-of-multiple-values
-                  `',test-form expected actual (getf parameters :line)))
+                  `',test-form expected actual (getf parameters :line)
+                  (getf parameters :comment)))
            (unsatisfied (condition)
              ,(the-push-instance-form result 'unsatisfied-clause
-                `(test-form condition) t nil (getf parameters :line) :args
-                `(args condition))))))))
+                `(test-form condition) t nil (getf parameters :line)
+                (getf parameters :comment) :args `(args condition))))))))
 
 (defmethod make-requirement
            (test-form (key (eql :be-the)) expected &rest parameters)
@@ -399,8 +412,8 @@
         `(let ((,actual ,form))
            (unless (typep ,actual ',expected)
              ,(the-push-instance-form result 'issue `',test-form expected
-                `(list 'the (type-of ,actual) ,actual)
-                (getf parameters :line))))))))
+                `(list 'the (type-of ,actual) ,actual) (getf parameters :line)
+                (getf parameters :comment))))))))
 
 (defmethod make-requirement
            (test-form (key (eql :equivalents)) expected &rest parameters)
@@ -414,7 +427,8 @@
            (unless (,test ,actual1 ,actual2)
              ,(the-push-instance-form result 'issue
                 `(list ',test ',test-form ',expected) t
-                `(list ',test ,actual1 ,actual2) (getf parameters :line))))))))
+                `(list ',test ,actual1 ,actual2) (getf parameters :line)
+                (getf parameters :comment))))))))
 
 (defmethod make-requirement
            (test-form (key (eql :expanded-to)) expected &rest parameters)
@@ -424,7 +438,7 @@
       `(let ((,actual (macroexpand-1 ',(copy-tree test-form))))
          (unless (sexp= ,actual ',expected)
            ,(the-push-instance-form result 'issue `',test-form expected actual
-              (getf parameters :line)))))))
+              (getf parameters :line) (getf parameters :comment)))))))
 
 (defmethod make-requirement
            (test-form (key (eql :output-satisfies)) expected &rest parameters)
@@ -440,8 +454,9 @@
            (handler-case
                (unless (,test ,actual)
                  ,(the-push-instance-form result 'issue `',test-form
-                    `(satisfies ,test) nil (getf parameters :line)))
+                    `(satisfies ,test) nil (getf parameters :line)
+                    (getf parameters :comment)))
              (unsatisfied (condition)
                ,(the-push-instance-form result 'unsatisfied-clause
-                  `(test-form condition) t nil (getf parameters :line) :args
-                  `(args condition)))))))))
+                  `(test-form condition) t nil (getf parameters :line)
+                  (getf parameters :comment) :args `(args condition)))))))))

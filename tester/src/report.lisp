@@ -1,6 +1,6 @@
 (in-package :jingoh.tester)
 
-(defstruct issue form expected actual line)
+(defstruct issue form expected actual line comment)
 
 (defstruct (test-issue (:include issue)) test)
 

@@ -368,17 +368,17 @@
 				     3)))
 	 (warning (condition)
 	   (push (make-instance 'warning-was-signaled :form '1 :expected '2
-				:actual condition :line nil
+				:actual condition :line nil :comment nil
 				:message (princ-to-string condition))
 		 0))
 	 (error (condition)
 	   (push (make-instance 'error-was-signaled :form '1 :expected '2
-				:actual condition :line nil
+				:actual condition :line nil :comment nil
 				:message (princ-to-string condition))
 		 0)))
        (unless (string= "" output)
 	 (push (make-instance 'unexpected-output :form '1 :expected '""
-			      :actual output :line nil)
+			      :actual output :line nil :comment nil)
 	       0))
        0))
 ,:test sexp=
@@ -414,8 +414,8 @@
 
 ;;;; Description:
 ; helper for writing make-requirement.
-#?(the-push-instance-form 0 1 2 3 4 5 6)
-=> (push (make-instance '1 :form 2 :expected '3 :actual 4 :line 5 6)
+#?(the-push-instance-form 0 1 2 3 4 5 6 7)
+=> (push (make-instance '1 :form 2 :expected '3 :actual 4 :line 5 :comment 6 7)
 	 0)
 ,:test equal
 
