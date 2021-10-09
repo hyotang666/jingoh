@@ -7,6 +7,7 @@
   :description "Jingoh extension: Import/Convert specification documentation."
   :depends-on (
                "uiop"                   ; Utilities, implicitly depends on via asdf.
+               "asdf"                   ; System builder.
                "3bmd"                   ; Markdown.
                "3bmd-ext-code-blocks"   ; Extension for 3bmd.
                "read-as-string"         ; S-expression string reader.
