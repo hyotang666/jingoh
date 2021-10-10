@@ -13,7 +13,6 @@
                "closer-mop"             ; Wrapper for meta object protocol.
                "bordeaux-threads"       ; Wrapper for multi threading especially for timeout.
                "structure-ext"          ; To enable constructing structure with MAKE-INSTANCE.
-               "resignal-bind"          ; Condition capturing for better error message.
                "check-bnf"              ; Macro arguments checker.
                "cl-ansi-text"           ; Ansi escape sequence especially for text coloring.
                "vivid-diff"             ; Object diff viewer.

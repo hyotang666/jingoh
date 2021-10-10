@@ -46,19 +46,16 @@
   (setf test-form (copy-cons test-form))
   (labels ((check ()
              (loop :for key :in parameters :by #'cddr
-                   :do (resignal-bind:resignal-bind ((error (c) 'simple-error
-                                                       :format-control
-                                                       (concatenate 'string
-                                                                    (simple-condition-format-control
-                                                                      c)
-                                                                    "in ~S~&Allowed are ~S.")
-                                                       :format-arguments
-                                                       (append
-                                                         (simple-condition-format-arguments
-                                                           c)
-                                                         (list parameters
-                                                               (list-all-option-keys)))))
-                         (find-option-key key))))
+                   :do (handler-case (find-option-key key)
+                         (error (c)
+                           (apply #'error
+                                  (concatenate 'string
+                                               (simple-condition-format-control
+                                                 c)
+                                               "in ~S~&Allowed are ~S.")
+                                  (append (simple-condition-format-arguments c)
+                                          (list parameters
+                                                (list-all-option-keys))))))))
            (make-body (test-form)
              (set-around
                (let ((after (getf parameters :after)))
