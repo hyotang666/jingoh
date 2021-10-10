@@ -16,12 +16,6 @@
      (if not-first-p
          `#',form
          form))
-    (function
-     (if not-first-p
-         form
-         (or (millet:function-name form)
-             (function-lambda-expression form)
-             `(lambda (&rest args) (apply ,form args)))))
     ((cons (eql lambda) t) form)
     ((or (cons (eql function) (cons symbol null))
          (cons (eql quote) (cons symbol null)))

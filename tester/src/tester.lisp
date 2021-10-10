@@ -131,7 +131,7 @@
            (test-form (key (eql '=>)) expected &rest parameters)
   (declare (ignore key))
   (alexandria:with-unique-names (actual result)
-    (let ((test (encallable (getf parameters :test #'eql)))
+    (let ((test (encallable (getf parameters :test 'eql)))
           (form (canonicalize test-form parameters)))
       (the-standard-handling-form result parameters test-form expected
         `(let ((,actual ,form))
@@ -318,7 +318,7 @@
            (test-form (key (eql :values)) expected &rest parameters)
   (declare (ignore key))
   (alexandria:with-unique-names (actual result)
-    (let ((test (encallable (getf parameters :test #'equal)))
+    (let ((test (encallable (getf parameters :test 'equal)))
           (form (canonicalize test-form parameters)))
       (the-standard-handling-form result parameters test-form expected
         `(let ((,actual (multiple-value-list ,form)))
@@ -331,7 +331,7 @@
            (test-form (key (eql :outputs)) expected &rest parameters)
   (declare (ignore key))
   (alexandria:with-unique-names (actual result)
-    (let ((test (encallable (getf parameters :test #'string=)))
+    (let ((test (encallable (getf parameters :test 'string=)))
           (form (canonicalize test-form parameters)))
       (the-standard-handling-form result parameters test-form expected
         `(let ((,actual
@@ -420,7 +420,7 @@
   (declare (ignore key))
   (let ((form1 (canonicalize test-form parameters))
         (form2 (canonicalize expected parameters))
-        (test (encallable (getf parameters :test #'eql))))
+        (test (encallable (getf parameters :test 'eql))))
     (alexandria:with-unique-names (actual1 actual2 result)
       (the-standard-handling-form result parameters test-form expected
         `(let ((,actual1 ,form1) (,actual2 ,form2))

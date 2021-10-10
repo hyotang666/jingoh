@@ -2,7 +2,7 @@
 (in-package :asdf)
 (defsystem :jingoh.tester
   :description "Jingoh module for issue objects and interface for jingoh.org."
-  :version "1.3.0"
+  :version "1.3.1"
   :author "SATO Shinichi"
   :license "MIT"
   :long-description #.(uiop:read-file-string (merge-pathnames "CONCEPTS.md"
@@ -10,7 +10,6 @@
   :depends-on (
                "alexandria"             ; Utilities, implicitly depends on via (bordeaux-threads check-bnf cl-colors2 cl-ansi-text vivid-diff)
                "uiop"                   ; Utilities, implicitly depends on via asdf.
-               "millet"                 ; Wrapper for implementation dependent utilities.
                "closer-mop"             ; Wrapper for meta object protocol.
                "bordeaux-threads"       ; Wrapper for multi threading especially for timeout.
                "structure-ext"          ; To enable constructing structure with MAKE-INSTANCE.

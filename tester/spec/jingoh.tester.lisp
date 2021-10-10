@@ -486,12 +486,12 @@
 #?(encallable ''car) => CAR
 #?(encallable ''car t) => #'CAR
 ,:test equal
-#?(encallable #'car) => CAR
-#?(encallable #'car t) :be-the function
+#?(encallable #'car) :signals error
+#?(encallable #'car t) :signals error
 #?(encallable '#'car) => CAR
 #?(encallable '(lambda (x) (print x))) => (LAMBDA (X) (PRINT X))
 ,:test equal
-#?(encallable (lambda (x) (print x))) :be-the (cons (eql lambda)T)
+#?(encallable (lambda (x) (print x))) :signals error
 
 #+syntax
 (ENCALLABLE form &optional not-first-p) ; => result
