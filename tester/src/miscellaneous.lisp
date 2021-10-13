@@ -48,14 +48,10 @@
              (loop :for key :in parameters :by #'cddr
                    :do (handler-case (find-option-key key)
                          (error (c)
-                           (apply #'error
-                                  (concatenate 'string
-                                               (simple-condition-format-control
-                                                 c)
-                                               "in ~S~&Allowed are ~S.")
-                                  (append (simple-condition-format-arguments c)
-                                          (list parameters
-                                                (list-all-option-keys))))))))
+                           (error
+                             (concatenate 'string (princ-to-string c)
+                                          " in ~S~&Allowed are ~S.")
+                             parameters (list-all-option-keys))))))
            (make-body (test-form)
              (set-around
                (let ((after (getf parameters :after)))
