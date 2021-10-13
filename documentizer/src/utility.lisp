@@ -2,22 +2,21 @@
 
 (declaim (optimize speed))
 
+(declaim
+ (ftype (function ((or symbol simple-string)) (values simple-string &optional))
+        escape-*))
+
 (defun escape-* (arg)
-  (flet ((ensure-symbol-notation (arg)
-           (declare (optimize (speed 1))) ; due to type uncertainty.
-           (if (uiop:string-suffix-p (prin1-to-string arg) "|")
-               (format nil "|~A|" arg)
-               (string arg))))
-    (declare
-      (ftype (function ((or symbol string)) (values simple-string &optional))
-             ensure-symbol-notation))
-    (with-output-to-string (*standard-output*)
-      (loop :for c :across (ensure-symbol-notation arg)
-            :when (char= #\* c)
-              :do (write-char #\\)
-                  (write-char c)
-            :else
-              :do (write-char c)))))
+  (with-output-to-string (*standard-output*)
+    (loop :for c
+               :across (etypecase arg
+                         (symbol (prin1-to-string arg))
+                         (string arg))
+          :when (char= #\* c)
+            :do (write-char #\\)
+                (write-char c)
+          :else
+            :do (write-char c))))
 
 (defun x-alph-pathname (char) (target-path (format nil "X_Alph_~A" char)))
 
