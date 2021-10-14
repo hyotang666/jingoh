@@ -281,10 +281,8 @@
 
 ;;;; Arguments and Values:
 
-; arg0 := org, Otherwise error.
-#?(org-name 0) :signals TYPE-ERROR
-,:lazy t
-,:ignore-signals warning
+; arg0 := org, Otherwise implementation dependent condition.
+#?(org-name 0) :signals condition
 
 ; result := symbol represents org name.
 
@@ -311,10 +309,8 @@
 
 ;;;; Arguments and Values:
 
-; arg0 := org, otherwise error.
-#?(org-package 0) :signals TYPE-ERROR
-,:lazy t
-,:ignore-signals warning
+; arg0 := org, otherwise implementation dependent condition.
+#?(org-package 0) :signals condition
 
 ; result := package
 
@@ -345,10 +341,8 @@
 
 ;;;; Arguments and Values:
 
-; arg0 := org, otherwise error.
-#?(org-current-subjects 0) :signals TYPE-ERROR
-,:lazy t
-,:ignore-signals warning
+; arg0 := org, otherwise implementation dependent condition.
+#?(org-current-subjects 0) :signals condition
 
 ; result := cons which includes current subjects.
 
@@ -378,10 +372,8 @@
 
 ;;;; Arguments and Values:
 
-; arg0 := org, otherwise error.
-#?(org-options 0) :signals TYPE-ERROR
-,:lazy T
-,:ignore-signals warning
+; arg0 := org, otherwise implementation dependent condition.
+#?(org-options 0) :signals condition
 
 ; result := list which includes options
 
@@ -411,10 +403,8 @@
 
 ;;;; Arguments and Values:
 
-; arg0 := org, otherwise error.
-#?(org-specifications 0) :signals TYPE-ERROR
-,:lazy t
-,:ignore-signals warning
+; arg0 := org, otherwise implementation dependent condition.
+#?(org-specifications 0) :signals condition
 
 ; result := vector which includes specifications.
 
@@ -441,10 +431,10 @@
 
 ;;;; Arguments and Values:
 
-; name := symbol, otherwise error.
+; name := symbol, otherwise implementation dependent condition.
 #?(register-org 0 (make-org)) :signals condition
 
-; org := Org, otherwise error.
+; org := Org, otherwise implementation dependent condition.
 #?(register-org :hoge 0) :signals condition
 
 ; result := org
@@ -555,7 +545,7 @@
 
 ;;;; Arguments and Values:
 
-; org := org, otherwise error.
+; org := org, otherwise implementation dependent condition.
 #?(org-requirements-count 0) :signals condition
 
 ; result := non negative integer.
@@ -597,12 +587,10 @@
 
 ; subject-designator := subject designator, described later.
 
-; org := org generate form. when such form does not generate org, an error is signaled.
-#?(do-requirements (req t 0)
+; org := org generate form. when such form does not generate org, an implementation dependent condition is signaled.
+#?(do-requirements (req t :not-org)
     (princ req))
-:signals type-error
-,:lazy t
-,:ignore-signals warning
+:signals condition
 
 ; return := return value generate form.
 #?(do-requirements (req t *org* (princ :end))
@@ -665,12 +653,12 @@
 
 ;;;; Arguments and Values:
 
-; subject := symbol, otherwise error.
+; subject := symbol, otherwise implementation dependent condition.
 #?(add-requirement "not symbol" 0) :signals condition
 
 ; requirement := any lisp object. unspecified.
 
-; org := org, otherwise error.
+; org := org, otherwise implementation dependent condition.
 #?(add-requirement 'subject :value :not-org) :signals condition
 
 ; result := requirement
@@ -719,7 +707,7 @@
 
 ; subject-designator := subject-designator, describe later
 
-; org := org, otherwise error
+; org := org, otherwise implementation dependent condition
 #?(delete-subject 'subject :not-org) :signals condition
 
 ; result := T
