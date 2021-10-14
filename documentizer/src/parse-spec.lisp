@@ -63,10 +63,9 @@
 (defun section-p (elt)
   (and (uiop:string-prefix-p "(" elt)
        (let* ((*package* (find-package :jingoh.documentizer))
-              (null-package:*only-junk-p* t)
               (sexp
-               (with-input-from-string (s elt)
-                 (null-package:read-with-null-package s))))
+               (handler-bind ((error #'eclector.reader:recover))
+                 (eclector.reader:read-from-string elt))))
          (when (find (car sexp)
                      '(requirements-about common-requirements-about))
            sexp))))

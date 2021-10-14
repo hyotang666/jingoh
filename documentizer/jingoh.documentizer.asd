@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.documentizer
-  :version "6.7.1"
+  :version "6.7.2"
   :author "SATO Shinichi"
   :license "MIT"
   :description "Jingoh extension: Import/Convert specification documentation."
@@ -11,7 +11,7 @@
                "3bmd"                   ; Markdown.
                "3bmd-ext-code-blocks"   ; Extension for 3bmd.
                "read-as-string"         ; S-expression string reader.
-               "null-package"           ; Safe S expression reader.
+               "eclector"               ; Safe S expression reader.
                "cl-ppcre"               ; Regular expression.
                )
   :pathname "src/"
