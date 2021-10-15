@@ -142,7 +142,7 @@
           (*package* (org-package *org*)))
     (flet ((to-end ()
              (go #0=#:end)))
-      (declare (dynamic-extent #'to-end)) ; To muffle SBCL compiler.
+      (declare (dynamic-extent (function to-end))) ; To muffle SBCL compiler.
       ;; in order to be able to see tag, we need SETF in PROG*'s body.
       (setf *issues*
               (resignal-bind ((missing-subject () 'missing-subject
