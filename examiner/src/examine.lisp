@@ -45,11 +45,7 @@
   (invoke-debugger (make-condition 'break-on-fails)))
 
 (define-condition break-on-finish (error)
-  ((issues :initarg :issues :reader issues))
-  (:report
-   (lambda (condition stream)
-     (declare (ignore condition))
-     (format stream "Break cause *BREAK-ON-FINISH*."))))
+  ((issues :initarg :issues :reader issues)))
 
 (defun break-on-finish (&optional issues)
   (invoke-debugger (make-condition 'break-on-finish :issues issues)))
@@ -62,7 +58,7 @@
                        (with-output-to-string (out)
                          (print-summary (issues c) out)))
           stream))
-      (call-next-method)))
+      (funcall (formatter "Break cause *BREAK-ON-FINISH*.") stream)))
 
 (defun print-progress
        (subject
