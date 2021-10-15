@@ -67,6 +67,8 @@
            &rest option*
            &key (as (error "Keyword parameter :AS is required."))
            &allow-other-keys)
+  #+ecl
+  (declare (ignore as)) ; due to check-bnf does not support ecl.
   (check-bnf:check-bnf (:whole whole)
     ((subject* symbol))
     ((option* keyword t))
