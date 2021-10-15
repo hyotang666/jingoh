@@ -76,7 +76,7 @@
         add-requirement))
 
 (defun add-requirement (subject requirement &optional (org *org*))
-  #+clisp
+  #+(or clisp allegro)
   (check-type subject symbol)
   (let ((spec (find subject (org-specifications org) :key #'spec-subject)))
     (if spec

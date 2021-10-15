@@ -69,7 +69,7 @@
  (ftype (function (keyword) (values keyword &optional)) add-new-option-key))
 
 (defun add-new-option-key (key)
-  #+clisp
+  #+(or clisp allegro)
   (check-type key keyword)
   (setf (gethash key *option-keys*) key))
 
@@ -79,7 +79,7 @@
         find-option-key))
 
 (defun find-option-key (key &optional (errorp t))
-  #+clisp
+  #+(or clisp allegro)
   (check-type key keyword)
   (or (values (gethash key *option-keys*))
       (when errorp

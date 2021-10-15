@@ -9,7 +9,7 @@
 (declaim (ftype (function (symbol org) (values org &optional)) register-org))
 
 (defun register-org (name org)
-  #+clisp
+  #+(or clisp allegro)
   (progn (check-type name symbol) (check-type org org))
   (setf (gethash name *orgs*) org))
 
