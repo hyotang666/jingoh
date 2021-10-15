@@ -2,7 +2,7 @@
 (in-package :asdf)
 (defsystem :jingoh.tester
   :description "Jingoh module for issue objects and interface for jingoh.org."
-  :version "1.3.2"
+  :version "1.3.3"
   :author "SATO Shinichi"
   :license "MIT"
   :long-description #.(uiop:read-file-string (merge-pathnames "CONCEPTS.md"

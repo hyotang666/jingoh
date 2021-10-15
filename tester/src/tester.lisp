@@ -129,7 +129,6 @@
 
 (defmethod make-requirement
            (test-form (key (eql '=>)) expected &rest parameters)
-  (declare (ignore key))
   (alexandria:with-unique-names (actual result)
     (let ((test (encallable (getf parameters :test 'eql)))
           (form (canonicalize test-form parameters)))
@@ -142,7 +141,6 @@
 
 (defmethod make-requirement
            (test-form (key (eql :signals)) expected &rest parameters)
-  (declare (ignore key))
   (assert (millet:type-specifier-p expected))
   (assert (subtypep expected 'condition))
   (alexandria:with-unique-names (actual result end output)
@@ -204,7 +202,6 @@
 (defmethod make-requirement
            (test-form (key (eql :invokes-debugger)) (expected null)
             &rest parameters)
-  (declare (ignore key expected))
   (alexandria:with-unique-names (result output end temp)
     (let ((form (canonicalize test-form parameters)))
       `(lambda ()
@@ -249,7 +246,6 @@
 
 (defmethod make-requirement
            (test-form (key (eql :invokes-debugger)) expected &rest parameters)
-  (declare (ignore key))
   (alexandria:with-unique-names (actual result output end)
     (let ((form (canonicalize test-form parameters))
           (test (getf parameters :test)))
@@ -316,7 +312,6 @@
 
 (defmethod make-requirement
            (test-form (key (eql :values)) expected &rest parameters)
-  (declare (ignore key))
   (alexandria:with-unique-names (actual result)
     (let ((test (encallable (getf parameters :test 'equal)))
           (form (canonicalize test-form parameters)))
@@ -329,7 +324,6 @@
 
 (defmethod make-requirement
            (test-form (key (eql :outputs)) expected &rest parameters)
-  (declare (ignore key))
   (alexandria:with-unique-names (actual result)
     (let ((test (encallable (getf parameters :test 'string=)))
           (form (canonicalize test-form parameters)))
@@ -345,7 +339,6 @@
 
 (defmethod make-requirement
            (test-form (key (eql :satisfies)) expected &rest parameters)
-  (declare (ignore key))
   (let ((actual (gensym "ACTUAL"))
         (test (encallable expected))
         (form (canonicalize test-form parameters))
@@ -371,14 +364,13 @@
 (defmethod make-requirement
            (test-form (key (eql '=>)) (expected (eql 'unspecified))
             &rest parameters)
-  (declare (ignore test-form key expected parameters))
+  (declare (ignore test-form parameters))
   '(lambda () nil))
 
 (defmethod make-requirement
            (test-form (key (eql '=>))
             (expected (eql 'implementation-dependent))
             &rest parameters)
-  (declare (ignore key))
   (let ((result (gensym "RESULT")))
     (the-standard-handling-form result parameters test-form expected
       (canonicalize test-form parameters))))
@@ -386,7 +378,6 @@
 (defmethod make-requirement
            (test-form (key (eql :multiple-value-satisfies)) expected
             &rest parameters)
-  (declare (ignore key))
   (let ((actual (gensym "ACTUAL"))
         (test (encallable expected t))
         (form (canonicalize test-form parameters))
@@ -405,7 +396,6 @@
 
 (defmethod make-requirement
            (test-form (key (eql :be-the)) expected &rest parameters)
-  (declare (ignore key))
   (let ((form (canonicalize test-form parameters)))
     (alexandria:with-unique-names (actual result)
       (the-standard-handling-form result parameters test-form expected
@@ -417,7 +407,6 @@
 
 (defmethod make-requirement
            (test-form (key (eql :equivalents)) expected &rest parameters)
-  (declare (ignore key))
   (let ((form1 (canonicalize test-form parameters))
         (form2 (canonicalize expected parameters))
         (test (encallable (getf parameters :test 'eql))))
@@ -432,7 +421,6 @@
 
 (defmethod make-requirement
            (test-form (key (eql :expanded-to)) expected &rest parameters)
-  (declare (ignore key))
   (alexandria:with-unique-names (result actual)
     (the-standard-handling-form result parameters test-form expected
       `(let ((,actual (macroexpand-1 ',(copy-tree test-form))))
@@ -442,7 +430,6 @@
 
 (defmethod make-requirement
            (test-form (key (eql :output-satisfies)) expected &rest parameters)
-  (declare (ignore key))
   (alexandria:with-unique-names (actual result)
     (let ((test (encallable expected))
           (form (canonicalize test-form parameters)))
