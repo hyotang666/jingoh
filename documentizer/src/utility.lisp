@@ -24,7 +24,10 @@
 
 (defvar *target-type* "html")
 
-(defun target-path (name) (make-pathname :name name :type *target-type*))
+(defun target-path (name)
+  #+allegro
+  (check-type name string)
+  (make-pathname :name name :type *target-type*))
 
 (defmacro with-output-to ((pathname) &body body)
   `(with-open-file (*standard-output* ,pathname :direction :output

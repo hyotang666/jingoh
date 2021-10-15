@@ -461,7 +461,7 @@ package documentation
 ;;;; Arguments and Values:
 
 ; name := string, otherwise error.
-#?(target-path :example) :signals error
+#?(target-path :not-string) :signals error
 
 ; result := pathname
 

@@ -83,6 +83,8 @@
 ;;; PACKAGES
 
 (defun packages (meta-datas)
+  #+allegro
+  (check-type meta-datas list)
   (format t "# Packages Index~%")
   (loop :for i :of-type (mod #.most-positive-fixnum) :upfrom 1
         :for m :in meta-datas
