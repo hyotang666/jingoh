@@ -413,7 +413,6 @@
 ;;; :README
 
 (defmethod generate ((dispatcher (eql :readme)) &key system)
-  (declare (ignore dispatcher))
   (setf system (asdf:find-system system)) ; as canonicalize.
   (let* ((readme-path
           (path-of "README" "md" (asdf:system-source-directory system)))

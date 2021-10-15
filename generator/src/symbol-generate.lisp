@@ -276,10 +276,10 @@
                 lambda-vars variables)
               (let ((return (third ftype)))
                 (mapc #'acc
-                      (etypecase return
+                      (typecase return
                         ((or null (eql *)) '(("result" nil)))
                         ((cons (eql values) *) (parse-values return))
-                        (t (list (list "result" return))))))))))))
+                        (otherwise (list (list "result" return))))))))))))
 
 (defun parse-values (values)
   (labels ((rec (spec* &optional optionalp (num 1) acc)
