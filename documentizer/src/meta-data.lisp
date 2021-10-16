@@ -86,24 +86,27 @@
     (unwind-protect
         (uiop:while-collecting (acc)
           (dolist (component (component-children system))
-            (with-open-file (s (asdf:component-pathname component))
-              (do* ((tag '#:tag)
-                    (hook (coerce *macroexpand-hook* 'function))
-                    (*macroexpand-hook* (lambda (expander form env)
-                                          (typecase form
-                                            ((cons (eql in-package) *)
-                                             (eval
+            (when (uiop:featurep
+                    (asdf/component:component-if-feature component))
+              (with-open-file (s (asdf:component-pathname component))
+                (do* ((tag '#:tag)
+                      (hook (coerce *macroexpand-hook* 'function))
+                      (*macroexpand-hook* (lambda (expander form env)
+                                            (typecase form
+                                              ((cons (eql in-package) *)
+                                               (eval
+                                                 (funcall hook expander form
+                                                          env)))
+                                              ((not (cons (eql defpackage) *))
                                                (funcall hook expander form
-                                                        env)))
-                                            ((not (cons (eql defpackage) *))
-                                             (funcall hook expander form env))
-                                            (otherwise ; defpackage form.
-                                             (acc form)
-                                             (funcall hook expander form
-                                                      env)))))
-                    (exp #0=(read s nil tag) #0#))
-                   ((eq exp tag))
-                (macroexpand exp)))))
+                                                        env))
+                                              (otherwise ; defpackage form.
+                                               (acc form)
+                                               (funcall hook expander form
+                                                        env)))))
+                      (exp #0=(read s nil tag) #0#))
+                     ((eq exp tag))
+                  (macroexpand exp))))))
       (setq *package* package))))
 
 (defun component-children (component)
