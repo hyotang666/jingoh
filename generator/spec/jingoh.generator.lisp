@@ -250,7 +250,8 @@
 ; return-spec := [ "result" | "result n" | "optional" | "rest values" ]
 ; typename := [ string | null ]
 #?(PARSE-LAMBDA-LIST 'PARSE-LAMBDA-LIST)
-=> ((SYMBOL NIL) ("result" NIL))
+=> #.(or #+cmu '((SYMBOL "T") ("result" LIST))
+	 '((SYMBOL NIL) ("result" NIL)))
 , :test equal
 
 ;;;; Affected By:
