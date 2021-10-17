@@ -25,6 +25,7 @@
     (make-array 0 :fill-pointer 0 :adjustable t :element-type 'spec)
     :type (vector spec *)))
 
+#-cmu
 (declaim
  (ftype (function (spec) (values (vector requirement *) &optional))
         spec-requirements))
@@ -39,21 +40,21 @@
   (reduce #'+ (org-specifications org)
           :key (lambda (x) (length (spec-requirements x)))))
 
-(defmethod print-object ((o org) *standard-output*)
+(defmethod print-object ((o org) output)
   (if (null *print-escape*)
       (call-next-method)
-      (print-unreadable-object (o *standard-output* :type t)
+      (print-unreadable-object (o output :type t)
         (let ((count (org-requirements-count o)))
-          (format t "~A~:[ ~D requirement~P~;~]" (org-name o) (zerop count)
-                  count count)))))
+          (funcall (formatter "~A~:[ ~D requirement~P~;~]") output (org-name o)
+                   (zerop count) count count)))))
 
-(defmethod print-object ((s spec) *standard-output*)
+(defmethod print-object ((s spec) output)
   (if (null *print-escape*)
       (call-next-method)
-      (print-unreadable-object (s *standard-output* :type t)
+      (print-unreadable-object (s output :type t)
         (let ((count (length (spec-requirements s))))
-          (format t "~A~:[ ~D requirement~P~;~]" (spec-subject s) (zerop count)
-                  count count)))))
+          (funcall (formatter "~A~:[ ~D requirement~P~;~]") output
+                   (spec-subject s) (zerop count) count count)))))
 
 (deftype org-designator () '(or (and symbol (not boolean)) org))
 
