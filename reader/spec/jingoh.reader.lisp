@@ -10,9 +10,9 @@
 ;;;; Description:
 ; Set dispatch macro wich specified character to `*readtable*`.
 #?(let ((*readtable* (copy-readtable nil)))
-    (values (get-dispatch-macro-character #\# #\?)
+    (values (named-readtables::%get-dispatch-macro-character #\# #\? *readtable*)
 	    (enable)
-	    (get-dispatch-macro-character #\# #\?)))
+	    (named-readtables::%get-dispatch-macro-character #\# #\? *readtable*)))
 :multiple-value-satisfies
 (lambda ($1 $2 $3)
   (& (null $1)

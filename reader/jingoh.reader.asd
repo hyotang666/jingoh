@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.reader
-  :version "2.2.8"
+  :version "2.2.9"
   :author "SATO Shinichi"
   :license "MIT"
   :description "Jingoh module to provide reader macro."

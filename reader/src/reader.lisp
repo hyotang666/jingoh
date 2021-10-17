@@ -26,7 +26,8 @@
   (let ((var (gensym "CHAR")) (it (gensym "TEMP")))
     `(let* ((,var ,char)
             (,it
-             (get-dispatch-macro-character *dispatch-macro-character* ,var)))
+             (named-readtables::%get-dispatch-macro-character
+               *dispatch-macro-character* ,var *readtable*)))
        (if (null ,it) ; Noone use it.
            #0=(replace-macro-character *dispatch-macro-character* ,var)
            (if (eq '|#?reader| ,it) ; it's me!
@@ -72,7 +73,7 @@
   (labels ((read-form (as)
              (let ((form (read stream t t t)))
                (when *read-print*
-                 (format *trace-output* "~%~S: ~S" as form))
+                 (funcall (formatter "~%~S: ~S") *trace-output* as form))
                form))
            (options ()
              (if number
@@ -83,7 +84,10 @@
                        :collect (read-form '#:option-key)
                        :collect (read-form '#:option-value))))
            (have-option? ()
-             (case (peek-char t stream nil nil t)
+             (case
+                 (handler-case (peek-char t stream nil nil t)
+                   ;; cmucl signals.
+                   (end-of-file ()))
                (#\Newline
                 (|line-counter| stream (read-char stream))
                 (have-option?))
@@ -100,7 +104,7 @@
               ,(pop *lines*)
               ,@(options))))
       (when (or *read-verbose* *read-print*)
-        (format *trace-output* "~%READ: ~S" form))
+        (funcall (formatter "~%READ: ~S") *trace-output* form))
       form)))
 
 (locally
@@ -179,6 +183,8 @@
        (coerce
          (load-time-value (get-macro-character #\" (copy-readtable nil)) t)
          'function)))
+  #+cmu
+  (declare (type function reader))
   (defun |string-line-counter| (stream character)
     (let ((string (funcall reader stream character)))
       (incf *line* (count #\Newline string))
