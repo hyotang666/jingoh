@@ -229,6 +229,8 @@
              '(|affected by| side-effects notes exceptional-situations))))
 
 (defun parse-lambda-list (symbol)
+  #+abcl
+  (check-type symbol symbol)
   (multiple-value-bind (type _ information)
       (when (fboundp 'cltl2:function-information)
         (cltl2:function-information symbol))
