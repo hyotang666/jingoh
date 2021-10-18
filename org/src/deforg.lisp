@@ -34,6 +34,8 @@
 
 (defmacro deforg (&whole whole name)
   (check-bnf:check-bnf (:whole whole) ((name symbol)))
+  #-check-bnf
+  (check-type name symbol)
   `(eval-when (:load-toplevel :compile-toplevel :execute)
      (register-org ',name (make-org :name ',name))))
 
@@ -45,6 +47,8 @@
 
 (defmacro in-org (&whole whole name)
   (check-bnf:check-bnf (:whole whole) ((name symbol)))
+  #-check-bnf
+  (check-type name symbol)
   `(eval-when (:load-toplevel :compile-toplevel :execute)
      (setf *org*
              (or (find-org ',name nil)
@@ -54,6 +58,11 @@
   (check-bnf:check-bnf (:whole whole)
     ((subject symbol))
     ((option* keyword t)))
+  #-check-bnf
+  (progn
+   (check-type subject symbol)
+   (loop :for (k) :on option* :by #'cddr
+         :do (check-type k keyword)))
   `(eval-when (:load-toplevel :compile-toplevel :execute)
      (setf (org-options *org*) ',option*)
      (setf (org-current-subjects *org*) (list ',subject))))
@@ -67,12 +76,16 @@
            &rest option*
            &key (as (error "Keyword parameter :AS is required."))
            &allow-other-keys)
-  #+ecl
-  (declare (ignore as)) ; due to check-bnf does not support ecl.
   (check-bnf:check-bnf (:whole whole)
     ((subject* symbol))
     ((option* keyword t))
     ((as symbol)))
+  #-check-bnf
+  (progn
+   (assert (every #'symbolp subject*))
+   (loop :for (k) :on option* :by #'cddr
+         :do (check-type k keyword))
+   (check-type as symbol))
   `(eval-when (:load-toplevel :compile-toplevel :execute)
      (setf (org-options *org*) ',option*)
      (setf (org-current-subjects *org*) ',subject*)))

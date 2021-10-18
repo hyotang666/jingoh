@@ -43,6 +43,8 @@
     ((<subject-designator> check-bnf:expression))
     ((<org> check-bnf:expression))
     ((<return> check-bnf:expression)))
+  #-check-bnf
+  (check-type var (or symbol (cons symbol (cons symbol null))))
   (setf var (alexandria:ensure-list var))
   (if (constantp <subject-designator> env)
       (let ((sd (eval <subject-designator>)))

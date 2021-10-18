@@ -17,7 +17,7 @@
 ;;;; Arguments and Values:
 
 ; name := symbol, otherwise ERROR.
-#?(deforg "ERROR") :signals check-bnf:syntax-error
+#?(deforg "ERROR") :signals error
 ,:lazy T
 
 ; result := org
@@ -56,7 +56,7 @@
 ;;;; Arguments and Values:
 
 ; name := org-designator, otherwise error.
-#?(in-org 0) :signals check-bnf:syntax-error
+#?(in-org 0) :signals error
 ,:lazy T
 
 ; result := org
@@ -92,7 +92,7 @@
 
 ; subject := subject-designator. ; see subject-designator below.
 ; Otherwise error.
-#?(requirements-about 0) :signals check-bnf:syntax-error
+#?(requirements-about 0) :signals error
 ,:lazy T
 
 ; option := keyword value pair.
@@ -147,7 +147,7 @@
 ; but :AS is required. See below.
 
 ; as := symbol. Otherwise error.
-#?(common-requirements-about (first car) :as 0) :signals check-bnf:syntax-error
+#?(common-requirements-about (first car) :as 0) :signals error
 ,:lazy T
 ; specify alias for common subjects.
 
