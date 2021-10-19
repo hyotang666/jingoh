@@ -106,6 +106,12 @@
                                                        condition)))))
                                    ,@body))
                                body))))
+           ,@(when (getf parameters :timeout)
+               `((bt:timeout (condition)
+                  ,(the-push-instance-form result 'error-was-signaled
+                     `',test-form expected 'condition (getf parameters :line)
+                     (getf parameters :comment) :message
+                     `(princ-to-string condition)))))
            ,@(unless (ignore-signals 'warning parameters)
                `((warning (condition)
                   ,(the-push-instance-form result 'warning-was-signaled
