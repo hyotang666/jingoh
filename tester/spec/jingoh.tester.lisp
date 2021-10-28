@@ -1,7 +1,5 @@
 (defpackage :jingoh.tester.spec
-  (:use :cl :jingoh :jingoh.tester :jingoh.org)
-  (:import-from :jingoh.tester #:*color-hook*)
-  )
+  (:use :cl :jingoh :jingoh.tester :jingoh.org))
 (in-package :jingoh.tester.spec)
 (setup :jingoh.tester)
 
@@ -1071,75 +1069,6 @@
 
 ;;;; Notes:
 ; refered by print-object specialized by issue, jingoh.tester::diff, and jingoh.tester::diff-string.
-
-(requirements-about MISMATCH-SEXP :doc-type function)
-
-;;;; Description:
-; When sexp is not syntactically equal, markup such diffs.
-#?(prin1 (mismatch-sexp :foo :bar))
-:outputs #.(cl-ansi-text:red ":FOO")
-
-#+syntax
-(MISMATCH-SEXP actual expected) ; => result
-
-;;;; Arguments and Values:
-
-; actual := form
-
-; expected := form
-
-; result := form which may be markuped.
-; *NOTE!* - markuped object is diff object. Do not confused.
-#?(mismatch-sexp :foo :bar) :be-the jingoh.tester::diff
-
-;;;; Affected By:
-; `*print-vivid*` `jingoh.tester::*color-hook*`
-; when `*print-vivid*` is nil, printed notation is not colored.
-#?(let ((*print-vivid* nil))
-    (prin1 (mismatch-sexp :foo :bar)))
-:outputs ":FOO"
-#?(let ((*print-vivid* nil))
-    (princ (mismatch-sexp "foo" "foobar")))
-:outputs "\"foo\""
-
-;;;; Side-Effects:
-; none
-
-;;;; Notes:
-; For debug use.
-
-; Like SEXP=, this handle uninterned symbol in expected as variable. 
-#?(mismatch-sexp '#:var 'hoge) => #:var
-,:test (lambda ($actual $result)
-	 (& (symbolp $actual)
-	    (symbolp $result)
-	    (null (symbol-package $actual))
-	    (null (symbol-package $result))
-	    (string= (prin1-to-string $actual)
-		     (prin1-to-string $result))))
-
-;;;; Exceptional-Situations:
-
-;;;; string-output tests
-; When actual shorter than expected, string ":NULL" is added last.
-#?(let ((*color-hook* #'identity)) ; without coloring.
-    (prin1 (mismatch-sexp "foo" "fooo")))
-:outputs "\"foo:NULL\""
-
-; when actual longer than expected, such part is printed with coloring.
-#?(let ((*color-hook* (constantly " instead of coloring")))
-    (prin1 (mismatch-sexp "foobar" "foo")))
-:outputs "\"foo instead of coloring\""
-
-#?(let ((*color-hook* (constantly "instead of coloring")))
-    (prin1 (mismatch-sexp "foo" "bar")))
-:outputs "\"instead of coloring\""
-
-;;;; Examples.
-#?(let ((*print-vivid* nil))
-    (prin1(mismatch-sexp #2A() #2A((1 2) (3 4)))))
-:outputs #.(prin1-to-string'(:DIFFERENT-DIMENSIONS :EXPECTED (2 2) :ACTUAL (0 0) #2A()))
-,:test equalp
 
 (requirements-about SYNTAX-ERROR :doc-type type)
 

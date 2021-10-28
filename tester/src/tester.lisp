@@ -191,10 +191,9 @@
                          (with-integrated-output-stream (*standard-output*)
                            (let ((*error-output* (make-broadcast-stream)))
                              (setf ,actual
-                                     (with-compilation-unit (:override t)
-                                       (funcall
-                                         (coerce '(lambda () ,form)
-                                                 'function))))))))
+                                     (funcall
+                                       (coerce '(lambda () ,form)
+                                               'function)))))))
                ,(the-push-instance-form result 'unexpected-success `',test-form
                   expected actual (getf parameters :line)
                   (getf parameters :comment)))

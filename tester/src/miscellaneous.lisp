@@ -95,6 +95,9 @@
                                            uiop:*usual-uninteresting-conditions*))
       (otherwise (make-body `(eval (macroexpand ',test-form)))))))
 
+(defun slots<=obj (obj)
+  (mapcar #'c2mop:slot-definition-name (c2mop:class-slots (class-of obj))))
+
 (defun sexp= (sexp1 sexp2)
   (let (env)
     (labels ((rec (sexp1 sexp2)

@@ -2,6 +2,7 @@
 
 (defpackage :jingoh.tester
   (:use :cl :jingoh.org)
+  (:import-from :vivid-colors #:*print-vivid*)
   (:export ;;;; main api
            ;; notations
            #:defspec
