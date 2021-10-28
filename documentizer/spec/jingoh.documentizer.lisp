@@ -61,9 +61,7 @@
      (every (lambda (x)
 	      (typep x 'meta-data))
 	    $result)))
-,:ignore-signals (or warning
-		     ;; ECL needs
-		     uiop:compile-file-error)
+,:ignore-signals nil
 ,:stream NIL
 
 #+syntax
