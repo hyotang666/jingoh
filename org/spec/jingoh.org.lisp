@@ -727,6 +727,19 @@
 
 ;;;; Exceptional-Situations:
 
+;; The guard for allegro.
+#+allegro
+#?(array-has-fill-pointer-p (delete 0 (make-array 4 :fill-pointer 2 :initial-element 0)))
+=> NIL
+,:comment "When this test is failed, fix DELETE-SUBJECT to use cl:delete."
+
+;; The guard for ABCL
+#+abcl
+#?(handler-case (prin1-to-string (delete 0 (make-array 4 :fill-pointer 2 :initial-element 0)))
+    (condition () t))
+=> T
+,:comment "When this test is failed, fix DELETE-SUBJECT to use cl:delete."
+
 (requirements-about org-designator :doc-type type)
 ;;;; Description:
 ; Represents org.

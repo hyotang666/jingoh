@@ -44,7 +44,9 @@
     ((<org> check-bnf:expression))
     ((<return> check-bnf:expression)))
   #-check-bnf
-  (check-type var (or symbol (cons symbol (cons symbol null))))
+  (progn
+   whole ; to muffle unused style warning.
+   (check-type var (or symbol (cons symbol (cons symbol null)))))
   (setf var (alexandria:ensure-list var))
   (if (constantp <subject-designator> env)
       (let ((sd (eval <subject-designator>)))
@@ -78,7 +80,7 @@
         add-requirement))
 
 (defun add-requirement (subject requirement &optional (org *org*))
-  #+(or clisp allegro)
+  #+(or clisp allegro abcl)
   (check-type subject symbol)
   (let ((spec (find subject (org-specifications org) :key #'spec-subject)))
     (if spec

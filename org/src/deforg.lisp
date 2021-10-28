@@ -9,9 +9,23 @@
 (declaim (ftype (function (symbol org) (values org &optional)) register-org))
 
 (defun register-org (name org)
-  #+(or clisp allegro)
+  #+(or clisp allegro abcl)
   (progn (check-type name symbol) (check-type org org))
   (setf (gethash name *orgs*) org))
+
+#+(or allegro abcl)
+(defun delete% (item vector &key (key #'identity))
+  ;; DELETE for allegro.
+  ;; Allegro wipe away fill-pointer after DELETE.
+  ;; ABCL has [issue.](https://github.com/armedbear/abcl/issues/404)
+  (assert (array-has-fill-pointer-p vector))
+  (loop :for index :upfrom 0 :below (fill-pointer vector)
+        :with fill-pointer = 0
+        :unless (eql item (funcall key (aref vector index)))
+          :do (setf (aref vector fill-pointer) (aref vector index)) ; shift
+              (incf fill-pointer)
+        :finally (setf (fill-pointer vector) fill-pointer)
+                 (return vector)))
 
 (declaim
  (ftype (function (symbol &optional org) (values (eql t) &optional))
@@ -20,7 +34,8 @@
 (defun delete-subject (subject-designator &optional (org *org*))
   (flet ((del-sub (sub)
            (setf (org-specifications org)
-                   (delete sub (org-specifications org) :key #'spec-subject))))
+                   (#.(or #+(or allegro abcl) 'delete% 'delete) sub
+                    (org-specifications org) :key #'spec-subject))))
     (case subject-designator
       ((nil) ; delete all.
        (loop :with spec = (org-specifications org)
@@ -35,7 +50,9 @@
 (defmacro deforg (&whole whole name)
   (check-bnf:check-bnf (:whole whole) ((name symbol)))
   #-check-bnf
-  (check-type name symbol)
+  (progn
+   whole ; to muffle unused style warning.
+   (check-type name symbol))
   `(eval-when (:load-toplevel :compile-toplevel :execute)
      (register-org ',name (make-org :name ',name))))
 
@@ -48,7 +65,9 @@
 (defmacro in-org (&whole whole name)
   (check-bnf:check-bnf (:whole whole) ((name symbol)))
   #-check-bnf
-  (check-type name symbol)
+  (progn
+   whole ; to muffle unused style warning.
+   (check-type name symbol))
   `(eval-when (:load-toplevel :compile-toplevel :execute)
      (setf *org*
              (or (find-org ',name nil)
@@ -60,6 +79,7 @@
     ((option* keyword t)))
   #-check-bnf
   (progn
+   whole ; to muffle unused style warning.
    (check-type subject symbol)
    (loop :for (k) :on option* :by #'cddr
          :do (check-type k keyword)))
@@ -82,6 +102,7 @@
     ((as symbol)))
   #-check-bnf
   (progn
+   whole ; to muffle unused style warning.
    (assert (every #'symbolp subject*))
    (loop :for (k) :on option* :by #'cddr
          :do (check-type k keyword))
