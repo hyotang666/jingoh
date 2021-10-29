@@ -2,23 +2,28 @@
 
 (defun requirement-form (requirement) (apply #'make-requirement requirement))
 
-(defun check (requirement)
-  (macrolet ((with-internal-issue-handling (form)
-               `(handler-case ,form
-                  (error (c)
-                    (lambda ()
-                      (list
-                        (make-instance 'jingoh-internal-issue
-                                       :actual :skipped
-                                       :message (princ-to-string c)
-                                       :form (car requirement)
-                                       :expected :do-test
-                                       :line (getf (cdr requirement)
-                                                   :line))))))))
-    (funcall
-      (with-internal-issue-handling
-       (coerce (with-internal-issue-handling (requirement-form requirement))
-               'function)))))
+(let ((io *debug-io*))
+  (defun check (requirement)
+    (let (condition)
+      (flet ((return-internal-issue (c)
+               (return-from check
+                 (list
+                   (make-instance 'jingoh-internal-issue
+                                  :actual :skipped
+                                  :message (princ-to-string c)
+                                  :form (car requirement)
+                                  :expected :do-test
+                                  :line (getf (cdr requirement) :line))))))
+        (handler-bind ((condition
+                         (lambda (c)
+                           (setq *debug-io* io
+                                 condition c)))
+                       (error #'return-internal-issue))
+          (restart-case (funcall
+                          (coerce (requirement-form requirement) 'function))
+            (continue ()
+                :report "Skip this test."
+              (return-internal-issue condition))))))))
 
 (defmacro defspec (&whole whole &body body)
   (check-bnf:check-bnf (:whole whole)
