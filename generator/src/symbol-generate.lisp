@@ -319,7 +319,7 @@
                        acc))))))
     (declare
       (ftype (function
-              (* list (or null string) (mod #.most-positive-fixnum) list)
+              (t list (or null string) (mod #.most-positive-fixnum) list)
               (values list &optional))
              body)
       (ftype (function (list) (values list &optional)) do-return))

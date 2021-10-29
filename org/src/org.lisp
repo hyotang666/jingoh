@@ -27,7 +27,7 @@
 
 #-cmu
 (declaim
- (ftype (function (spec) (values (vector requirement *) &optional))
+ (ftype (function (spec) (values (vector requirement) &optional))
         spec-requirements))
 
 (declaim

@@ -76,7 +76,7 @@
                                                           <return>)))))))
 
 (declaim
- (ftype (function (symbol * &optional org) (values t &optional))
+ (ftype (function (symbol t &optional org) (values t &optional))
         add-requirement))
 
 (defun add-requirement (subject requirement &optional (org *org*))
