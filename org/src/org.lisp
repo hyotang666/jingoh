@@ -25,11 +25,6 @@
     (make-array 0 :fill-pointer 0 :adjustable t :element-type 'spec)
     :type (vector spec *)))
 
-#-cmu
-(declaim
- (ftype (function (spec) (values (vector requirement) &optional))
-        spec-requirements))
-
 (declaim
  (ftype (function (org) (values (mod #.most-positive-fixnum) &optional))
         org-requirements-count))
