@@ -252,9 +252,13 @@ MIT
 SBCL
 
 ### Tested with
-* SBCL/2.0.9
-* CCL/1.12
-* ECL/20.4.24
+* SBCL/2.1.10
+* CCL/1.12.1
+* CLISP/2.49 ; Failed.
+* ECL/21.2.1
+* Allegro/10.1
+* CMUCL/21D
+* ABCL/1.8.0 ; Failed.
 
 ### Known issue.
 #### CLISP
@@ -263,6 +267,10 @@ SBCL
 > The Lisp Pretty Printer implementation is not perfect yet.
 
 JINGOH.GENERATOR depends on pretty-printer and test fails in clisp.
+
+#### ABCL
+* [Format issue](https://github.com/armedbear/abcl/issues/398)
+* [Coercion issue](https://github.com/armedbear/abcl/issues/399)
 
 ## Installation
 
