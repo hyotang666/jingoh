@@ -167,7 +167,6 @@
 
 ; To test condition, use :signals.
 #?(? (error "error") :signals ERROR) => NIL
-#-abcl ; ABCL try to muffle warning.
 #?(? (signal 'warning) :signals warning) => NIL
 
 ; Corner case: Handling unknown condition.
@@ -209,7 +208,6 @@
      => T :ignore-signals warning :stream nil)
 => NIL
 ,:ignore-signals warning
-#-abcl ; ABCL try to muffle warning.
 #?(? (signal 'warning) => NIL :ignore-signals warning)
 => NIL
 ,:ignore-signals warning
@@ -219,7 +217,6 @@
      :signals ERROR :lazy T)
 => NIL
 
-#-abcl ; ABCL muffle warning.
 ; To test restart is available, use :with-restarts with :signals.
 #?(? (warn "warning") :signals warning :with-restarts muffle-warning)
 => NIL
