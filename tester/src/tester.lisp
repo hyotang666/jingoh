@@ -45,6 +45,8 @@
               :with-restarts :ignore-signals
               :lazy :test
               :doc-type :as))))
+  #-check-bnf
+  whole ; to muffle unused variable style warning.
   `(eval-when (:load-toplevel :execute)
      ,@(unless (getf (cdddr body) :lazy '#:does-not-exist)
          `(,(canonicalize (car body) (cdddr body))))
