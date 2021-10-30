@@ -285,6 +285,13 @@
 ; Using literal circular list.
 #?(? '#0=(:a . #0#) :be-the list) => NIL
 
+; Edge case.
+; Can test signal.
+#-ecl ; due to ecl has handler for top-level.
+#?(signal 'error)
+=> NIL
+,:ignore-signals nil
+
 (requirements-about CHECK :doc-type function)
 
 ;;;; Description:

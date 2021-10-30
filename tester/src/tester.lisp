@@ -17,10 +17,10 @@
         (handler-bind ((condition
                          (lambda (c)
                            (setq *debug-io* io
-                                 condition c)))
-                       (error #'return-internal-issue))
+                                 condition c))))
           (restart-case (funcall
-                          (coerce (requirement-form requirement) 'function))
+                          (handler-bind ((error #'return-internal-issue))
+                            (coerce (requirement-form requirement) 'function)))
             (continue ()
                 :report "Skip this test."
               (return-internal-issue condition))))))))
