@@ -38,9 +38,7 @@
                     (org-specifications org) :key #'spec-subject))))
     (case subject-designator
       ((nil) ; delete all.
-       (loop :with spec = (org-specifications org)
-             :repeat (fill-pointer spec)
-             :do (vector-pop spec)))
+       (setf (fill-pointer (org-specifications org)) 0))
       ((t) ; delete current.
        (mapc #'del-sub (org-current-subjects org)))
       (otherwise ; delete specified one.
