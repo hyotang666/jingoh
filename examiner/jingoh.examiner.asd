@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.examiner
-  :version "0.0.16"
+  :version "0.0.17"
   :author "SATO Shinichi"
   :license "MIT"
   :description "Jingoh module for test running and control/config output."
@@ -11,7 +11,6 @@
                "jingoh.org" ; database.
                "jingoh.tester" ; object.
                "cl-ansi-text" ; text colorizing.
-               "resignal-bind" ; condition handling.
                )
   :pathname "src/"
   :components ((:file "examine")))

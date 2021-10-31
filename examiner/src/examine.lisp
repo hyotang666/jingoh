@@ -1,5 +1,5 @@
 (defpackage :jingoh.examiner
-  (:use :cl :jingoh.org :jingoh.tester :resignal-bind)
+  (:use :cl :jingoh.org :jingoh.tester)
   (:export ;;;; main api
            #:examine
            ;;;; variables
@@ -137,17 +137,24 @@
         ((:vivid *print-vivid*) *print-vivid*))
   (setf *issues* nil)
   (prog* ((*org*
-           (resignal-bind ((missing-org () 'missing-org :api 'examine))
-             (find-org org)))
+           (handler-case (find-org org)
+             (missing-org (c)
+               (error
+                 (make-condition 'missing-org
+                                 :api 'examine
+                                 :datum (datum c))))))
           (*package* (org-package *org*)))
     (flet ((to-end ()
              (go #0=#:end)))
       (declare (dynamic-extent (function to-end))) ; To muffle SBCL compiler.
       ;; in order to be able to see tag, we need SETF in PROG*'s body.
       (setf *issues*
-              (resignal-bind ((missing-subject () 'missing-subject
-                                :api 'examine))
-                (print-progress subject #'to-end))))
+              (handler-case (print-progress subject #'to-end)
+                (missing-subject (c)
+                  (error
+                    (make-condition 'missing-subject
+                                    :api 'examine
+                                    :datum (datum c)))))))
     (print-summary *issues*)
    #0#
     (when (or (<= 1 *verbose*) (eq :stop *on-fails*))
