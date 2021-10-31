@@ -84,14 +84,14 @@
   (:set 'unsatisfied-clause 'vprint-unsatisfied-clause))
 
 (defmethod print-object ((issue issue) stream)
-  (if (null *print-vivid*)
+  (if (or (not (uiop:featurep :vivid-colors)) (not *print-vivid*))
       (call-next-method)
       (let ((vivid-colors:*vprint-dispatch*
              (vivid-colors:find-vprint-dispatch :jingoh)))
         (vivid-colors:vprint issue stream))))
 
 (defmethod print-object ((issue unsatisfied-clause) stream)
-  (if (not *print-vivid*)
+  (if (or (not (uiop:featurep :vivid-colors)) (not *print-vivid*))
       (call-next-method)
       (let ((vivid-colors:*vprint-dispatch*
              (vivid-colors:find-vprint-dispatch :jingoh)))
