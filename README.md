@@ -339,19 +339,21 @@ If you want to run tests in parallel, modify `spec/your-system.test.asd` like be
 ### License
 MIT
 ### Tested with
-* CCL/1.12
-* SBCL/2.0.9
-* ECL/20.4.24
+* SBCL/2.1.10
+* CCL/1.12.1
+* CLISP/2.49 ; See [generator]
+* ECL/21.2.1
+* Allegro/10.1
+* CMUCL/21D
+* ABCL/1.8.0 ; See [generator] and/or [tester]
+
+[generator]: generator/README.md
+[tester]: tester/README.md
 
 ### Known issue.
-#### CLISP
-[CLISP says](https://clisp.sourceforge.io/impnotes.html#clpp)
-
-> The Lisp Pretty Printer implementation is not perfect yet.
-
-JINGOH.GENERATOR depends on pretty-printer and test fails in clisp.
-
-Other features works fine though.
+#### CMUCL
+Coloring diff printing is not supported in CMUCL.
+For details see [here](https://github.com/hyotang666/vivid-colors/blob/main/content/README.md)
 
 ## Installation
 TODO
