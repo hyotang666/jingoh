@@ -25,7 +25,7 @@
 (defvar *target-type* "html")
 
 (defun target-path (name)
-  #+allegro
+  #+(or allegro abcl)
   (check-type name string)
   (make-pathname :name name :type *target-type*))
 
