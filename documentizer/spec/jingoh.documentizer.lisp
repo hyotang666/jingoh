@@ -63,6 +63,7 @@
 	    $result)))
 ,:ignore-signals nil
 ,:stream NIL
+,:timeout #.(or #+allegro 20 1)
 
 #+syntax
 (META-DATAS<=SYSTEM system &optional (sys-dir
