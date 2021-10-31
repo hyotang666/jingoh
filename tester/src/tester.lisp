@@ -38,13 +38,7 @@
               :signals :invokes-debugger))
      (expected check-bnf:expression)
      (option* option-key check-bnf:expression)
-     (option-key
-      (member :timeout :line
-              :around :before
-              :after :stream
-              :with-restarts :ignore-signals
-              :lazy :test
-              :doc-type :as))))
+     (option-key (member . #.(list-all-option-keys)))))
   #-check-bnf
   whole ; to muffle unused variable style warning.
   `(eval-when (:load-toplevel :execute)
