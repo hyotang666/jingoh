@@ -1,14 +1,13 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem "jingoh.parallel"
-  :version "0.0.1"
+  :version "0.0.2"
   :author "SATO Shinichi"
   :license "MIT"
   :description "Jingoh extension: Parallel testing."
   :depends-on
   (
    "lparallel"
-   "resignal-bind" ; condition handling.
    "jingoh"
    "bordeaux-threads" ; wrapper for multi threading.
    "cl-cpus" ; getting CPU information.

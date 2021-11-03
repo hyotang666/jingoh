@@ -1,5 +1,5 @@
 (defpackage #:jingoh.parallel
-  (:use #:common-lisp #:resignal-bind #:jingoh.org #:jingoh.examiner)
+  (:use #:common-lisp #:jingoh.org #:jingoh.examiner)
   (:import-from :cl-cpus #:get-number-of-processors)
   (:import-from :lparallel
                 #:pmap
@@ -22,17 +22,24 @@
         ((:vivid *print-vivid*) *print-vivid*)
         (cores (get-number-of-processors)))
   (prog* ((*org*
-           (resignal-bind:resignal-bind ((missing-org () 'missing-org
-                                           :api 'examine))
-             (find-org org)))
+           (handler-case (find-org org)
+             (missing-org (c)
+               (error
+                 (make-condition 'missing-org
+                                 :api 'examine
+                                 :datum (datum c))))))
           (*package* (org-package *org*)) (*print-circle* t)
           (*kernel* (make-kernel cores)))
     (setf *issues*
-            (resignal-bind:resignal-bind ((missing-subject () 'missing-subject
-                                            :api 'examine))
-              (if (find *on-fails* '(:error :stop) :test #'eq)
-                  (xxx-on-fails subject)
-                  (print-progress subject))))
+            (handler-case
+                (if (find *on-fails* '(:error :stop) :test #'eq)
+                    (xxx-on-fails subject)
+                    (print-progress subject))
+              (missing-subject (c)
+                (error
+                  (make-condition 'missing-subject
+                                  :api 'examine
+                                  :datum (datum c))))))
     (print-summary *issues*)
     (when (or (<= 1 *verbose*) (eq :stop *on-fails*))
       (mapc #'print *issues*)))
