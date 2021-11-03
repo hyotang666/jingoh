@@ -56,8 +56,8 @@
            ;; Ok.
            (defmethod c2mop:slot-definition-name ((a vector))
              (if (eq 'system::defstruct-slot-description (aref a 0))
-                 (call-next-method)
-                 (aref a 1))))
+                 (aref a 1)
+                 (call-next-method))))
           ;; Somebody (including us while reloading) defined it already.
           ;; Does it work enough for us?
           ((eq 'form (c2mop:slot-definition-name slot))
