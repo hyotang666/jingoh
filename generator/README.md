@@ -262,13 +262,18 @@ SBCL
 
 ### Known issue.
 #### CLISP
+Test is failed but it is not critical.
+
 [CLISP says](https://clisp.sourceforge.io/impnotes.html#clpp)
 
 > The Lisp Pretty Printer implementation is not perfect yet.
 
 JINGOH.GENERATOR depends on pretty-printer and test fails in clisp.
+Any features works fine, but output is not pretty.
 
 #### ABCL
+Jingoh.generator is stopping to support abcl due to its specific issues.
+
 * [Format issue](https://github.com/armedbear/abcl/issues/398)
 * [Coercion issue](https://github.com/armedbear/abcl/issues/399)
 

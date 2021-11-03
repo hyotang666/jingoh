@@ -341,19 +341,17 @@ MIT
 ### Tested with
 * SBCL/2.1.10
 * CCL/1.12.1
-* CLISP/2.49 ; See [generator]
+* CLISP/2.49 ; See [generator].
 * ECL/21.2.1
 * Allegro/10.1
-* CMUCL/21D
-* ABCL/1.8.0 ; See [generator] and/or [tester]
+* CMUCL/21D ; See [tester].
+* ABCL/1.8.0 ; See [generator], [documentizer] and/or [tester].
 
-[generator]: generator/README.md
-[tester]: tester/README.md
+[generator]: generator/README.md#known-issue
+[tester]: tester/README.md#known-issue
+[documentizer]: documentizer/README.md#known-issue
 
 ### Known issue.
-#### CMUCL
-Coloring diff printing is not supported in CMUCL.
-For details see [here](https://github.com/hyotang666/vivid-colors/blob/main/content/README.md)
 
 ## Installation
 TODO
