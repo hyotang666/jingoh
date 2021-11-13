@@ -1,5 +1,7 @@
 (in-package :jingoh.tester)
 
+(declaim (optimize speed))
+
 (defun ignore-signals (type params)
   (let ((condition (getf params :ignore-signals '#:not-ignore-signals)))
     (or (eq type condition) (eq t condition) (eq nil condition))))
@@ -122,17 +124,25 @@
                   (equal sexp1 sexp2))
                  (vector
                   (and (vectorp sexp2)
-                       (loop :for elt1 :across sexp1
-                             :for elt2 :across sexp2
-                             :always (rec elt1 elt2))))
+                       (locally
+                        #+sbcl
+                        (declare
+                          (sb-ext:muffle-conditions sb-ext:compiler-note))
+                        (loop :for elt1 :across sexp1
+                              :for elt2 :across sexp2
+                              :always (rec elt1 elt2)))))
                  (array
                   (and (arrayp sexp2)
                        (equal (array-dimensions sexp1)
                               (array-dimensions sexp2))
-                       (dotimes (i (array-total-size sexp1) t)
-                         (unless (rec (row-major-aref sexp1 i)
-                                      (row-major-aref sexp2 i))
-                           (return nil)))))
+                       (locally
+                        #+sbcl
+                        (declare
+                          (sb-ext:muffle-conditions sb-ext:compiler-note))
+                        (dotimes (i (array-total-size sexp1) t)
+                          (unless (rec (row-major-aref sexp1 i)
+                                       (row-major-aref sexp2 i))
+                            (return nil))))))
                  (t
                   (if (typep (class-of sexp1) 'structure-class)
                       (and (eq (type-of sexp1) (type-of sexp2))

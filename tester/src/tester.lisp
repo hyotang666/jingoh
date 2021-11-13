@@ -1,5 +1,7 @@
 (in-package :jingoh.tester)
 
+(declaim (optimize speed))
+
 (defun requirement-form (requirement) (apply #'make-requirement requirement))
 
 (let ((io *debug-io*))
@@ -14,6 +16,7 @@
                                   :form (car requirement)
                                   :expected :do-test
                                   :line (getf (cdr requirement) :line))))))
+        (declare (dynamic-extent (function return-internal-issue)))
         (handler-bind ((condition
                          (lambda (c)
                            (setq *debug-io* io
@@ -68,7 +71,7 @@
         (lambda (form)
           (if (typep form '(cons (satisfies function-designator-p) t))
               (let ((vars
-                     (loop :repeat (length (cdr form))
+                     (loop :repeat (list-length (cdr form))
                            :collect (gensym))))
                 `(let ,(mapcar #'list vars (cdr form))
                    (assert (,(car form) ,@vars) ()

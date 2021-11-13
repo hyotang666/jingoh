@@ -1,5 +1,7 @@
 (in-package :jingoh.tester)
 
+(declaim (optimize speed))
+
 (defstruct issue form expected actual line comment)
 
 (defstruct (test-issue (:include issue)) test)
@@ -49,9 +51,8 @@
           ;; ABCL uses VECTOR to implement structure slot definitions.
           ;; Does nobody define yet?
           ((not
-             (find 'vector methods
-                   :test (lambda (name specializers)
-                           (find name specializers :key #'class-name))
+             (find (find-class 'vector) methods
+                   :test #'find
                    :key #'c2mop:method-specializers))
            ;; Ok.
            (defmethod c2mop:slot-definition-name ((a vector))
