@@ -372,7 +372,8 @@
 
 (defmethod generate ((dispatcher (eql 'test-asd)) &key system forms path)
   (ensure-directories-exist *default-pathname-defaults*)
-  (output-to path (test-asd-generator system forms)))
+  ;; The tests should be done in dependency order.
+  (output-to path (test-asd-generator system (reverse forms))))
 
 ;;; DEFPACKAGE-FORM
 
