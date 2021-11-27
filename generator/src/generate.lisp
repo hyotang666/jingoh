@@ -402,7 +402,9 @@
 	    (in-package ~(~S~))~%~
 	    (setup ~(~S~))~2%"
             `(defpackage ,spec-name
-               (:use :cl :jingoh ,package-name))
+               (:use :cl
+                     :jingoh
+                     ,(intern (symbol-name package-name) :keyword)))
             spec-name
             (intern
               (locally
