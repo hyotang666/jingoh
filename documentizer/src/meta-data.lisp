@@ -123,6 +123,6 @@
                     (rec (append (asdf:component-children first) rest) acc))
                    (asdf:module
                     (rec (append (asdf:component-children first) rest) acc))
-                   (asdf:static-file (rec rest acc))
-                   (otherwise (rec rest (cons first acc))))))
+                   (asdf:cl-source-file (rec rest (cons first acc)))
+                   (otherwise (rec rest acc)))))
         (rec (list component) nil))))
