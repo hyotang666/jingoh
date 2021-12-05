@@ -192,7 +192,25 @@
       (let* ((*package* (symbol-package symbol))
              (package-name (package-name *package*))
              (system
-              (asdf:find-system (or system (string-downcase package-name))))
+              (block nil
+                (tagbody
+                 :retry
+                  (handler-case
+                      (return
+                       (asdf:find-system
+                         (or system (string-downcase package-name))))
+                    (asdf:missing-component ()
+                      (restart-case (error
+                                      "Package name does not match system name. ~S"
+                                      package-name)
+                        (use-value (system-name)
+                            :report "Specify system name."
+                            :interactive (lambda ()
+                                           (list
+                                             (prompt-for:prompt-for
+                                               '(or string symbol) ">> ")))
+                          (setf system system-name)
+                          (go :retry))))))))
              (*default-pathname-defaults* (spec-directory system))
              (forms
               `((defpackage ,package-name
