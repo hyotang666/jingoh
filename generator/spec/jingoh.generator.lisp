@@ -136,7 +136,7 @@
 ;;;; Description:
 ; This documentation shall be embed.
 
-#+syntax (DUMMY arg) ; => result
+#+syntax (DUMMY ARG) ; => result
 
 ;;;; Arguments and Values:
 

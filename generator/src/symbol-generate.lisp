@@ -192,12 +192,9 @@
                                (list "~:<" ; form.
                                      "~A~^ ~1I~@_" ; notation.
                                      (list "~@{" ; lambda-list
-                                           (list "~(" ; downcase.
-                                                 (list "~:<~^" ; Each lambda
-                                                               ; vars.
-                                                       "~W~^ ~1I~@_" ; var
-                                                       "~@{~W~^ ~:_~}" "~:>")
-                                                 "~)~^ ~_")
+                                           (list "~:<~^" ; Each lambda vars.
+                                                 "~W~^ ~1I~@_" ; var
+                                                 "~@{~W~^ ~:_~}" "~:>~^ ~_")
                                            "~}")
                                      "~:> ~_")
                                "; => result~:>~2%"))))
