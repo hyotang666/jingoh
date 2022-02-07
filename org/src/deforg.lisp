@@ -46,11 +46,11 @@
   t)
 
 (defmacro deforg (&whole whole name)
-  (check-bnf:check-bnf (:whole whole) ((name symbol)))
-  #-check-bnf
-  (progn
-   whole ; to muffle unused style warning.
-   (check-type name symbol))
+  #.(if (alexandria:featurep :check-bnf)
+        '(check-bnf:check-bnf (:whole whole) ((name symbol)))
+        '(progn
+          whole ; to muffle unused style warning.
+          (check-type name symbol)))
   `(eval-when (:load-toplevel :compile-toplevel :execute)
      (register-org ',name (make-org :name ',name))))
 
@@ -61,26 +61,26 @@
   (remhash (org-name (find-org org-designator)) *orgs*))
 
 (defmacro in-org (&whole whole name)
-  (check-bnf:check-bnf (:whole whole) ((name symbol)))
-  #-check-bnf
-  (progn
-   whole ; to muffle unused style warning.
-   (check-type name symbol))
+  #.(if (alexandria:featurep :check-bnf)
+        '(check-bnf:check-bnf (:whole whole) ((name symbol)))
+        '(progn
+          whole ; to muffle unused style warning.
+          (check-type name symbol)))
   `(eval-when (:load-toplevel :compile-toplevel :execute)
      (setf *org*
              (or (find-org ',name nil)
                  (error 'missing-org :api 'in-org :datum ',name)))))
 
 (defmacro requirements-about (&whole whole subject &rest option*)
-  (check-bnf:check-bnf (:whole whole)
-    ((subject symbol))
-    ((option* keyword t)))
-  #-check-bnf
-  (progn
-   whole ; to muffle unused style warning.
-   (check-type subject symbol)
-   (loop :for (k) :on option* :by #'cddr
-         :do (check-type k keyword)))
+  #.(if (alexandria:featurep :check-bnf)
+        '(check-bnf:check-bnf (:whole whole)
+           ((subject symbol))
+           ((option* keyword t)))
+        '(progn
+          whole ; to muffle unused style warning.
+          (check-type subject symbol)
+          (loop :for (k) :on option* :by #'cddr
+                :do (check-type k keyword))))
   `(eval-when (:load-toplevel :compile-toplevel :execute)
      (setf (org-options *org*) ',option*)
      (setf (org-current-subjects *org*) (list ',subject))))
@@ -94,17 +94,17 @@
            &rest option*
            &key (as (error "Keyword parameter :AS is required."))
            &allow-other-keys)
-  (check-bnf:check-bnf (:whole whole)
-    ((subject* symbol))
-    ((option* keyword t))
-    ((as symbol)))
-  #-check-bnf
-  (progn
-   whole ; to muffle unused style warning.
-   (assert (every #'symbolp subject*))
-   (loop :for (k) :on option* :by #'cddr
-         :do (check-type k keyword))
-   (check-type as symbol))
+  #.(if (alexandria:featurep :check-bnf)
+        '(check-bnf:check-bnf (:whole whole)
+           ((subject* symbol))
+           ((option* keyword t))
+           ((as symbol)))
+        '(progn
+          whole ; to muffle unused style warning.
+          (assert (every #'symbolp subject*))
+          (loop :for (k) :on option* :by #'cddr
+                :do (check-type k keyword))
+          (check-type as symbol)))
   `(eval-when (:load-toplevel :compile-toplevel :execute)
      (setf (org-options *org*) ',option*)
      (setf (org-current-subjects *org*) ',subject*)))

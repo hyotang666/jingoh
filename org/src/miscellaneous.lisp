@@ -37,16 +37,16 @@
           (&whole whole
            (var &optional (<subject-designator> t) (<org> '*org*) <return>)
            &body body &environment env)
-  (check-bnf:check-bnf (:whole whole)
-    ((var (or symbol subject-spec))
-     (subject-spec (symbol symbol)))
-    ((<subject-designator> check-bnf:expression))
-    ((<org> check-bnf:expression))
-    ((<return> check-bnf:expression)))
-  #-check-bnf
-  (progn
-   whole ; to muffle unused style warning.
-   (check-type var (or symbol (cons symbol (cons symbol null)))))
+  #.(if (alexandria:featurep :check-bnf)
+        '(check-bnf:check-bnf (:whole whole)
+           ((var (or symbol subject-spec))
+            (subject-spec (symbol symbol)))
+           ((<subject-designator> check-bnf:expression))
+           ((<org> check-bnf:expression))
+           ((<return> check-bnf:expression)))
+        '(progn
+          whole ; to muffle unused style warning.
+          (check-type var (or symbol (cons symbol (cons symbol null))))))
   (setf var (alexandria:ensure-list var))
   (if (constantp <subject-designator> env)
       (let ((sd (eval <subject-designator>)))
