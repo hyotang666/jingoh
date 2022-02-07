@@ -5,8 +5,8 @@
 (defun <iterate-all-requirements> (<org> var body <return>)
   (let ((s (gensym "S")) (sub? (cadr var)))
     `(locally
-      ;; Due to not simple-array.
-      (declare (optimize (speed 1)))
+      #+sbcl ; Due to not simple-array.
+      (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
       (loop :for ,s :across (org-specifications ,<org>)
                  ,@(when sub?
                      `(:for ,sub? = (spec-subject ,s)))
@@ -90,7 +90,8 @@
   requirement)
 
 (defun find-subject (subject &optional (org *org*))
-  (declare (optimize (speed 1))) ; due to not simple-array.
+  #+sbcl ; due to not simple-array.
+  (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
   (loop :for s :across (org-specifications org)
         :when (eq subject (spec-subject s))
           :return s))
