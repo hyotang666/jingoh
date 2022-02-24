@@ -2,7 +2,7 @@
 (in-package :asdf)
 
 (defsystem :jingoh.generator
-  :version "1.2.45"
+  :version "1.3.0"
   :author "SATO Shinichi"
   :license "MIT"
   :description "Jingoh extension: Project skelton and test template generator and more."

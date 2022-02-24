@@ -431,6 +431,16 @@
                (string package-name))
               :keyword))))
 
+;;; PACKAGE
+
+(defmethod generate ((package package) &key append system)
+  (let ((*default-pathname-defaults* (spec-directory system)))
+    (generate
+      `(defpackage ,(package-name package)
+         (:export ,@(loop :for symbol :being :each :external-symbol :of package
+                          :collect symbol)))
+      :append append)))
+
 ;;; :README
 
 (defmethod generate ((dispatcher (eql :readme)) &key system)
