@@ -3,11 +3,8 @@
 (declaim (optimize speed))
 
 (defun symbol-generate (symbol package)
-  (multiple-value-bind (s existp)
-      (find-symbol (symbol-name symbol) package)
-    (if (not existp)
-        (error "Symbol ~S is not found in ~S" symbol package)
-        (dolist (roll (rolls-of s)) (funcall (coerce roll 'function) s)))))
+  (let ((s (uiop:find-symbol* (symbol-name symbol) package)))
+    (dolist (roll (rolls-of s)) (funcall (coerce roll 'function) s))))
 
 (defun rolls-of (symbol)
   (unless (special-operator-p symbol)
