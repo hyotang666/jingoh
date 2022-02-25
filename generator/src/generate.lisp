@@ -2,6 +2,16 @@
 
 (declaim (optimize speed))
 
+;;;; UTILITY
+
+(defun package-key (designator)
+  (intern
+    (etypecase designator
+      (package (package-name designator))
+      (symbol (symbol-name designator))
+      (string designator))
+    :keyword))
+
 ;;;; GENERATOR
 
 (declaim
@@ -121,10 +131,7 @@
                `(:file ,(string-downcase (second form))))
              (examine-form (form)
                `(apply #'uiop:symbol-call :jingoh :examine
-                       ,(package-key (second form)) asdf::args))
-             (package-key (package-name)
-               (declare (optimize (speed 1))) ; due to type uncertainty.
-               (intern (string package-name) :keyword)))
+                       ,(package-key (second form)) asdf::args)))
       (let ((*package* (find-package :asdf)))
         (format t "; vim: ft=lisp et~%~
 		(in-package :asdf)~%~
@@ -144,7 +151,7 @@
 ;;; CL-SOURCE-FILE
 
 (defun cl-source-file-generator (system-name)
-  (let ((package-name (intern (string-upcase system-name) :keyword)))
+  (let ((package-name (package-key (string-upcase system-name))))
     (lambda ()
       (format t "~(~S~)~%~(~S~)~%~(~S~)~2%" '(in-package :cl-user)
               `(defpackage ,package-name
@@ -414,13 +421,7 @@
 
 (defun generate-header (package-name)
   (let ((spec-name (intern (format nil "~A.SPEC" package-name) :keyword))
-        (package-name-keyword
-         (intern
-           (locally ; due to type uncertainty
-            #+sbcl
-            (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
-            (string package-name))
-           :keyword)))
+        (package-name-keyword (package-key package-name)))
     (format t "~(~S~)~%~
 	    (in-package ~(~S~))~%~
 	    (setup ~(~S~))~2%"
