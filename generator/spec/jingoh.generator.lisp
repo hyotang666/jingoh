@@ -101,14 +101,6 @@
 #?(generate-header :hoge) => NIL
 ,:stream NIL
 
-#?(generate-header :hoge) :outputs
-"(defpackage :hoge.spec
-  (:use :cl :jingoh :hoge))
-(in-package :hoge.spec)
-(setup :hoge)
-
-"
-
 ;;;; Affected By:
 ; none
 
