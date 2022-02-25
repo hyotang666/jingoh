@@ -184,6 +184,23 @@
 ;;;; GENERATE
 ;;; SYMBOL
 
+(defun find-system (system package)
+  "Return asdf:system named SYSTEM or PACKAGE, otherwise error with restart RETRY."
+  (loop (handler-case
+            (return
+             (asdf:find-system
+               (or system (string-downcase (package-name package)))))
+          (asdf:missing-component ()
+            (restart-case (error "Package name ~S does not match system name."
+                                 (package-name package))
+              (retry (system-name)
+                  :report "Specify system name."
+                  :interactive (lambda ()
+                                 (list
+                                   (prompt-for:prompt-for '(or string symbol)
+                                                          ">> ")))
+                (setf system system-name)))))))
+
 (defmethod generate ((symbol symbol) &key system init pathname append)
   (if (keywordp symbol)
       (if init
@@ -191,26 +208,7 @@
           (generate (asdf:find-system symbol) :append append))
       (let* ((*package* (symbol-package symbol))
              (package-name (package-name *package*))
-             (system
-              (block nil
-                (tagbody
-                 :retry
-                  (handler-case
-                      (return
-                       (asdf:find-system
-                         (or system (string-downcase package-name))))
-                    (asdf:missing-component ()
-                      (restart-case (error
-                                      "Package name does not match system name. ~S"
-                                      package-name)
-                        (use-value (system-name)
-                            :report "Specify system name."
-                            :interactive (lambda ()
-                                           (list
-                                             (prompt-for:prompt-for
-                                               '(or string symbol) ">> ")))
-                          (setf system system-name)
-                          (go :retry))))))))
+             (system (find-system system *package*))
              (*default-pathname-defaults* (spec-directory system))
              (forms
               `((defpackage ,package-name
@@ -433,12 +431,27 @@
 ;;; PACKAGE
 
 (defmethod generate ((package package) &key append system)
-  (let ((*default-pathname-defaults* (spec-directory system)))
-    (generate
-      `(defpackage ,(package-name package)
-         (:export ,@(loop :for symbol :being :each :external-symbol :of package
-                          :collect symbol)))
-      :append append)))
+  (flet ((add-hint (condition)
+           (let ((new-control
+                  (concatenate 'string
+                               (simple-condition-format-control condition)
+                               "~:@_Hint: You can use :SYSTEM keyword arguments for ~S."))
+                 (new-arguments
+                  (append (simple-condition-format-arguments condition)
+                          (list 'generate))))
+             (reinitialize-instance condition
+                                    :format-control new-control
+                                    :format-arguments new-arguments))))
+    (let ((*default-pathname-defaults*
+           (spec-directory
+             (handler-bind ((simple-error #'add-hint))
+               (find-system system package)))))
+      (generate
+        `(defpackage ,(package-name package)
+           (:export ,@(loop :for symbol :being :each :external-symbol :of
+                                 package
+                            :collect symbol)))
+        :append append))))
 
 ;;; :README
 
