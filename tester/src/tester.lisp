@@ -151,7 +151,9 @@
 
 (defmethod make-requirement
            (test-form (key (eql :signals)) expected &rest parameters)
-  (assert (millet:type-specifier-p expected))
+  (assert (millet:type-specifier-p expected) ()
+    "~S is not a type-specifier. :SIGNALS require a condition type-specifier."
+    expected)
   (assert (subtypep expected 'condition))
   (alexandria:with-unique-names (actual result end output)
     (let ((form (canonicalize test-form parameters)))
