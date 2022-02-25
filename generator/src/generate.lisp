@@ -209,6 +209,8 @@
                 (setf system system-name)))))))
 
 (defmethod generate ((symbol symbol) &key system init pathname append)
+  (unless symbol
+    (error "~S is invalid for ~S first argument." nil 'generate))
   (if (keywordp symbol)
       (if init
           (generate 'init :system symbol :pathname pathname)
