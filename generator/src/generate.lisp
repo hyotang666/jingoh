@@ -415,21 +415,20 @@
                                 :error)))))
 
 (defun generate-header (package-name)
-  (let ((spec-name (intern (format nil "~A.SPEC" package-name) :keyword)))
+  (let ((spec-name (intern (format nil "~A.SPEC" package-name) :keyword))
+        (package-name-keyword
+         (intern
+           (locally ; due to type uncertainty
+            #+sbcl
+            (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
+            (string package-name))
+           :keyword)))
     (format t "~(~S~)~%~
 	    (in-package ~(~S~))~%~
 	    (setup ~(~S~))~2%"
             `(defpackage ,spec-name
-               (:use :cl
-                     :jingoh
-                     ,(intern (symbol-name package-name) :keyword)))
-            spec-name
-            (intern
-              (locally
-               ;; due to type uncertainty
-               (declare (optimize (speed 1)))
-               (string package-name))
-              :keyword))))
+               (:use :cl :jingoh ,package-name-keyword))
+            spec-name package-name-keyword)))
 
 ;;; PACKAGE
 
