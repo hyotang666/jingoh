@@ -52,8 +52,10 @@
                          (error (c)
                            (error
                              (concatenate 'string (princ-to-string c)
-                                          " in ~S~&Allowed are ~S.")
-                             parameters (list-all-option-keys))))))
+                                          " in ~S ~:@_Hint: ~S?")
+                             parameters
+                             (fuzzy-match:fuzzy-match (symbol-name key)
+                                                      (list-all-option-keys)))))))
            (make-body (test-form)
              (set-around
                (let ((after (getf parameters :after)))

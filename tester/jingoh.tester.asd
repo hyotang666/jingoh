@@ -2,7 +2,7 @@
 (in-package :asdf)
 (defsystem :jingoh.tester
   :description "Jingoh module for issue objects and interface for jingoh.org."
-  :version "1.3.15"
+  :version "1.3.16"
   :author "SATO Shinichi"
   :license "MIT"
   :long-description #.(uiop:read-file-string (merge-pathnames "CONCEPTS.md"
@@ -19,6 +19,7 @@
                "vivid-colors"           ; Colored pretty printer, implicitly depends on via vivid-diff.
                "cl-colors2"             ; Color object, implicity depends on via vivid-colors
                "jingoh.org"             ; Module the database.
+               "fuzzy-match"            ; String fuzzy matching especially for better error messages.
                )
   :pathname "src/"
   :components ((:file "package")
