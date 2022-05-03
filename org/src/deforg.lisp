@@ -13,11 +13,10 @@
   (progn (check-type name symbol) (check-type org org))
   (setf (gethash name *orgs*) org))
 
-#+(or allegro abcl)
+#+(or allegro)
 (defun delete% (item vector &key (key #'identity))
   ;; DELETE for allegro.
   ;; Allegro wipe away fill-pointer after DELETE.
-  ;; ABCL has [issue.](https://github.com/armedbear/abcl/issues/404)
   (assert (array-has-fill-pointer-p vector))
   (loop :for index :upfrom 0 :below (fill-pointer vector)
         :with fill-pointer = 0
@@ -34,7 +33,7 @@
 (defun delete-subject (subject-designator &optional (org *org*))
   (flet ((del-sub (sub)
            (setf (org-specifications org)
-                   (#.(or #+(or allegro abcl) 'delete% 'delete) sub
+                   (#.(or #+(or allegro) 'delete% 'delete) sub
                     (org-specifications org) :key #'spec-subject))))
     (case subject-designator
       ((nil) ; delete all.
