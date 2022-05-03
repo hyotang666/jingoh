@@ -108,7 +108,8 @@
       form)))
 
 (locally
- (declare (optimize (speed 1))) ; out of responds.
+ #+sbcl ; out of our responsibility.
+ (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
  (named-readtables:defreadtable syntax
    (:merge :standard)
    (:dispatch-macro-char *dispatch-macro-character* *dispatch-macro-sub-char*
@@ -190,8 +191,9 @@
       (incf *line* (count #\Newline string))
       string)))
 
-(locally ; out of responds.
- (declare (optimize (speed 1)))
+(locally
+ #+sbcl ; out of our responsibility.
+ (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
  (named-readtables:defreadtable counter
    (:merge :standard)
    (:macro-char #\Newline '|line-counter|)
