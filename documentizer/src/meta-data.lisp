@@ -86,9 +86,9 @@
     (unwind-protect
         (uiop:while-collecting (acc)
           (dolist (component (component-children system))
-            (when (let ((feature-form(asdf/component:component-if-feature component)))
-		    (or (null feature-form)
-			(uiop:featurep feature-form)))
+            (when (let ((feature-form
+                         (asdf/component:component-if-feature component)))
+                    (or (null feature-form) (uiop:featurep feature-form)))
               (with-open-file (s (asdf:component-pathname component))
                 (do* ((tag '#:tag)
                       (hook (coerce *macroexpand-hook* 'function))
