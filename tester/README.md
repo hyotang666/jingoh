@@ -1,11 +1,11 @@
 # Tests.
-* SBCL/2.1.7
+* SBCL/2.2.4
 * CCL/1.12.1
 * CLISP/2.49
 * ECL/21.2.1
 * Allegro/10.1
 * CMUCL/21D ; See below.
-* ABCL/1.8.0 ; Failed. See below.
+* ABCL/1.9.0 ; Failed. See below.
 
 # Known issues.
 

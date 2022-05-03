@@ -339,13 +339,13 @@ If you want to run tests in parallel, modify `spec/your-system.test.asd` like be
 ### License
 MIT
 ### Tested with
-* SBCL/2.1.10
+* SBCL/2.2.4
 * CCL/1.12.1
 * CLISP/2.49 ; See [generator].
 * ECL/21.2.1
 * Allegro/10.1
 * CMUCL/21D ; See [tester].
-* ABCL/1.8.0 ; See [generator], [documentizer] and/or [tester].
+* ABCL/1.9.0 ; See [generator], [documentizer] and/or [tester].
 
 [generator]: generator/README.md#known-issue
 [tester]: tester/README.md#known-issue

@@ -252,13 +252,13 @@ MIT
 SBCL
 
 ### Tested with
-* SBCL/2.1.10
+* SBCL/2.2.4
 * CCL/1.12.1
 * CLISP/2.49 ; Failed.
 * ECL/21.2.1
 * Allegro/10.1
 * CMUCL/21D
-* ABCL/1.8.0 ; Failed.
+* ABCL/1.9.0 ; Failed.
 
 ### Known issue.
 #### CLISP
@@ -275,7 +275,6 @@ Any features works fine, but output is not pretty.
 Jingoh.generator is stopping to support abcl due to its specific issues.
 
 * [Format issue](https://github.com/armedbear/abcl/issues/398)
-* [Coercion issue](https://github.com/armedbear/abcl/issues/399)
 
 ## Installation
 
