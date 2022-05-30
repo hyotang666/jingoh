@@ -345,10 +345,10 @@
           (use-value (directory)
               :report "Specify directory."
               :interactive (lambda ()
-                             (let* ((input
+                             (let* ((prompt-for:*default-reader* #'read-line)
+                                    (input
                                      (prompt-for:prompt-for 'string
-                                                            "Specify >> "
-                                                            :by #'read-line))
+                                                            "Specify >> "))
                                     (exists? (uiop:directory-exists-p input)))
                                (list
                                  (or exists?
