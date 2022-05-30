@@ -3,8 +3,10 @@
 (declaim (optimize speed))
 
 (defun ignore-signals (type params)
-  (let ((condition (getf params :ignore-signals '#:not-ignore-signals)))
-    (or (eq type condition) (eq t condition) (eq nil condition))))
+  (let* ((sentinel '#:not-ignore-signals)
+         (condition (getf params :ignore-signals sentinel)))
+    (unless (eq sentinel condition)
+      (or (subtypep condition type) (eq t condition) (eq nil condition)))))
 
 (defun function-designator-p (symbol)
   (and (symbolp symbol)

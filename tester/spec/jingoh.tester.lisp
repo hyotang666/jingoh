@@ -388,6 +388,29 @@
        0))
 ,:test sexp=
 
+; If :ignore-signals is specified with type of warning, warning clause is not generated.
+#?(the-standard-handling-form 0 '(:ignore-signals warning) 1 2 3)
+=> (lambda ()
+     (let (0 (output ""))
+       (handler-case (setf output (with-output-to-string (*standard-output*)
+				   (with-integrated-output-stream (*standard-output*)
+                                     (handler-bind ((warning
+						      (lambda (condition)
+							(when (find-restart 'muffle-warning condition)
+							  (muffle-warning condition)))))
+				       3))))
+	 (error (condition)
+	   (push (make-instance 'error-was-signaled :form '1 :expected '2
+				:actual condition :line nil :comment nil
+				:message (princ-to-string condition))
+		 0)))
+       (unless (string= "" output)
+	 (push (make-instance 'unexpected-output :form '1 :expected '""
+			      :actual output :line nil :comment nil)
+	       0))
+       0))
+,:test sexp=
+
 #+syntax
 (THE-STANDARD-HANDLING-FORM result parameters test-form expected &rest body) ; => result
 
