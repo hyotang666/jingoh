@@ -71,7 +71,7 @@
 
 (defun |#?reader-body| (stream number)
   (labels ((read-form (as)
-             (let ((form (read stream t t t)))
+             (let ((form (eclector.reader:read stream t t t)))
                (when *read-print*
                  (funcall (formatter "~%~S: ~S") *trace-output* as form))
                form))
@@ -85,7 +85,7 @@
                        :collect (read-form '#:option-value))))
            (have-option? ()
              (case
-                 (handler-case (peek-char t stream nil nil t)
+                 (handler-case (eclector.reader:peek-char t stream nil nil t)
                    ;; cmucl signals.
                    (end-of-file ()))
                (#\Newline
@@ -118,24 +118,6 @@
 ;;;; COLLECT-SPEC-LINES
 
 (defvar *line-pos*)
-
-(declaim (ftype (function (stream) (values list &optional)) collect-spec-lines))
-
-(defun collect-spec-lines (input)
-  (let ((*readtable* (named-readtables:find-readtable 'counter))
-        (*line-pos*)
-        (*line* 1)
-        (pathname (ignore-errors (pathname input))))
-    (when (and pathname (probe-file pathname)) ; ECL need.
-      ;; To set dispatch macro dynamically, since it may be customized.
-      (set-dispatch-macro-character *dispatch-macro-character*
-                                    *dispatch-macro-sub-char* '|#?counter|)
-      (with-open-file (s pathname :external-format (stream-external-format
-                                                     input))
-        (loop :with tag = '#:end
-              :for sexp = (read s nil tag)
-              :until (eq sexp tag)))
-      (nreverse *line-pos*))))
 
 (defun |line-counter| (stream character)
   (declare (ignore stream character))
@@ -180,60 +162,28 @@
               (otherwise #|Do nothing, to next loop|#)))
   (values))
 
-(defun |#?as-string| (stream character number)
-  (write-char #\#)
-  (when number
-    (write number))
-  (write-char character)
-  (read-as-string::%read-as-string stream t t t) ; form.
-  (read-as-string::%read-as-string stream t t t) ; key.
-  (read-as-string::%read-as-string stream t t t) ; expected.
-  (loop :for c = (peek-char nil stream t t t)
-        :if (read-as-string::whitecharp c)
-          :do (write-char (read-char stream))
-        :else :if (char= #\, c) ; have-option.
-          :do (write-char (read-char stream)) ; discard.
-              (read-as-string::%read-as-string stream t t t) ; option key.
-              (read-as-string::%read-as-string stream t t t) ; option value.
-        :else
-          :do (loop-finish)))
-
 (defun |#+counter| (stream character number)
   (declare (ignore number))
   (if (funcall (ecase character (#\+ #'identity) (#\- #'not))
                (uiop:featurep
                  (let ((*package* (find-package :keyword)))
-                   (read stream t t t))))
-      (read stream t t t)
-      (labels ((count-it ()
-                 (incf *line*
-                       (count #\Newline
-                              (let ((read-as-string:*default-readtable*
-                                     (named-readtables:find-readtable
-                                       'read-as-string:as-string)))
-                                (read-as-string:set-dispatcher #\?
-                                                               '|#?as-string|
-                                                               read-as-string:*default-readtable*)
-                                (read-as-string:read-as-string stream t t
-                                                               t)))))
-               (have-option? ()
-                 (case (peek-char t stream t t t)
-                   (#\Newline
-                    (|line-counter| stream (read-char stream))
-                    (have-option?))
-                   (#\;
-                    (|line-comment| stream (read-char stream))
-                    (have-option?))
-                   (#\, (read-char stream))
-                   (otherwise nil))))
-        (count-it)
-        (loop :while (have-option?)
-              :do (count-it)
-                  (count-it)))))
+                   (eclector.reader:read stream t t t))))
+      (eclector.reader:read stream t t t)
+      (handler-bind ((error
+                       (lambda (condition)
+                         (let ((restart
+                                (find-restart 'eclector.reader:recover
+                                              condition)))
+                           (when restart
+                             (invoke-restart restart))))))
+        (eclector.reader:read stream t t t))))
 
 (let ((reader
        (coerce
-         (load-time-value (get-macro-character #\" (copy-readtable nil)) t)
+         (load-time-value
+          (eclector.readtable:get-macro-character
+            eclector.readtable:*readtable* #\")
+          t)
          'function)))
   #+cmu
   (declare (type function reader))
@@ -242,14 +192,35 @@
       (incf *line* (count #\Newline string))
       string)))
 
-(locally
- #+sbcl ; out of our responsibility.
- (declare (sb-ext:muffle-conditions sb-ext:compiler-note))
- (named-readtables:defreadtable counter
-   (:merge :standard)
-   (:macro-char #\Newline '|line-counter|)
-   (:macro-char #\; '|line-comment|)
-   (:macro-char #\" '|string-line-counter|)
-   (:dispatch-macro-char #\# #\+ '|#+counter|)
-   (:dispatch-macro-char #\# #\- '|#+counter|)
-   (:dispatch-macro-char #\# #\| '|block-comment|)))
+(defvar *counter*
+  (eclector.readtable:copy-readtable eclector.readtable:*readtable*))
+
+(flet ((syntax (type &rest args)
+         (apply #'uiop:symbol-call :eclector.readtable
+                (format nil "SET-~A-CHARACTER" type) *counter* args)))
+  (syntax :macro #\Newline '|line-counter|)
+  (syntax :macro #\; '|line-comment|)
+  (syntax :macro #\" '|string-line-counter|)
+  (syntax :dispatch-macro #\# #\+ '|#+counter|)
+  (syntax :dispatch-macro #\# #\- '|#+counter|)
+  (syntax :dispatch-macro #\# #\| '|block-comment|))
+
+(declaim (ftype (function (stream) (values list &optional)) collect-spec-lines))
+
+(defun collect-spec-lines (input)
+  (let ((eclector.readtable:*readtable*
+         (eclector.readtable:copy-readtable *counter*))
+        (*line-pos*)
+        (*line* 1)
+        (pathname (ignore-errors (pathname input))))
+    (when (and pathname (probe-file pathname)) ; ECL need.
+      ;; To set dispatch macro dynamically, since it may be customized.
+      (eclector.readtable:set-dispatch-macro-character
+        eclector.readtable:*readtable* *dispatch-macro-character*
+        *dispatch-macro-sub-char* '|#?counter|)
+      (with-open-file (s pathname :external-format (stream-external-format
+                                                     input))
+        (loop :with tag = '#:end
+              :for sexp = (eclector.reader:read s nil tag)
+              :until (eq sexp tag)))
+      (nreverse *line-pos*))))
