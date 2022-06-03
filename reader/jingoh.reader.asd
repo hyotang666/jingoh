@@ -1,7 +1,7 @@
 ; vim: ft=lisp et
 (in-package :asdf)
 (defsystem :jingoh.reader
-  :version "2.2.10"
+  :version "2.3.0"
   :author "SATO Shinichi"
   :license "MIT"
   :description "Jingoh module to provide reader macro."
@@ -9,6 +9,7 @@
                         (uiop:subpathname *load-pathname* "CONCEPTS.md"))
   :depends-on (
                "named-readtables"       ; Readtable manager.
+               "read-as-string"         ; S-Expression as string.
                "jingoh.tester"          ; Module for the S-expressions that is the Reader generates.
                )
   :pathname "src/"

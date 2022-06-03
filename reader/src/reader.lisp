@@ -180,6 +180,57 @@
               (otherwise #|Do nothing, to next loop|#)))
   (values))
 
+(defun |#?as-string| (stream character number)
+  (write-char #\#)
+  (when number
+    (write number))
+  (write-char character)
+  (read-as-string::%read-as-string stream t t t) ; form.
+  (read-as-string::%read-as-string stream t t t) ; key.
+  (read-as-string::%read-as-string stream t t t) ; expected.
+  (loop :for c = (peek-char nil stream t t t)
+        :if (read-as-string::whitecharp c)
+          :do (write-char (read-char stream))
+        :else :if (char= #\, c) ; have-option.
+          :do (write-char (read-char stream)) ; discard.
+              (read-as-string::%read-as-string stream t t t) ; option key.
+              (read-as-string::%read-as-string stream t t t) ; option value.
+        :else
+          :do (loop-finish)))
+
+(defun |#+counter| (stream character number)
+  (declare (ignore number))
+  (if (funcall (ecase character (#\+ #'identity) (#\- #'not))
+               (uiop:featurep
+                 (let ((*package* (find-package :keyword)))
+                   (read stream t t t))))
+      (read stream t t t)
+      (labels ((count-it ()
+                 (incf *line*
+                       (count #\Newline
+                              (let ((read-as-string:*default-readtable*
+                                     (named-readtables:find-readtable
+                                       'read-as-string:as-string)))
+                                (read-as-string:set-dispatcher #\?
+                                                               '|#?as-string|
+                                                               read-as-string:*default-readtable*)
+                                (read-as-string:read-as-string stream t t
+                                                               t)))))
+               (have-option? ()
+                 (case (peek-char t stream t t t)
+                   (#\Newline
+                    (|line-counter| stream (read-char stream))
+                    (have-option?))
+                   (#\;
+                    (|line-comment| stream (read-char stream))
+                    (have-option?))
+                   (#\, (read-char stream))
+                   (otherwise nil))))
+        (count-it)
+        (loop :while (have-option?)
+              :do (count-it)
+                  (count-it)))))
+
 (let ((reader
        (coerce
          (load-time-value (get-macro-character #\" (copy-readtable nil)) t)
@@ -199,4 +250,6 @@
    (:macro-char #\Newline '|line-counter|)
    (:macro-char #\; '|line-comment|)
    (:macro-char #\" '|string-line-counter|)
+   (:dispatch-macro-char #\# #\+ '|#+counter|)
+   (:dispatch-macro-char #\# #\- '|#+counter|)
    (:dispatch-macro-char #\# #\| '|block-comment|)))
