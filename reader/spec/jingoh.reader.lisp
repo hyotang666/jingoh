@@ -1,6 +1,6 @@
 (defpackage :jingoh.reader.spec
   (:import-from :jingoh.reader
-		#:|block-comment| #:*line*)
+		#:|block-comment| #:*line* #:%collect-spec-lines)
   (:use :cl :jingoh :jingoh.reader :jingoh.tester))
 (in-package :jingoh.reader.spec)
 (setup :jingoh.reader)
@@ -248,3 +248,48 @@
 #?(with-input-from-string (s "Missing end tag")
     (|block-comment| s '#:ignored '#:ignored))
 :signals END-OF-FILE
+
+(requirements-about %COLLECT-SPEC-LINES :doc-type function)
+
+;;;; Description:
+
+#+syntax (%COLLECT-SPEC-LINES INPUT) ; => result
+
+;;;; Arguments and Values:
+
+; input := input stream, otherwise error.
+#?(%collect-spec-lines "not stream") :signals type-error
+
+; result := list thats element is line numbers where #? form appears.
+#?(with-input-from-string (in (format nil "#?(+) => 0~%#?(*) => 1"))
+    (%collect-spec-lines in))
+=> (1 2)
+,:test equal
+
+;;;; Affected By:
+; *counter*, internal use. eclector.readtable:readtable.
+; *dispatch-macro-character*.
+; *dispatch-macro-sub-char*.
+
+;;;; Side-Effects:
+; Consume stream contents.
+
+;;;; Notes:
+
+;;;; Exceptional-Situations:
+; If form in invalid, an error is signaled.
+#?(with-input-from-string (in ")")
+    (%collect-spec-lines in))
+:signals error
+
+;;;; Tests.
+; Handling the end-of-file.
+#?(with-input-from-string (in "")
+    (%collect-spec-lines in))
+=> NIL
+
+; Handling read time conditional.
+#?(with-input-from-string (in (format nil "#+()~%hoge~%#?(+) => 0"))
+    (%collect-spec-lines in))
+=> (3)
+,:test equal
