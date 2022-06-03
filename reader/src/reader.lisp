@@ -205,22 +205,26 @@
   (syntax :dispatch-macro #\# #\- '|#+counter|)
   (syntax :dispatch-macro #\# #\| '|block-comment|))
 
+(defun %collect-spec-lines (input)
+  ;; Split for easy to debug.
+  (let ((*line-pos*)
+        (*line* 1)
+        (eclector.readtable:*readtable*
+         (eclector.readtable:copy-readtable *counter*)))
+    ;; To set dispatch macro dynamically, since it may be customized.
+    (eclector.readtable:set-dispatch-macro-character
+      eclector.readtable:*readtable* *dispatch-macro-character*
+      *dispatch-macro-sub-char* '|#?counter|)
+    (loop :with tag = '#:end
+          :for sexp = (eclector.reader:read input nil tag)
+          :until (eq sexp tag))
+    (nreverse *line-pos*)))
+
 (declaim (ftype (function (stream) (values list &optional)) collect-spec-lines))
 
 (defun collect-spec-lines (input)
-  (let ((eclector.readtable:*readtable*
-         (eclector.readtable:copy-readtable *counter*))
-        (*line-pos*)
-        (*line* 1)
-        (pathname (ignore-errors (pathname input))))
+  (let ((pathname (ignore-errors (pathname input))))
     (when (and pathname (probe-file pathname)) ; ECL need.
-      ;; To set dispatch macro dynamically, since it may be customized.
-      (eclector.readtable:set-dispatch-macro-character
-        eclector.readtable:*readtable* *dispatch-macro-character*
-        *dispatch-macro-sub-char* '|#?counter|)
       (with-open-file (s pathname :external-format (stream-external-format
                                                      input))
-        (loop :with tag = '#:end
-              :for sexp = (eclector.reader:read s nil tag)
-              :until (eq sexp tag)))
-      (nreverse *line-pos*))))
+        (%collect-spec-lines s)))))
