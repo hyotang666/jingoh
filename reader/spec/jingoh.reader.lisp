@@ -258,7 +258,7 @@
 ;;;; Arguments and Values:
 
 ; input := input stream, otherwise error.
-#?(%collect-spec-lines "not stream") :signals type-error
+#?(%collect-spec-lines "not stream") :signals error
 
 ; result := list thats element is line numbers where #? form appears.
 #?(with-input-from-string (in (format nil "#?(+) => 0~%#?(*) => 1"))
