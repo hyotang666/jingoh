@@ -1,5 +1,5 @@
 # Tested.
-* SBCL/2.2.4
+* SBCL/2.2.5
 * CCL/1.12.1
 * CLISP/2.49
 * ECL/21.2.1
