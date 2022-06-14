@@ -146,6 +146,33 @@
 
 "
 
+#?(defstruct struct (slot nil :type (member :a :b :c)))
+=> STRUCT
+,:before (mapc #'fmakunbound '(struct-p make-struct copy-struct struct-slot (setf struct-slot)))
+
+#?(symbol-generate 'struct :jingoh.generator.spec)
+:output-satisfies
+(lambda (output)
+  (& (equal output
+	    (format nil "(requirements-about STRUCT :doc-type STRUCTURE)
+
+;;;; Description:
+;;;; Class Precedence List: (case in ~A)
+; ~{~(~A~)~^ ~}
+
+;;;; Effective Slots:
+
+; SLOT [Type] (MEMBER :A :B :C)~@[~A~]
+
+;;;; Notes:
+
+"
+uiop:*implementation-type*
+(mapcar #'class-name (closer-mop:class-precedence-list (find-class 'struct)))
+(when (uiop:featurep :clisp)
+  "
+; [ACCESSOR] struct-slot")))))
+
 #+syntax
 (SYMBOL-GENERATE symbol package) ; => result
 

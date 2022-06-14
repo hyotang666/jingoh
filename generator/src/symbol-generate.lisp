@@ -118,7 +118,7 @@
             uiop:*implementation-type*
             (mapcar #'class-name (closer-mop:class-precedence-list class)))
     (dolist (slot (applicables class))
-      (apply #'format t "; ~A [Type] ~A~%~
+      (apply #'format t "; ~A [Type] ~S~%~
 	     ~{~@[~{; [~A] ~{~(~S~)~^ ~}~}~&~]~}~&~
 	     ~@[; ~A~]~&~%"
              slot))
@@ -136,8 +136,13 @@
 
 (defun parse-class (class)
   (loop :for slot :in (closer-mop:class-direct-slots class)
-        :for r = (closer-mop:slot-definition-readers slot)
-        :for w :of-type list = (closer-mop:slot-definition-writers slot)
+        :for r
+             = (ignore-errors ;; For implementation that does not support
+                              ;; slot-definition-readers for structure-class.
+                              (closer-mop:slot-definition-readers slot))
+        :for w :of-type list
+             = (ignore-errors ;; Same with readers above.
+                              (closer-mop:slot-definition-writers slot))
         :for a :of-type list
              = (remove-if-not
                  (lambda (x)
