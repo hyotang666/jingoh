@@ -113,6 +113,13 @@
 
 ;;;; Exceptional-Situations:
 
+;;;; Tests.
+; Can handle read time labeling.
+#?(with-input-from-string (s "(list #0=1 #0#) => (#0=1 #0#) ,:test equal")
+    (|#?reader| s #\? nil))
+=> (defspec (list #0=1 #0#) => (1 1) :line nil :test equal)
+,:test equal
+
 (requirements-about *READ-VERBOSE* :doc-type variable)
 
 ;;;; Description:

@@ -71,7 +71,7 @@
 
 (defun |#?reader-body| (stream number)
   (labels ((read-form (as)
-             (let ((form (eclector.reader:read stream t t t)))
+             (let ((form (eclector.reader:read stream)))
                (when *read-print*
                  (funcall (formatter "~%~S: ~S") *trace-output* as form))
                form))
