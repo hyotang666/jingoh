@@ -115,8 +115,10 @@
 
 ;;;; Tests.
 ; Can handle read time labeling.
-#?(with-input-from-string (s "(list #0=1 #0#) => (#0=1 #0#) ,:test equal")
-    (|#?reader| s #\? nil))
+#?(let ((*readtable* (copy-readtable nil)))
+    (enable)
+    (with-input-from-string (s "#?(list #0=1 #0#) => (#1=1 #1#) ,:test equal")
+      (read s)))
 => (defspec (list #0=1 #0#) => (1 1) :line nil :test equal)
 ,:test equal
 

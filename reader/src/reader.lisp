@@ -64,6 +64,8 @@
   (let ((*line* 1))
     (|#?reader-body| stream number)))
 
+(defvar *reader-package* :cl)
+
 (declaim
  (ftype (function (stream (or null (mod #.most-positive-fixnum)))
          (values cons &optional))
@@ -71,7 +73,7 @@
 
 (defun |#?reader-body| (stream number)
   (labels ((read-form (as)
-             (let ((form (eclector.reader:read stream)))
+             (let ((form (uiop:symbol-call *reader-package* 'read stream t t t)))
                (when *read-print*
                  (funcall (formatter "~%~S: ~S") *trace-output* as form))
                form))
@@ -85,7 +87,9 @@
                        :collect (read-form '#:option-value))))
            (have-option? ()
              (case
-                 (handler-case (eclector.reader:peek-char t stream nil nil t)
+                 (handler-case
+                     (uiop:symbol-call *reader-package* 'peek-char t stream nil
+                                       nil t)
                    ;; cmucl signals.
                    (end-of-file ()))
                (#\Newline
@@ -127,7 +131,8 @@
 (defun |#?counter| (stream character number)
   (declare (ignore character))
   (push *line* *line-pos*)
-  (|#?reader-body| stream number))
+  (let ((*reader-package* :eclector.reader))
+    (|#?reader-body| stream number)))
 
 (defun |line-comment| (stream character)
   (declare (ignore character))
